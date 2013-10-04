@@ -17,8 +17,6 @@ public class NosElus {
 
     public static void main(String[] args) throws IOException {
 
-
-
         get(new Route("/hello") {
             @Override
             public Object handle(Request request, Response response) {
