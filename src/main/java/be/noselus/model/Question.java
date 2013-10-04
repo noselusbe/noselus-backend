@@ -15,6 +15,10 @@ public class Question {
     public String questionText;
     public String answerText;
 
+    public Question() {
+    	
+    }
+    
     public Question( Person askedBy,  Person askedTo, Person answeredBy, String session, Integer year, String number, LocalDate dateAsked, LocalDate dateAnswered, String title, String questionText, String answerText) {
         this.askedBy = askedBy;
         this.askedTo = askedTo;

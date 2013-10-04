@@ -11,13 +11,12 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import be.noselus.model.Question;
 import be.noselus.model.QuestionResponse;
 
 public class QuestionResponseParser {
 
 	public static QuestionResponse parse(String url) throws IOException {
-//		String url = "http://parlement.wallonie.be/content/print_container.php?print=quest_rep_voir.php&id_doc=36256&type=all";
-		
 		QuestionResponse model = new QuestionResponse();
 		
 		Document doc = Jsoup.parse(new URL(url).openStream(), "iso-8859-1", url);
@@ -31,8 +30,8 @@ public class QuestionResponseParser {
 		// Extract Question & Response
 		fields = extract(doc, "h2");
 		
-		model.question = fields.get(0);
-		model.response = fields.get(1);
+		model.question_date = fields.get(0);
+		model.response_date = fields.get(1);
         
 		// Extract From/To
 		fields = extract(doc, "li.evid02");
@@ -51,14 +50,13 @@ public class QuestionResponseParser {
         return model;
 	}
 
-	private static List<String> extract(Document doc, String tag) {
+	protected static List<String> extract(Document doc, String tag) {
 		Elements data = doc.select(tag);
         
 		List<String> items = new ArrayList<>();
         for (Element e: data) {
         	String item = StringEscapeUtils.unescapeHtml(e.html());
         	items.add(item);
-        	System.out.println(item);
         }
         
         return items;

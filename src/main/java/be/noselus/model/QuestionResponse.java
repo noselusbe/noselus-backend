@@ -8,10 +8,13 @@ public class QuestionResponse {
 	public String year;
 	public String number;
 	
-	public String question;
+	public String question_date;
 	public String question_from;
 	public String question_to;
 	
-	public String response;
+	public String response_date;
 	public String response_from;
+	
+	public String questionText;
+	public String responseText;
 }
