@@ -24,7 +24,8 @@ public class NosElus {
             }
         });
 
-        get(new JsonTransformer("questions") {
+        get(new JsonTransformer("/questions") {
+
             @Override
             public Object handle(final Request request, final Response response) {
                 return questionRepository.getQuestions();
