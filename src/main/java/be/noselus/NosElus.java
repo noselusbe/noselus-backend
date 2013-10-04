@@ -1,21 +1,27 @@
 package be.noselus;
 
-import static spark.Spark.get;
-
-import java.io.IOException;
-
-import spark.Request;
-import spark.Response;
-import spark.Route;
 import be.noselus.repository.QuestionRepository;
 import be.noselus.repository.QuestionRepositoryStub;
 import be.noselus.service.JsonTransformer;
+import spark.Request;
+import spark.Response;
+import spark.Route;
+
+import java.io.IOException;
+
+import static spark.Spark.get;
+import static spark.Spark.setPort;
 
 public class NosElus {
 
     public static QuestionRepository questionRepository = new QuestionRepositoryStub();
 
     public static void main(String[] args) throws IOException {
+        final String port = System.getenv("PORT");
+        if (port != null){
+          setPort(Integer.parseInt(port));
+
+        }
 
         get(new Route("/hello") {
             @Override
