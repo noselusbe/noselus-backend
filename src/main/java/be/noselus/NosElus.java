@@ -1,12 +1,12 @@
 package be.noselus;
 
-import spark.Request;
-import spark.Response;
-import spark.Route;
+import static spark.Spark.get;
 
 import java.io.IOException;
 
-import static spark.Spark.get;
+import spark.Request;
+import spark.Response;
+import spark.Route;
 
 public class NosElus {
 
