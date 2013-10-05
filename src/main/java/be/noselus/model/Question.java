@@ -14,6 +14,7 @@ public class Question {
     public String title;
     public String questionText;
     public String answerText;
+    public String excerpt;
 
     public Question() {
     	
@@ -31,5 +32,10 @@ public class Question {
         this.title = title;
         this.questionText = questionText;
         this.answerText = answerText;
+        if (questionText.length()< 50){
+            this.excerpt = questionText;
+        } else {
+            this.excerpt = questionText.substring(0,50) + "...";
+        }
     }
 }

@@ -19,4 +19,8 @@ public class PersonSmall {
     public String toString() {
     	return full_name;
     }
+
+    public static PersonSmall fromPerson(final Person person){
+        return new PersonSmall(person.full_name, person.id);
+    }
 }
