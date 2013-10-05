@@ -49,6 +49,10 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.jdbi</groupId>
+            <artifactId>jdbi</artifactId>
+        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>
@@ -98,6 +102,11 @@
 				<artifactId>postgresql</artifactId>
 				<version>9.1-901.jdbc3</version>
 			</dependency>
+            <dependency>
+                <groupId>org.jdbi</groupId>
+                <artifactId>jdbi</artifactId>
+                <version>2.50</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

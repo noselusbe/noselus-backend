@@ -1,16 +1,15 @@
 package be.noselus.db;
 
+import be.noselus.model.Question;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import be.noselus.model.Question;
-
 public class SqlRequester {
 
 	public static void insertQuestion(Connection db, Question question) throws SQLException {
-		System.out.println(question.id);
-		
+
 		String sql = 
 				"INSERT INTO written_question (session, year, number, date_asked, date_answer, title, question_text, answer_text, asked_by, asked_to, assembly_ref) "
 				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
