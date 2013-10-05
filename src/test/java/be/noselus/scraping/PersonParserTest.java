@@ -71,6 +71,7 @@ public class PersonParserTest {
 	}
 	
 	@Test
+	@Ignore
 	public void parseListChamber() throws MalformedURLException, IOException, SQLException, ClassNotFoundException {
 		String sql = "SELECT assembly_id FROM person WHERE id > 158;";
 		PreparedStatement stat = db.prepareStatement(sql);
