@@ -76,19 +76,6 @@ public class PoliticianRepositoryInMemory implements PoliticianRepository {
         }
     }
 
-    private List<? extends Person> getMinisters() {
-        //int id, String full_name, String party, String address, String postal_code, String town, String phone, String fax, String email, String site, PersonFunction function
-        final Person rudyDemotte = new Person(politicanIdGenerator.getAndIncrement(),"DEMOTTE Rudy", "PS", "Rue Mazy 25/27", "5100", "Jambes", "+32(0)81.331.211", "+32(0)81.331.366", "", "http://demotte.wallonie.be/", PersonFunction.MINISTER);
-        final Person jeanMarcNollet = new Person(politicanIdGenerator.getAndIncrement(),"NOLLET Jean-Marc", "ECOLO", "Place des Célestines, 1", "5000", "NAMUR", "081/32.17.11", "081/32.17.00", "", "http://nollet.wallonie.be/", PersonFunction.MINISTER);
-        final Person andreAntoine = new Person(politicanIdGenerator.getAndIncrement(),"ANTOINE André", "cdH", "Rue d'Harscamp 22", "5000", "NMAUR", "+32(0)81.253.811", "+32(0)81.253.999", "", "http://antoine.wallonie.be/", PersonFunction.MINISTER);
-        final Person jeanClaudeMarcourt = new Person(politicanIdGenerator.getAndIncrement(),"MARCOURT Jean-Claude", "PS", "Rue Kefer, 2", "5100", "NAMUR", "081/32.17.11", "081/32.17.00", "", "http://marcourt.wallonie.be/", PersonFunction.MINISTER);
-        final Person paulFurlan = new Person(politicanIdGenerator.getAndIncrement(),"FURLAN Paul", "PS", "Rue du Moulin de Meuse, 4", "5000", "Beez (Namur)", "+32(0)81.234.711", "+32(0)81.234.720", "", "http://furlan.wallonie.be/", PersonFunction.MINISTER);
-        final Person elianeTillieux = new Person(politicanIdGenerator.getAndIncrement(),"TILLIEUX Eliane", "PS", "Rue des Brigades d'Irlande 4", "5100", "Jambes (Namur)", "+32(0)81.323.411", "+32(0)81.323.519", "", "http://tillieux.wallonie.be/", PersonFunction.MINISTER);
-        final Person philippeHenry = new Person(politicanIdGenerator.getAndIncrement(),"HENRY Philippe", "ECOLO", "Rue des Brigades d'Irlande 4", "5100", "Jambes (Namur)", "+32(0)81.32.35.11", "+32(0)81.32.34.75", "", "http://henry.wallonie.be/", PersonFunction.MINISTER);
-        final Person carloDiAntonio = new Person(politicanIdGenerator.getAndIncrement(),"DI ANTONIO Carlo", "cdH", "Chaussée de Louvain 2", "5000", "Namur", "+32(0)81.710.310", "+32(0)81.710.380", "", "http://diantonio.wallonie.be/", PersonFunction.MINISTER);
-        return Lists.newArrayList(rudyDemotte,jeanMarcNollet, andreAntoine,jeanClaudeMarcourt, paulFurlan, elianeTillieux, philippeHenry, carloDiAntonio);
-    }
-
     @Override
     public List<Person> getFullPoliticianByName(final String name) {
         Predicate<Person> hasName = new Predicate<Person>() {
