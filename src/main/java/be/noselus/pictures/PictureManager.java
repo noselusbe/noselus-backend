@@ -10,6 +10,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.TreeMap;
+
+import be.noselus.db.DatabaseHelper;
 
 public class PictureManager {
 	
@@ -23,6 +26,7 @@ public class PictureManager {
 		PreparedStatement stat = db.prepareStatement("SELECT id, assembly_id FROM person;");
 		stat.execute();
 		
+		mapping = new TreeMap<Integer, Integer>();
 		while (stat.getResultSet().next()) {
 			int id = stat.getResultSet().getInt("id");
 			int assembly_id = stat.getResultSet().getInt("assembly_id");
