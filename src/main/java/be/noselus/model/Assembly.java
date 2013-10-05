@@ -1,8 +1,8 @@
 package be.noselus.model;
 
 public class Assembly {
-	
-	public enum Level {
+
+    public enum Level {
 		DEPUTY_CHAMBER,
 		SENATE,
 		REGION,
@@ -10,14 +10,20 @@ public class Assembly {
 		PROVINCE,
 		EUROPE
 	}
+
+    private final int id;
+    private final String label;
+	private final Level level;
 	
-	private String label;
-	private Level level; 
-	
-	public Assembly(String label, Level level) {
-		this.label = label;
+	public Assembly(int id,String label, Level level) {
+        this.id = id;
+        this.label = label;
 		this.level = level;
 	}
+
+    public int getId() {
+        return id;
+    }
 
 	public String getLabel() {
 		return label;
