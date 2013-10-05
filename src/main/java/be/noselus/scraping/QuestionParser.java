@@ -3,6 +3,7 @@ package be.noselus.scraping;
 import be.noselus.model.PersonSmall;
 import be.noselus.model.Question;
 import be.noselus.repository.DeputyRepository;
+
 import org.apache.commons.lang.StringEscapeUtils;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormatter;
@@ -19,19 +20,23 @@ import java.util.List;
 
 public class QuestionParser {
 
+	private String url = "http://parlement.wallonie.be/content/print_container.php?print=quest_rep_voir.php&type=all&id_doc=";
+	
     private DeputyRepository deputyRepository;
 
     public QuestionParser(final DeputyRepository deputyRepository) {
         this.deputyRepository = deputyRepository;
     }
 
-    public Question parse(String url) throws IOException {
+    public Question parse(int id) throws IOException {
 		
 		DateTimeFormatter dateFormatter = getDateFormatter();
 		
 		Question model = new Question();
 		
-		Document doc = Jsoup.parse(new URL(url).openStream(), "iso-8859-1", url);
+		model.id = id;
+		
+		Document doc = Jsoup.parse(new URL(url + id).openStream(), "iso-8859-1", url + id);
         List<String> fields;
 		
         // Extract Title
@@ -41,9 +46,6 @@ public class QuestionParser {
 		
 		// Extract Question & Response
 		fields = extract(doc, "h2");
-		
-		// TODO remove after debug
-		System.out.println(fields.get(0));
 		
 		model.date_asked = LocalDate.parse(fields.get(0).replace("Question écrite du ", "").replace(" ", ""), dateFormatter);
 		if (fields.size() > 1) {

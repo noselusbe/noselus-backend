@@ -22,9 +22,9 @@ public class QuestionParserTest {
 
 	@Test
 	public void openData() throws IOException {
-		String url = "http://parlement.wallonie.be/content/print_container.php?print=quest_rep_voir.php&id_doc=36256&type=all";
-		Question qr = parser.parse(url);
+		Question qr = parser.parse(36256);
 		
+		Assert.assertEquals(36256, qr.id.intValue());
 		Assert.assertEquals("l'\"Open Data - Open Government\"", qr.title);
 		Assert.assertEquals("2010-2011", qr.session);
 		Assert.assertEquals(2011, qr.year.intValue());
@@ -40,9 +40,9 @@ public class QuestionParserTest {
 	
 	@Test
 	public void eolien() throws IOException {
-		String url = "http://parlement.wallonie.be/content/print_container.php?print=quest_rep_voir.php&id_doc=50370&type=28";
-		Question qr = parser.parse(url);
+		Question qr = parser.parse(50370);
 		
+		Assert.assertEquals(50370, qr.id.intValue());
 		Assert.assertEquals("le coût élevé de l'éolien", qr.title);
 		Assert.assertEquals("2013-2014", qr.session);
 		Assert.assertEquals(2013, qr.year.intValue());
