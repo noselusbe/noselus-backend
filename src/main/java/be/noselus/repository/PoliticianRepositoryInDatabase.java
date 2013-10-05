@@ -1,24 +1,23 @@
 package be.noselus.repository;
 
+import be.noselus.db.DatabaseHelper;
+import be.noselus.model.Person;
+import be.noselus.model.PersonFunction;
+import be.noselus.model.PersonSmall;
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Lists;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import be.noselus.db.DatabaseHelper;
-import be.noselus.model.Person;
-import be.noselus.model.PersonFunction;
-import be.noselus.model.PersonSmall;
-
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Lists;
 
 public class PoliticianRepositoryInDatabase implements PoliticianRepository {
 
@@ -55,8 +54,10 @@ public class PoliticianRepositoryInDatabase implements PoliticianRepository {
         		String site = stat.getResultSet().getString("site");
         		PersonFunction function = PersonFunction.valueOf(stat.getResultSet().getString("function"));
         		int assembly_id = stat.getResultSet().getInt("assembly_id");
-        		
-        		Person person = new Person(id, full_name, party, address, postal_code, town, phone, fax, email, site, function, assembly_id);
+
+                List<Integer> questions = Collections.emptyList();
+
+        		Person person = new Person(id, full_name, party, address, postal_code, town, phone, fax, email, site, function, assembly_id, questions);
         		politicians.add(person);
         	}
         	

@@ -1,15 +1,23 @@
 package be.noselus.pictures;
 
-import java.io.InputStream;
-
 import be.noselus.model.Person;
-import be.noselus.repository.PoliticianRepositoryInDatabase;
+import be.noselus.repository.PoliticianRepository;
+import com.google.inject.Inject;
+
+import java.io.InputStream;
 
 public class PictureManager {
 
-	public static InputStream get(int id) {
+    PoliticianRepository politicianRepository;
+
+    @Inject
+    public PictureManager(final PoliticianRepository politicianRepository) {
+        this.politicianRepository = politicianRepository;
+    }
+
+    public InputStream get(int id) {
 		
-		Person politician = new PoliticianRepositoryInDatabase().getPoliticianById(id);
+		Person politician = politicianRepository.getPoliticianById(id);
 		
 		String path = null;
 		String ext = null;
