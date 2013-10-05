@@ -1,6 +1,5 @@
 package be.noselus.scraping;
 
-import be.noselus.model.PersonSmall;
 import be.noselus.model.Question;
 import be.noselus.repository.PoliticianRepository;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -57,14 +56,14 @@ public class QuestionParser {
 		String askedTo = fields.get(1).replace("à ", "");
 		int pos = askedTo.indexOf(',');
 		if (pos > 0) {
-			model.asked_to = new PersonSmall(askedTo.substring(0, pos));
+            model.asked_to = politicianRepository.getPoliticianByName(askedTo.substring(0, pos)).get(0).id;
 			// String title = askedTo.substring(pos+1)
 		} else {
-			model.asked_to = new PersonSmall(askedTo);
+			model.asked_to = politicianRepository.getPoliticianByName(askedTo).get(0).id;
 		}
 		
 		if (fields.size() > 2) {
-			model.answered_by = new PersonSmall(fields.get(2).replace("de ", ""));
+			model.answered_by = politicianRepository.getPoliticianByName(fields.get(2).replace("de ", "")).get(0).id;
 		}
 		
         // Extract Metadata
