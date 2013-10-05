@@ -13,8 +13,9 @@ public class Person {
     public String email;
     public String site;
     public PersonFunction function;
+	public int assembly_id;
 
-    public Person(Integer id, String full_name, String party, String address, String postal_code, String town, String phone, String fax, String email, String site, PersonFunction function) {
+    public Person(Integer id, String full_name, String party, String address, String postal_code, String town, String phone, String fax, String email, String site, PersonFunction function, int assembly_id) {
         this.id = id;
         this.full_name = full_name;
         this.party = party;
@@ -26,6 +27,7 @@ public class Person {
         this.email = email;
         this.site = site;
         this.function = function;
+        this.assembly_id = assembly_id;
     }
     
     @Override
