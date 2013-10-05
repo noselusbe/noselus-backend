@@ -3,6 +3,7 @@ package be.noselus.model;
 import org.joda.time.LocalDate;
 
 public class Question {
+    public Integer id;
     public PersonSmall asked_by;
     public PersonSmall asked_to;
     public PersonSmall answered_by;
@@ -20,7 +21,7 @@ public class Question {
     	
     }
     
-    public Question( PersonSmall asked_by,  PersonSmall asked_to, PersonSmall answered_by, String session, Integer year, String number, LocalDate date_asked, LocalDate dateAnswered, String title, String questionText, String answerText) {
+    public Question( PersonSmall asked_by,  PersonSmall asked_to, PersonSmall answered_by, String session, Integer year, String number, LocalDate date_asked, LocalDate dateAnswered, String title, String questionText, String answerText, Integer id) {
         this.asked_by = asked_by;
         this.asked_to = asked_to;
         this.answered_by = answered_by;
@@ -35,7 +36,8 @@ public class Question {
         if (questionText.length()< 50){
             this.excerpt = questionText;
         } else {
-            this.excerpt = questionText.substring(0,50) + "...";
+            this.excerpt = questionText.substring(0,150) + "...";
         }
+        this.id = id;
     }
 }

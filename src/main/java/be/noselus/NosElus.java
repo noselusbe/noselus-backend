@@ -33,17 +33,17 @@ public class NosElus {
             }
         });
 
-        get(new JsonTransformer("/questions") {
+        get(new JsonTransformer("/questions", "questions") {
 
             @Override
-            public Object handle(final Request request, final Response response) {
+            public Object myHandle(final Request request, final Response response) {
                 return questionRepository.getQuestions();
             }
         });
 
-        get(new JsonTransformer("/persons") {
+        get(new JsonTransformer("/politicians", "politicians") {
             @Override
-            public Object handle(final Request request, final Response response) {
+            public Object myHandle(final Request request, final Response response) {
                 return deputyRepository.getDeputies();
             }
         });
