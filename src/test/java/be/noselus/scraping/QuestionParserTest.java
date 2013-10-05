@@ -57,6 +57,24 @@ public class QuestionParserTest {
 	}
 	
 	@Test
+	public void andreAntoine() throws IOException {
+		Question qr = parser.parse(50054);
+		
+		Assert.assertEquals(50054, qr.id.intValue());
+		Assert.assertEquals("la baisse de l'emploi dans les P.M.E.", qr.title);
+		Assert.assertEquals("2012-2013", qr.session);
+		Assert.assertEquals(2013, qr.year.intValue());
+		Assert.assertEquals("467 (2012-2013) 1", qr.number);
+		Assert.assertEquals("2013-09-13", qr.date_asked.toString());
+		Assert.assertEquals(31, qr.asked_by);
+		Assert.assertEquals(76, qr.asked_to);
+		Assert.assertEquals(null, qr.date_answered);
+		Assert.assertEquals(0, qr.answered_by);
+		Assert.assertEquals(2244, qr.question_text.length());
+		Assert.assertEquals(null, qr.answer_text);
+	}
+	
+	@Test
 	public void texts() throws IOException {
 		String url = "http://parlement.wallonie.be/content/print_container.php?print=quest_rep_voir.php&id_doc=36256&type=all";
 		Document doc = Jsoup.parse(new URL(url).openStream(), "iso-8859-1", url);

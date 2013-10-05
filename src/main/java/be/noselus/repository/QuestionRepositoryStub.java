@@ -3,10 +3,14 @@ package be.noselus.repository;
 import be.noselus.model.PersonSmall;
 import be.noselus.model.Question;
 import be.noselus.model.Assembly;
+
 import com.google.common.collect.Lists;
+
 import org.joda.time.LocalDate;
 
 import java.util.List;
+
+import javax.naming.OperationNotSupportedException;
 
 public class QuestionRepositoryStub implements QuestionRepository {
 
