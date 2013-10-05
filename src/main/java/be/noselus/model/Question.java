@@ -14,8 +14,9 @@ public class Question {
     public String title;
     public String questionText;
     public String answerText;
+    public Assembly assembly;
 
-    public Question( PersonSmall asked_by,  PersonSmall asked_to, PersonSmall answered_by, String session, Integer year, String number, LocalDate date_asked, LocalDate dateAnswered, String title, String questionText, String answerText) {
+    public Question( PersonSmall asked_by,  PersonSmall asked_to, PersonSmall answered_by, String session, Integer year, String number, LocalDate date_asked, LocalDate dateAnswered, String title, String questionText, String answerText, Assembly assembly) {
         this.asked_by = asked_by;
         this.asked_to = asked_to;
         this.answered_by = answered_by;
@@ -27,5 +28,6 @@ public class Question {
         this.title = title;
         this.questionText = questionText;
         this.answerText = answerText;
+        this.assembly = assembly;
     }
 }
