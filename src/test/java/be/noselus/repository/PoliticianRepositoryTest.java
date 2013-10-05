@@ -8,25 +8,25 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class DeputyRepositoryTest {
+public class PoliticianRepositoryTest {
 
-    private final DeputyRepository repo = new DeputyRepositoryInMemory();
+    private final PoliticianRepository repo = new PoliticianRepositoryInMemory();
 
     @Test
     public void returnAllDeputies(){
-       final List<Person> deputies = repo.getDeputies();
+       final List<Person> deputies = repo.getPoliticians();
        assertEquals(74, deputies.size());
     }
 
     @Test
     public void firstDeputyIsExpected(){
-        final List<Person> deputies = repo.getDeputies();
+        final List<Person> deputies = repo.getPoliticians();
         final Person person = deputies.get(0);
         assertEquals("BARZIN Anne", person.full_name);
     }
     @Test
     public void deputyWithNoSite(){
-        final List<Person> deputies = repo.getDeputies();
+        final List<Person> deputies = repo.getPoliticians();
         final Person person = deputies.get(1);
         //BASTIN Jean-Paul;cdH;Al'Gofe, 19;4960;G'DOUMONT-MALMEDY;080 79 96 66;087 32 22 69;sec.jpbastin@lecdh.be;
         assertEquals("BASTIN Jean-Paul", person.full_name);
@@ -42,14 +42,20 @@ public class DeputyRepositoryTest {
 
     @Test
     public void findByName(){
-        final List<Person> found = repo.getFullDeputyByName("KUBLA");
+        final List<Person> found = repo.getFullPoliticianByName("KUBLA");
         assertEquals(1,found.size());
         assertEquals("KUBLA Serge", found.get(0).full_name);
     }
     @Test
     public void findSmallByName(){
-        final List<PersonSmall> found = repo.getDeputyByName("ONKELINX");
+        final List<PersonSmall> found = repo.getPoliticianByName("ONKELINX");
         assertEquals(1,found.size());
         assertEquals("ONKELINX Alain", found.get(0).full_name);
+    }
+
+    @Test
+    public void findByAlmostName(){
+        final List<PersonSmall> found = repo.getPoliticianByName("KAPOMPOLE Joëlle");
+        assertEquals(1, found.size());
     }
 }

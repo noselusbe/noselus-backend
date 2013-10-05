@@ -1,8 +1,8 @@
 package be.noselus.scraping;
 
 import be.noselus.model.Question;
-import be.noselus.repository.DeputyRepository;
-import be.noselus.repository.DeputyRepositoryInMemory;
+import be.noselus.repository.PoliticianRepository;
+import be.noselus.repository.PoliticianRepositoryInMemory;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
@@ -17,8 +17,8 @@ import java.util.List;
 
 public class QuestionParserTest {
 
-    DeputyRepository deputyRepository = new DeputyRepositoryInMemory();
-    QuestionParser parser = new QuestionParser(deputyRepository);
+    PoliticianRepository politicianRepository = new PoliticianRepositoryInMemory();
+    QuestionParser parser = new QuestionParser(politicianRepository);
 
 	@Test
 	public void openData() throws IOException {
@@ -30,12 +30,30 @@ public class QuestionParserTest {
 		Assert.assertEquals(2011, qr.year.intValue());
 		Assert.assertEquals("594 (2010-2011) 1", qr.number);
 		Assert.assertEquals("2011-08-29", qr.date_asked.toString());
-		Assert.assertEquals("DISABATO Emmanuel", qr.asked_by.toString());
+		Assert.assertEquals(21, qr.asked_by);
 		Assert.assertEquals("FURLAN Paul", qr.asked_to.toString());
 		Assert.assertEquals("2011-10-07", qr.date_answered.toString());
 		Assert.assertEquals("FURLAN Paul", qr.answered_by.toString());
-		Assert.assertEquals(2596, qr.questionText.length());
-		Assert.assertEquals(5663, qr.answerText.length());
+		Assert.assertEquals(2596, qr.question_text.length());
+		Assert.assertEquals(5663, qr.answer_text.length());
+	}
+	
+	@Test
+	public void eolien() throws IOException {
+		String url = "http://parlement.wallonie.be/content/print_container.php?print=quest_rep_voir.php&id_doc=50370&type=28";
+		Question qr = parser.parse(url);
+		
+		Assert.assertEquals("le coût élevé de l'éolien", qr.title);
+		Assert.assertEquals("2013-2014", qr.session);
+		Assert.assertEquals(2013, qr.year.intValue());
+		Assert.assertEquals("51 (2013-2014) 1", qr.number);
+		Assert.assertEquals("2013-10-04", qr.date_asked.toString());
+		Assert.assertEquals(63, qr.asked_by);
+		Assert.assertEquals("NOLLET Jean-Marc", qr.asked_to.toString());
+		Assert.assertEquals(null, qr.date_answered);
+		Assert.assertEquals(null, qr.answered_by);
+		Assert.assertEquals(2044, qr.question_text.length());
+		Assert.assertEquals(null, qr.answer_text);
 	}
 	
 	@Test
