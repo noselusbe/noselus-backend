@@ -61,4 +61,38 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
 
         return result;
     }
+
+    @Override
+    public List<Question> searchByKeyword(final String... keywords) {
+        List<Question> results = Lists.newArrayList();
+        try {
+            Connection db = DatabaseHelper.openConnection(false, true);
+            final StringBuffer sql = new StringBuffer("SELECT * FROM written_question WHERE title LIKE ");
+            for (int i = 0; i < keywords.length; i++) {
+                String keyword = keywords[i];
+                sql.append("'%");
+                sql.append(keyword);
+                sql.append("%'");
+                if (i < keywords.length - 1){
+                    sql.append(" OR title LIKE  ");
+                }
+
+            }
+            sql.append(";");
+            PreparedStatement stat = db.prepareStatement(sql.toString());
+
+            stat.execute();
+
+            while (stat.getResultSet().next()) {
+                final Question question = mapper.map(stat.getResultSet());
+                results.add(question);
+            }
+
+            stat.close();
+
+        } catch (SQLException | ClassNotFoundException e) {
+            logger.error("Error loading person from DB", e);
+        }
+        return results;
+    }
 }

@@ -54,4 +54,9 @@ public class QuestionRepositoryStub implements QuestionRepository {
         return question;
 
     }
+
+    @Override
+    public List<Question> searchByKeyword(final String... keywords) {
+        return Lists.newArrayList(question);
+    }
 }
