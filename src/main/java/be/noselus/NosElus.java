@@ -5,7 +5,6 @@ import static spark.Spark.setPort;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 
 import org.apache.commons.io.IOUtils;
 
@@ -18,8 +17,6 @@ import be.noselus.repository.PoliticianRepositoryInDatabase;
 import be.noselus.repository.QuestionRepository;
 import be.noselus.repository.QuestionRepositoryInDatabase;
 import be.noselus.service.JsonTransformer;
-
-import com.google.common.io.ByteStreams;
 
 public class NosElus {
 
@@ -77,6 +74,8 @@ public class NosElus {
         	public Object handle(final Request request, final Response response) {
         		try {
 	        		final String id = request.params(":id");
+//	        		int width = Integer.valueOf((String)request.attribute("w"));
+//	        		int height = Integer.valueOf((String)request.attribute("h"));
 	        		byte[] out = null;
 	        		InputStream is = PictureManager.get(Integer.valueOf(id));
 	        		
