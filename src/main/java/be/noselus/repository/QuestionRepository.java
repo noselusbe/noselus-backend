@@ -1,8 +1,8 @@
 package be.noselus.repository;
 
-import java.util.List;
-
 import be.noselus.model.Question;
+
+import java.util.List;
 
 public interface QuestionRepository {
 
@@ -11,4 +11,6 @@ public interface QuestionRepository {
     Question getQuestionById(int id);
 
     List<Question> searchByKeyword(String... keywords);
+
+    List<Integer> questionAskedBy(int askedById);
 }

@@ -1,13 +1,12 @@
 package be.noselus.repository;
 
-import java.util.List;
-
-import org.joda.time.LocalDate;
-
 import be.noselus.model.Assembly;
 import be.noselus.model.Question;
-
 import com.google.common.collect.Lists;
+import org.joda.time.LocalDate;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class QuestionRepositoryStub implements QuestionRepository {
 
@@ -60,5 +59,10 @@ public class QuestionRepositoryStub implements QuestionRepository {
     @Override
     public List<Question> searchByKeyword(final String... keywords) {
         return Lists.newArrayList(question);
+    }
+
+    @Override
+    public List<Integer> questionAskedBy(final int askedById) {
+        return Arrays.asList(1);
     }
 }

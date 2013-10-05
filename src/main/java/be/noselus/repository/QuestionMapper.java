@@ -2,6 +2,7 @@ package be.noselus.repository;
 
 import be.noselus.model.Assembly;
 import be.noselus.model.Question;
+import com.google.inject.Inject;
 import org.joda.time.LocalDate;
 
 import java.sql.Date;
@@ -10,7 +11,12 @@ import java.sql.SQLException;
 
 public class QuestionMapper {
 
-    AssemblyRegistry assemblyRegistry = new AssemblyRegistryInDatabase();
+    private final AssemblyRegistry assemblyRegistry;
+
+    @Inject
+    public QuestionMapper(AssemblyRegistry assemblyRegistry) {
+        this.assemblyRegistry = assemblyRegistry;
+    }
 
     public Question map( ResultSet r) throws SQLException {
         final int id = r.getInt("id");
