@@ -1,9 +1,8 @@
 package be.noselus.scraping;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.List;
-
+import be.noselus.model.Question;
+import be.noselus.repository.DeputyRepository;
+import be.noselus.repository.DeputyRepositoryInMemory;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
@@ -12,14 +11,19 @@ import org.jsoup.nodes.Document;
 import org.junit.Assert;
 import org.junit.Test;
 
-import be.noselus.model.Question;
+import java.io.IOException;
+import java.net.URL;
+import java.util.List;
 
 public class QuestionParserTest {
+
+    DeputyRepository deputyRepository = new DeputyRepositoryInMemory();
+    QuestionParser parser = new QuestionParser(deputyRepository);
 
 	@Test
 	public void openData() throws IOException {
 		String url = "http://parlement.wallonie.be/content/print_container.php?print=quest_rep_voir.php&id_doc=36256&type=all";
-		Question qr = QuestionParser.parse(url);
+		Question qr = parser.parse(url);
 		
 		Assert.assertEquals("l'\"Open Data - Open Government\"", qr.title);
 		Assert.assertEquals("2010-2011", qr.session);
@@ -39,7 +43,7 @@ public class QuestionParserTest {
 		String url = "http://parlement.wallonie.be/content/print_container.php?print=quest_rep_voir.php&id_doc=36256&type=all";
 		Document doc = Jsoup.parse(new URL(url).openStream(), "iso-8859-1", url);
 		
-		List<String> texts = QuestionParser.extract(doc, "div#print_container div + div");
+		List<String> texts = parser.extract(doc, "div#print_container div + div");
 		
 		Assert.assertEquals(2596, texts.get(0).length());
 		Assert.assertEquals(5663, texts.get(2).length());

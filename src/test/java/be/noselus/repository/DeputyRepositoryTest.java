@@ -2,14 +2,12 @@ package be.noselus.repository;
 
 import be.noselus.model.Person;
 import be.noselus.model.PersonSmall;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-@Ignore
 public class DeputyRepositoryTest {
 
     private final DeputyRepository repo = new DeputyRepositoryInMemory();
