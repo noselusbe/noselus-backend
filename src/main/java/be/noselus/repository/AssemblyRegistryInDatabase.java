@@ -34,6 +34,7 @@ public class AssemblyRegistryInDatabase implements AssemblyRegistry {
                 Assembly result = new Assembly(foundId, label, Assembly.Level.valueOf(level));
 
                 stat.close();
+                db.close();
 
                 assemblies.put(id,result);
 

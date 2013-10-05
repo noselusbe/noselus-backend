@@ -61,6 +61,7 @@ public class PoliticianRepositoryInDatabase implements PoliticianRepository {
         	}
         	
         	stat.close();
+        	db.close();
 
         } catch (SQLException | ClassNotFoundException e) {
            logger.error("Error loading person from DB", e);
