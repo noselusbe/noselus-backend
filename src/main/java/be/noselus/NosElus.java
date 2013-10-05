@@ -1,15 +1,25 @@
 package be.noselus;
 
-import be.noselus.repository.*;
-import be.noselus.service.JsonTransformer;
+import static spark.Spark.get;
+import static spark.Spark.setPort;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import org.apache.commons.io.IOUtils;
+
 import spark.Request;
 import spark.Response;
 import spark.Route;
+import be.noselus.pictures.PictureManager;
+import be.noselus.repository.PoliticianRepository;
+import be.noselus.repository.PoliticianRepositoryInDatabase;
+import be.noselus.repository.QuestionRepository;
+import be.noselus.repository.QuestionRepositoryInDatabase;
+import be.noselus.service.JsonTransformer;
 
-import java.io.IOException;
-
-import static spark.Spark.get;
-import static spark.Spark.setPort;
+import com.google.common.io.ByteStreams;
 
 public class NosElus {
 
@@ -61,6 +71,30 @@ public class NosElus {
                 return politicianRepository.getPoliticianById(Integer.parseInt(params));
             }
         });
-
+        
+        get(new Route("/politicians/picture/:id") {
+        	@Override
+        	public Object handle(final Request request, final Response response) {
+        		try {
+	        		final String id = request.params(":id");
+	        		byte[] out = null;
+	        		InputStream is = PictureManager.get(Integer.valueOf(id));
+	        		
+	        		if (is == null) {
+	        			response.status(404);
+	        			return null;
+	        		} else {
+		        		out = IOUtils.toByteArray(is);
+		        		response.raw().setContentType("image/jpeg;charset=utf-8");
+		        		response.raw().getOutputStream().write(out, 0, out.length);
+						return out;
+	        		}
+				} catch (NumberFormatException | IOException e) {
+					response.status(404);
+					return null;
+				}
+        	}
+        });
+        
     }
 }

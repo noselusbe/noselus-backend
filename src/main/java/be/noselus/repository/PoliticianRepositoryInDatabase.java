@@ -54,8 +54,9 @@ public class PoliticianRepositoryInDatabase implements PoliticianRepository {
         		String email = stat.getResultSet().getString("email");
         		String site = stat.getResultSet().getString("site");
         		PersonFunction function = PersonFunction.valueOf(stat.getResultSet().getString("function"));
+        		int assembly_id = stat.getResultSet().getInt("assembly_id");
         		
-        		Person person = new Person(id, full_name, party, address, postal_code, town, phone, fax, email, site, function);
+        		Person person = new Person(id, full_name, party, address, postal_code, town, phone, fax, email, site, function, assembly_id);
         		politicians.add(person);
         	}
         	
