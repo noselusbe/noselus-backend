@@ -1,8 +1,8 @@
 package be.noselus.scraping;
 
 import be.noselus.model.Question;
-import be.noselus.repository.DeputyRepository;
-import be.noselus.repository.DeputyRepositoryInMemory;
+import be.noselus.repository.PoliticianRepository;
+import be.noselus.repository.PoliticianRepositoryInMemory;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
@@ -17,8 +17,8 @@ import java.util.List;
 
 public class QuestionParserTest {
 
-    DeputyRepository deputyRepository = new DeputyRepositoryInMemory();
-    QuestionParser parser = new QuestionParser(deputyRepository);
+    PoliticianRepository politicianRepository = new PoliticianRepositoryInMemory();
+    QuestionParser parser = new QuestionParser(politicianRepository);
 
 	@Test
 	public void openData() throws IOException {

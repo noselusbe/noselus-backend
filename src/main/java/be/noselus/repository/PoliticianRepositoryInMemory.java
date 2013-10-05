@@ -22,13 +22,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class DeputyRepositoryInMemory implements DeputyRepository {
+public class PoliticianRepositoryInMemory implements PoliticianRepository {
 
-    private static final Logger logger = LoggerFactory.getLogger(DeputyRepositoryInMemory.class);
+    private static final Logger logger = LoggerFactory.getLogger(PoliticianRepositoryInMemory.class);
     private List<Person> deputies;
 
     @Override
-    public List<Person> getDeputies() {
+    public List<Person> getPoliticians() {
         if (deputies == null) {
 
             try {
@@ -72,7 +72,7 @@ public class DeputyRepositoryInMemory implements DeputyRepository {
     }
 
     @Override
-    public List<Person> getFullDeputyByName(final String name) {
+    public List<Person> getFullPoliticianByName(final String name) {
         Predicate<Person> hasName = new Predicate<Person>() {
             public boolean apply(Person p) {
                 final int endIndex = name.lastIndexOf(" ");
@@ -87,14 +87,14 @@ public class DeputyRepositoryInMemory implements DeputyRepository {
             }
         };
 
-        Collection<Person> foundPerson = Collections2.filter(getDeputies(), hasName);
+        Collection<Person> foundPerson = Collections2.filter(getPoliticians(), hasName);
         return Lists.newArrayList(foundPerson);
 
     }
 
     @Override
-    public List<PersonSmall> getDeputyByName(final String name) {
-        final List<Person> fullDeputyByName = getFullDeputyByName(name);
+    public List<PersonSmall> getPoliticianByName(final String name) {
+        final List<Person> fullDeputyByName = getFullPoliticianByName(name);
         return Lists.transform(fullDeputyByName, new Function<Person, PersonSmall>() {
             @Override
             public PersonSmall apply(final be.noselus.model.Person input) {
@@ -104,14 +104,14 @@ public class DeputyRepositoryInMemory implements DeputyRepository {
     }
 
     @Override
-    public Person getDeputyById(final int id) {
+    public Person getPoliticianById(final int id) {
         Predicate<Person> withId = new Predicate<Person>() {
             public boolean apply(Person p) {
                 return p != null && (p.id == id);
             }
         };
 
-        Collection<Person> foundPerson = Collections2.filter(getDeputies(), withId);
+        Collection<Person> foundPerson = Collections2.filter(getPoliticians(), withId);
         return foundPerson.iterator().next();
     }
 
