@@ -43,7 +43,9 @@ public class QuestionParser {
 		fields = extract(doc, "h2");
 		
 		model.date_asked = LocalDate.parse(fields.get(0).replace("Question écrite du ", "").replace(" ", ""), dateFormatter);
-		model.date_answered = LocalDate.parse(fields.get(1).replace("Réponse du ", "").replace(" ", ""), dateFormatter);
+		if (fields.size() > 1) {
+			model.date_answered = LocalDate.parse(fields.get(1).replace("Réponse du ", "").replace(" ", ""), dateFormatter);
+		}
         
 		// Extract From/To
 		fields = extract(doc, "li.evid02");
@@ -61,7 +63,9 @@ public class QuestionParser {
 			model.asked_to = new PersonSmall(askedTo);
 		}
 		
-		model.answered_by = new PersonSmall(fields.get(2).replace("de ", ""));
+		if (fields.size() > 2) {
+			model.answered_by = new PersonSmall(fields.get(2).replace("de ", ""));
+		}
 		
         // Extract Metadata
         fields = extract(doc, "div#print_container > ul li");
@@ -73,7 +77,9 @@ public class QuestionParser {
 		// Extract Texts
 		fields = extract(doc, "div#print_container div + div");
 		model.questionText = fields.get(0);
-		model.answerText = fields.get(2);
+		if (fields.size() > 2) {
+			model.answerText = fields.get(2);
+		}
 		
         return model;
 	}
