@@ -1,14 +1,13 @@
 package be.noselus.repository;
 
 import be.noselus.model.Person;
-import com.google.common.base.Optional;
+import be.noselus.model.PersonSmall;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 @Ignore
 public class DeputyRepositoryTest {
@@ -41,13 +40,18 @@ public class DeputyRepositoryTest {
         assertEquals("087 32 22 69", person.fax);
         assertEquals("sec.jpbastin@lecdh.be", person.email);
         assertEquals("", person.site);
-
     }
 
     @Test
     public void findByName(){
-        final Optional<Person> kubla = repo.getDeputyByName("KUBLA");
-        assertTrue(kubla.isPresent());
-        assertEquals("KUBLA Serge", kubla.get().full_name);
+        final List<Person> found = repo.getFullDeputyByName("KUBLA");
+        assertEquals(1,found.size());
+        assertEquals("KUBLA Serge", found.get(0).full_name);
+    }
+    @Test
+    public void findSmallByName(){
+        final List<PersonSmall> found = repo.getDeputyByName("ONKELINX");
+        assertEquals(1,found.size());
+        assertEquals("ONKELINX Alain", found.get(0).full_name);
     }
 }
