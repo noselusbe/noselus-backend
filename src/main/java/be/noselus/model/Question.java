@@ -7,7 +7,7 @@ public class Question {
     private static final int EXCERPT_SIZE = 150;
 
     public Integer id;
-    public PersonSmall asked_by;
+    public int asked_by;
     public PersonSmall asked_to;
     public PersonSmall answered_by;
     public String session;
@@ -25,7 +25,7 @@ public class Question {
     }
 
     public Question(PersonSmall asked_by, PersonSmall asked_to, PersonSmall answered_by, String session, Integer year, String number, LocalDate date_asked, LocalDate dateAnswered, String title, String question_text, String answer_text, Integer id) {
-        this.asked_by = asked_by;
+        this.asked_by = asked_by.id;
         this.asked_to = asked_to;
         this.answered_by = answered_by;
         this.session = session;

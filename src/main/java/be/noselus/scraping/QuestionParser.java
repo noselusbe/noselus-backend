@@ -51,7 +51,7 @@ public class QuestionParser {
 		fields = extract(doc, "li.evid02");
 
         final String askedByName = fields.get(0).replace("de ", "");
-        model.asked_by = deputyRepository.getDeputyByName(askedByName).get(0);
+        model.asked_by = deputyRepository.getDeputyByName(askedByName).get(0).id;
 
 		// Separate title from askedTo field
 		String askedTo = fields.get(1).replace("à ", "");
