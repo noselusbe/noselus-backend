@@ -1,17 +1,15 @@
 package be.noselus.pictures;
 
+import be.noselus.db.DatabaseHelper;
 import be.noselus.model.Person;
 import be.noselus.repository.PoliticianRepository;
 import com.google.inject.Inject;
+
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Map;
-
-import be.noselus.db.DatabaseHelper;
-
-import java.io.InputStream;
 
 public class PictureManager {
 	
