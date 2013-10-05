@@ -41,7 +41,7 @@ public class QuestionParserTest {
 	@Test
 	public void eolien() throws IOException {
 		String url = "http://parlement.wallonie.be/content/print_container.php?print=quest_rep_voir.php&id_doc=50370&type=28";
-		Question qr = QuestionParser.parse(url);
+		Question qr = parser.parse(url);
 		
 		Assert.assertEquals("le coût élevé de l'éolien", qr.title);
 		Assert.assertEquals("2013-2014", qr.session);
