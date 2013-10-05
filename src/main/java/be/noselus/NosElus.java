@@ -78,6 +78,8 @@ public class NosElus {
         	public Object handle(final Request request, final Response response) {
         		try {
 	        		final String id = request.params(":id");
+//	        		int width = Integer.valueOf((String)request.attribute("w"));
+//	        		int height = Integer.valueOf((String)request.attribute("h"));
 	        		byte[] out = null;
 	        		InputStream is = pictureManager.get(Integer.valueOf(id));
 	        		
