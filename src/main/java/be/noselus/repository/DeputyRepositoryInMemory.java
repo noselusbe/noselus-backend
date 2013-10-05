@@ -64,7 +64,7 @@ public class DeputyRepositoryInMemory implements DeputyRepository {
                 });
 
             } catch (IOException|URISyntaxException e) {
-               logger.error("Error reading file",e);
+               logger.error("Error reading file", e);
             }
 
         }
@@ -75,7 +75,15 @@ public class DeputyRepositoryInMemory implements DeputyRepository {
     public List<Person> getFullDeputyByName(final String name) {
         Predicate<Person> hasName = new Predicate<Person>() {
             public boolean apply(Person p) {
-                return p != null && (name.equals(p.full_name) || p.full_name.contains(name));
+                final int endIndex = name.lastIndexOf(" ");
+                final String lastName;
+                if (endIndex == -1){
+                    lastName = name;
+                } else {
+                    lastName = name.substring(0, endIndex);
+                }
+
+                return p != null && (name.equals(p.full_name) || p.full_name.contains(name) || p.full_name.contains(lastName));
             }
         };
 
@@ -93,6 +101,18 @@ public class DeputyRepositoryInMemory implements DeputyRepository {
                 return PersonSmall.fromPerson(input);
             }
         });
+    }
+
+    @Override
+    public Person getDeputyById(final int id) {
+        Predicate<Person> withId = new Predicate<Person>() {
+            public boolean apply(Person p) {
+                return p != null && (p.id == id);
+            }
+        };
+
+        Collection<Person> foundPerson = Collections2.filter(getDeputies(), withId);
+        return foundPerson.iterator().next();
     }
 
 }

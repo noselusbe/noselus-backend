@@ -41,10 +41,27 @@ public class NosElus {
             }
         });
 
+        get(new JsonTransformer("/questions/:id", "question") {
+
+            @Override
+            public Object myHandle(final Request request, final Response response) {
+                final String params = request.params(":id");
+                return questionRepository.getQuestionById(Integer.parseInt(params));
+            }
+        });
+
         get(new JsonTransformer("/politicians", "politicians") {
             @Override
             public Object myHandle(final Request request, final Response response) {
                 return deputyRepository.getDeputies();
+            }
+        });
+
+        get(new JsonTransformer("/politicians/:id", "politician") {
+            @Override
+            public Object myHandle(final Request request, final Response response) {
+                final String params = request.params(":id");
+                return deputyRepository.getDeputyById(Integer.parseInt(params));
             }
         });
 

@@ -8,4 +8,5 @@ public interface QuestionRepository {
 
     public List<Question> getQuestions();
 
+    Question getQuestionById(int id);
 }
