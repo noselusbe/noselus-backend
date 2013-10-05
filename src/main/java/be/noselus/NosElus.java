@@ -48,5 +48,13 @@ public class NosElus {
             }
         });
 
+        get(new JsonTransformer("/politicians/:id", "politician") {
+            @Override
+            public Object myHandle(final Request request, final Response response) {
+                final String params = request.params(":id");
+                return deputyRepository.getDeputyById(Integer.parseInt(params));
+            }
+        });
+
     }
 }

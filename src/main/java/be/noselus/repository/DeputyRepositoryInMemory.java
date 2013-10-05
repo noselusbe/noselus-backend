@@ -64,7 +64,7 @@ public class DeputyRepositoryInMemory implements DeputyRepository {
                 });
 
             } catch (IOException|URISyntaxException e) {
-               logger.error("Error reading file",e);
+               logger.error("Error reading file", e);
             }
 
         }
@@ -93,6 +93,18 @@ public class DeputyRepositoryInMemory implements DeputyRepository {
                 return PersonSmall.fromPerson(input);
             }
         });
+    }
+
+    @Override
+    public Person getDeputyById(final int id) {
+        Predicate<Person> withId = new Predicate<Person>() {
+            public boolean apply(Person p) {
+                return p != null && (p.id == id);
+            }
+        };
+
+        Collection<Person> foundPerson = Collections2.filter(getDeputies(), withId);
+        return foundPerson.iterator().next();
     }
 
 }
