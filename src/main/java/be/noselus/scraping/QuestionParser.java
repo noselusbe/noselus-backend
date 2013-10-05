@@ -1,8 +1,10 @@
 package be.noselus.scraping;
 
-import be.noselus.model.PersonSmall;
-import be.noselus.model.Question;
-import be.noselus.repository.PoliticianRepository;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.StringEscapeUtils;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormatter;
@@ -12,10 +14,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import be.noselus.model.PersonSmall;
+import be.noselus.model.Question;
+import be.noselus.repository.PoliticianRepository;
 
 public class QuestionParser {
 
@@ -74,11 +75,11 @@ public class QuestionParser {
 		
 		List<PersonSmall> list = politicianRepository.getPoliticianByName(name);
 		if (list.size() > 0) {
-			model.asked_to = list.get(0);
+			model.asked_to = list.get(0).id;
 		}
 		
 		if (fields.size() > 2) {
-			model.answered_by = new PersonSmall(fields.get(2).replace("de ", ""));
+			model.answered_by = politicianRepository.getPoliticianByName(fields.get(2).replace("de ", "")).get(0).id;
 		}
 		
         // Extract Metadata

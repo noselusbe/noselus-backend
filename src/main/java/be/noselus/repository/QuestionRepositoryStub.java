@@ -2,6 +2,7 @@ package be.noselus.repository;
 
 import be.noselus.model.PersonSmall;
 import be.noselus.model.Question;
+import be.noselus.model.Assembly;
 import com.google.common.collect.Lists;
 import org.joda.time.LocalDate;
 
@@ -43,7 +44,9 @@ public class QuestionRepositoryStub implements QuestionRepository {
                     "- d'évaluer son action.\n" +
                     "\n" +
                     "Appliqué au secteur public, le principe de l'Open Data consiste donc à permettre l'usage, commercial ou non, par d'autres acteurs (organismes publics, entreprises, associations, pouvoirs locaux ou citoyens) des données collectées par un organisme public donné.\n" +
-                    "C'est en 2006 que le gouvernement adoptait définitivement le décret transposant la directive précitée.\n", 1);
+                    "C'est en 2006 que le gouvernement adoptait définitivement le décret transposant la directive précitée.\n", 
+                    1,
+                    new Assembly("Parlement Wallon", Assembly.Level.REGION));
 
 
     @Override
@@ -55,5 +58,6 @@ public class QuestionRepositoryStub implements QuestionRepository {
     @Override
     public Question getQuestionById(final int id) {
         return question;
+
     }
 }
