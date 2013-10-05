@@ -1,21 +1,9 @@
 package be.noselus;
 
-import static spark.Spark.get;
-import static spark.Spark.setPort;
-
-import java.io.IOException;
-import java.io.InputStream;
-
-import org.apache.commons.io.IOUtils;
-
-import spark.Request;
-import spark.Response;
-import spark.Route;
 import be.noselus.pictures.PictureManager;
+import be.noselus.repository.AssemblyRegistry;
 import be.noselus.repository.PoliticianRepository;
-import be.noselus.repository.PoliticianRepositoryInDatabase;
 import be.noselus.repository.QuestionRepository;
-import be.noselus.repository.QuestionRepositoryInDatabase;
 import be.noselus.service.JsonTransformer;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -93,7 +81,7 @@ public class NosElus {
 //	        		int width = Integer.valueOf((String)request.attribute("w"));
 //	        		int height = Integer.valueOf((String)request.attribute("h"));
 	        		byte[] out = null;
-	        		InputStream is = PictureManager.get().get(Integer.valueOf(id));
+	        		InputStream is = pictureManager.get(Integer.valueOf(id));
 	        		
 	        		if (is == null) {
 	        			response.status(404);
@@ -104,7 +92,7 @@ public class NosElus {
 		        		response.raw().getOutputStream().write(out, 0, out.length);
 						return out;
 	        		}
-				} catch (NumberFormatException | IOException | ClassNotFoundException | SQLException e) {
+				} catch (NumberFormatException | IOException e) {
 					response.status(404);
 					return null;
 				}
