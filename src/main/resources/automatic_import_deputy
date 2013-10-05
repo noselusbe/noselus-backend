@@ -1,0 +1,1 @@
+\COPY person (full_name, party, address, postal_code, town, phone, fax, email, site, function) from 'liste_parl_pw-2013-10-04.csv' DELIMITER ';';
