@@ -13,19 +13,20 @@ public class PoliticianRepositoryTest {
     private final PoliticianRepository repo = new PoliticianRepositoryInMemory();
 
     @Test
-    public void returnAllDeputies(){
-       final List<Person> deputies = repo.getPoliticians();
-       assertEquals(74, deputies.size());
+    public void returnAllDeputies() {
+        final List<Person> deputies = repo.getPoliticians();
+        assertEquals(82, deputies.size());
     }
 
     @Test
-    public void firstDeputyIsExpected(){
+    public void firstDeputyIsExpected() {
         final List<Person> deputies = repo.getPoliticians();
         final Person person = deputies.get(0);
         assertEquals("BARZIN Anne", person.full_name);
     }
+
     @Test
-    public void deputyWithNoSite(){
+    public void deputyWithNoSite() {
         final List<Person> deputies = repo.getPoliticians();
         final Person person = deputies.get(1);
         //BASTIN Jean-Paul;cdH;Al'Gofe, 19;4960;G'DOUMONT-MALMEDY;080 79 96 66;087 32 22 69;sec.jpbastin@lecdh.be;
@@ -41,20 +42,21 @@ public class PoliticianRepositoryTest {
     }
 
     @Test
-    public void findByName(){
+    public void findByName() {
         final List<Person> found = repo.getFullPoliticianByName("KUBLA");
-        assertEquals(1,found.size());
+        assertEquals(1, found.size());
         assertEquals("KUBLA Serge", found.get(0).full_name);
     }
+
     @Test
-    public void findSmallByName(){
+    public void findSmallByName() {
         final List<PersonSmall> found = repo.getPoliticianByName("ONKELINX");
-        assertEquals(1,found.size());
+        assertEquals(1, found.size());
         assertEquals("ONKELINX Alain", found.get(0).full_name);
     }
 
     @Test
-    public void findByAlmostName(){
+    public void findByAlmostName() {
         final List<PersonSmall> found = repo.getPoliticianByName("KAPOMPOLE Joëlle");
         assertEquals(1, found.size());
     }
