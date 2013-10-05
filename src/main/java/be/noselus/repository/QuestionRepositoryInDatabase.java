@@ -33,6 +33,7 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
             }
 
             stat.close();
+            db.close();
 
         } catch (SQLException | ClassNotFoundException e) {
             logger.error("Error loading person from DB", e);
@@ -54,6 +55,7 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
             result = mapper.map(stat.getResultSet());
 
             stat.close();
+            db.close();
 
         } catch (SQLException | ClassNotFoundException e) {
             logger.error("Error loading person from DB", e);
@@ -89,6 +91,7 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
             }
 
             stat.close();
+            db.close();
 
         } catch (SQLException | ClassNotFoundException e) {
             logger.error("Error loading person from DB", e);
