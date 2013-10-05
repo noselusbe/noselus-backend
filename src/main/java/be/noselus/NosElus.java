@@ -15,8 +15,7 @@ import spark.Route;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static spark.Spark.get;
-import static spark.Spark.setPort;
+import static spark.Spark.*;
 
 public class NosElus {
 
@@ -46,6 +45,15 @@ public class NosElus {
             @Override
             public Object myHandle(final Request request, final Response response) {
                 return questionRepository.getQuestions();
+            }
+        });
+
+        post(new JsonTransformer("/questions/:keywords", "questions") {
+
+            @Override
+            protected Object myHandle(final Request request, final Response response) {
+                final String keywords = request.params("keywords");
+                return questionRepository.searchByKeyword(keywords.split("%20"));
             }
         });
 
