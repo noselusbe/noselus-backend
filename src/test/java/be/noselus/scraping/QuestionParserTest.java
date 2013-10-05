@@ -25,11 +25,11 @@ public class QuestionParserTest {
 		Assert.assertEquals("2010-2011", qr.session);
 		Assert.assertEquals(2011, qr.year.intValue());
 		Assert.assertEquals("594 (2010-2011) 1", qr.number);
-		Assert.assertEquals("2011-08-29", qr.dateAsked.toString());
-		Assert.assertEquals("DISABATO Emmanuel", qr.askedBy.toString());
-		Assert.assertEquals("FURLAN Paul, Ministre des Pouvoirs locaux et de la Ville", qr.askedTo.toString());
-		Assert.assertEquals("2011-10-07", qr.dateAnswered.toString());
-		Assert.assertEquals("FURLAN Paul", qr.answeredBy.toString());
+		Assert.assertEquals("2011-08-29", qr.date_asked.toString());
+		Assert.assertEquals("DISABATO Emmanuel", qr.asked_by.toString());
+		Assert.assertEquals("FURLAN Paul", qr.asked_to.toString());
+		Assert.assertEquals("2011-10-07", qr.date_answered.toString());
+		Assert.assertEquals("FURLAN Paul", qr.answered_by.toString());
 		Assert.assertEquals(2596, qr.questionText.length());
 		Assert.assertEquals(5663, qr.answerText.length());
 	}

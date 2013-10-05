@@ -14,20 +14,14 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import be.noselus.model.Person;
+import be.noselus.model.PersonSmall;
 import be.noselus.model.Question;
 
 public class QuestionParser {
 
 	public static Question parse(String url) throws IOException {
 		
-		DateTimeFormatter dateFormatter = new DateTimeFormatterBuilder()
-			.appendDayOfMonth(2)
-			.appendLiteral('/')
-			.appendMonthOfYear(2)
-			.appendLiteral('/')
-			.appendYear(4, 4)
-			.toFormatter();
+		DateTimeFormatter dateFormatter = getDateFormatter();
 		
 		Question model = new Question();
 		
@@ -42,15 +36,25 @@ public class QuestionParser {
 		// Extract Question & Response
 		fields = extract(doc, "h2");
 		
-		model.dateAsked = LocalDate.parse(fields.get(0).replace("Question écrite du ", "").replace(" ", ""), dateFormatter);
-		model.dateAnswered = LocalDate.parse(fields.get(1).replace("Réponse du ", "").replace(" ", ""), dateFormatter);
+		model.date_asked = LocalDate.parse(fields.get(0).replace("Question écrite du ", "").replace(" ", ""), dateFormatter);
+		model.date_answered = LocalDate.parse(fields.get(1).replace("Réponse du ", "").replace(" ", ""), dateFormatter);
         
 		// Extract From/To
 		fields = extract(doc, "li.evid02");
         
-		model.askedBy = new Person(fields.get(0).replace("de ", ""));
-		model.askedTo = new Person(fields.get(1).replace("à ", ""));
-		model.answeredBy = new Person(fields.get(2).replace("de ", ""));
+		model.asked_by = new PersonSmall(fields.get(0).replace("de ", ""));
+
+		// Separate title from askedTo field
+		String askedTo = fields.get(1).replace("à ", "");
+		int pos = askedTo.indexOf(',');
+		if (pos > 0) {
+			model.asked_to = new PersonSmall(askedTo.substring(0, pos));
+			// String title = askedTo.substring(pos+1)
+		} else {
+			model.asked_to = new PersonSmall(askedTo);
+		}
+		
+		model.answered_by = new PersonSmall(fields.get(2).replace("de ", ""));
 		
         // Extract Metadata
         fields = extract(doc, "div#print_container > ul li");
@@ -65,6 +69,16 @@ public class QuestionParser {
 		model.answerText = fields.get(2);
 		
         return model;
+	}
+
+	private static DateTimeFormatter getDateFormatter() {
+		return new DateTimeFormatterBuilder()
+			.appendDayOfMonth(2)
+			.appendLiteral('/')
+			.appendMonthOfYear(2)
+			.appendLiteral('/')
+			.appendYear(4, 4)
+			.toFormatter();
 	}
 
 	protected static List<String> extract(Document doc, String tag) {

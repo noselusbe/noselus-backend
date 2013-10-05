@@ -1,13 +1,11 @@
 package be.noselus.repository;
 
-import java.util.List;
-
+import be.noselus.model.PersonSmall;
+import be.noselus.model.Question;
+import com.google.common.collect.Lists;
 import org.joda.time.LocalDate;
 
-import com.google.common.collect.Lists;
-
-import be.noselus.model.Person;
-import be.noselus.model.Question;
+import java.util.List;
 
 public class QuestionRepositoryStub implements QuestionRepository {
 
@@ -16,8 +14,8 @@ public class QuestionRepositoryStub implements QuestionRepository {
     @Override
     public List<Question> getQuestions() {
 
-        Person askingPerson = new Person("DISABATO", "Emmanuel");
-        Person askedToPerson = new Person("FURLAN", "Paul");
+        PersonSmall askingPerson = new PersonSmall("DISABATO Emmanuel",1);
+        PersonSmall askedToPerson = new PersonSmall("FURLAN Paul", 2);
 
         Question question = new Question(askingPerson,askedToPerson,askedToPerson,"2010-2011",2011, "594 (2010-2011) 1", LocalDate.parse("2011-08-29"), LocalDate.parse("2011-10-07"),
                 "Open Data - Open Government",
