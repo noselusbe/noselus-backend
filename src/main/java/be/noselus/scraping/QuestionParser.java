@@ -1,10 +1,8 @@
 package be.noselus.scraping;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
+import be.noselus.model.PersonSmall;
+import be.noselus.model.Question;
+import be.noselus.repository.DeputyRepository;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormatter;
@@ -14,12 +12,20 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import be.noselus.model.PersonSmall;
-import be.noselus.model.Question;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public class QuestionParser {
 
-	public static Question parse(String url) throws IOException {
+    private DeputyRepository deputyRepository;
+
+    public QuestionParser(final DeputyRepository deputyRepository) {
+        this.deputyRepository = deputyRepository;
+    }
+
+    public Question parse(String url) throws IOException {
 		
 		DateTimeFormatter dateFormatter = getDateFormatter();
 		
@@ -41,8 +47,9 @@ public class QuestionParser {
         
 		// Extract From/To
 		fields = extract(doc, "li.evid02");
-        
-		model.asked_by = new PersonSmall(fields.get(0).replace("de ", ""));
+
+        final String askedByName = fields.get(0).replace("de ", "");
+        model.asked_by = deputyRepository.getDeputyByName(askedByName).get(0);
 
 		// Separate title from askedTo field
 		String askedTo = fields.get(1).replace("à ", "");
@@ -71,7 +78,7 @@ public class QuestionParser {
         return model;
 	}
 
-	private static DateTimeFormatter getDateFormatter() {
+	private DateTimeFormatter getDateFormatter() {
 		return new DateTimeFormatterBuilder()
 			.appendDayOfMonth(2)
 			.appendLiteral('/')
@@ -81,7 +88,7 @@ public class QuestionParser {
 			.toFormatter();
 	}
 
-	protected static List<String> extract(Document doc, String tag) {
+	protected List<String> extract(Document doc, String tag) {
 		Elements data = doc.select(tag);
         
 		List<String> items = new ArrayList<>();
