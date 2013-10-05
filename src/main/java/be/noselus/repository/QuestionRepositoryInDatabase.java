@@ -3,20 +3,28 @@ package be.noselus.repository;
 import be.noselus.db.DatabaseHelper;
 import be.noselus.model.Question;
 import com.google.common.collect.Lists;
+import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 
 public class QuestionRepositoryInDatabase implements QuestionRepository {
 
     private static final Logger logger = LoggerFactory.getLogger(QuestionRepositoryInDatabase.class);
+    private final AssemblyRegistry assemblyRegistry;
 
+    private QuestionMapper mapper;
 
-    private QuestionMapper mapper = new QuestionMapper();
+    @Inject
+    public QuestionRepositoryInDatabase(final AssemblyRegistry assemblyRegistry) {
+        this.assemblyRegistry = assemblyRegistry;
+        mapper = new QuestionMapper(this.assemblyRegistry);
+    }
 
     @Override
     public List<Question> getQuestions() {
@@ -94,5 +102,25 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
             logger.error("Error loading person from DB", e);
         }
         return results;
+    }
+
+    @Override
+    public List<Integer> questionAskedBy(final int askedById) {
+        try {
+            Connection db = DatabaseHelper.openConnection(false, true);
+            PreparedStatement questionsStat = db.prepareStatement("SELECT id FROM written_question WHERE asked_by = ?;");
+            questionsStat.setInt(1, askedById);
+
+            questionsStat.execute();
+            List<Integer> questionsAskedBy = Lists.newArrayList();
+            while (questionsStat.getResultSet().next()){
+                questionsAskedBy.add(questionsStat.getResultSet().getInt("id"));
+            }
+            questionsStat.close();
+            return questionsAskedBy;
+        } catch (SQLException|ClassNotFoundException e) {
+            logger.error("Error loading questions asked by " + askedById, e);
+        }
+        return Collections.emptyList();
     }
 }
