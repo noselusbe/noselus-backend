@@ -28,7 +28,7 @@ public class SqlRequester {
 		stat.setString(idx++, question.title);
 		stat.setString(idx++, question.question_text);
 		stat.setString(idx++, question.answer_text);
-		stat.setInt(idx++, question.asked_by.id);
+		stat.setInt(idx++, question.asked_by);
 		stat.setInt(idx++, question.asked_to.id);
 		stat.setInt(idx++, question.id);
 		

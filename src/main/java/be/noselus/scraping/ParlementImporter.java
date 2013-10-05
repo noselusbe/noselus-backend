@@ -9,28 +9,27 @@ import java.util.List;
 
 import be.noselus.db.SqlRequester;
 import be.noselus.model.Question;
-import be.noselus.repository.DeputyRepository;
-import be.noselus.repository.DeputyRepositoryInMemory;
+import be.noselus.repository.PoliticianRepository;
+import be.noselus.repository.PoliticianRepositoryInDatabase;
 
 public class ParlementImporter {
 	
 	public static void main(String[] args) throws SQLException, ClassNotFoundException {
-		DeputyRepository deputyRepository = new DeputyRepositoryInMemory();
+		PoliticianRepository deputyRepository = new PoliticianRepositoryInDatabase();
 		QuestionParser parser = new QuestionParser(deputyRepository);
 		
 		String url = "http://parlement.wallonie.be/content/print_container.php?print=quest_rep_voir.php&type=all&id_doc=";
 		
-		Connection db = openConnection(); 
+		Connection db = openConnection(false, true); 
 		
 		List<Question> questions = new ArrayList<>();
 		for (int id = 50000; id < 50005; id++) {
 			try {
 				questions.add(parser.parse(id));
 				Thread.sleep(1500);
-			} catch (IOException | IllegalArgumentException e) {
+			} catch (IOException | IllegalArgumentException | InterruptedException e) {
 				System.out.println(url + id);
-			} catch (InterruptedException e) {
-				System.out.println("Interrupted : " + url + id);
+				e.printStackTrace();
 			}
 		}
 		
@@ -42,13 +41,18 @@ public class ParlementImporter {
 		db.close();
 	}
 
-	private static Connection openConnection() throws SQLException, ClassNotFoundException {
+	public static Connection openConnection(boolean autoCommit, boolean readOnly) throws SQLException, ClassNotFoundException {
 		String url = "jdbc:postgresql://hackathon01.cblue.be:5432/noselus?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory";
 		String user = "noselus2";
 		String password = "noselus";
 		
 		Class.forName("org.postgresql.Driver");
-		return DriverManager.getConnection(url, user, password);
+		Connection db = DriverManager.getConnection(url, user, password);
+		
+		db.setAutoCommit(autoCommit);
+		db.setReadOnly(readOnly);
+		
+		return db;
 	}
 	
 }
