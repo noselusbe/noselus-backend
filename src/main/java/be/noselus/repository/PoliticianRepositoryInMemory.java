@@ -17,10 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class PoliticianRepositoryInMemory implements PoliticianRepository {
@@ -60,7 +57,7 @@ public class PoliticianRepositoryInMemory implements PoliticianRepository {
 
                     final String site = fields[8].trim();
 
-                    Person person = new Person(politicanIdGenerator.getAndIncrement(), fields[0], fields[1], fields[2], fields[3], fields[4], fields[5], fields[6], fields[7], site, PersonFunction.DEPUTY, 0);
+                    Person person = new Person(politicanIdGenerator.getAndIncrement(), fields[0], fields[1], fields[2], fields[3], fields[4], fields[5], fields[6], fields[7], site, PersonFunction.DEPUTY, 0, Arrays.asList(1));
                     result.add(person);
                     return true;
                 }

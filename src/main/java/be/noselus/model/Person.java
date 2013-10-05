@@ -1,5 +1,7 @@
 package be.noselus.model;
 
+import java.util.List;
+
 public class Person {
 
     public Integer id;
@@ -14,8 +16,10 @@ public class Person {
     public String site;
     public PersonFunction function;
 	public int assembly_id;
+    public List<Integer> asked_questions;
 
-    public Person(Integer id, String full_name, String party, String address, String postal_code, String town, String phone, String fax, String email, String site, PersonFunction function, int assembly_id) {
+    public Person(Integer id, String full_name, String party, String address, String postal_code, String town, String phone,
+                  String fax, String email, String site, PersonFunction function, int assembly_id, List<Integer> askedQuestionIds) {
         this.id = id;
         this.full_name = full_name;
         this.party = party;
@@ -27,6 +31,7 @@ public class Person {
         this.email = email;
         this.site = site;
         this.function = function;
+        this.asked_questions = askedQuestionIds;
         this.assembly_id = assembly_id;
     }
     
