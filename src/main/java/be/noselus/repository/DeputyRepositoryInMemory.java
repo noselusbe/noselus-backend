@@ -41,12 +41,12 @@ public class DeputyRepositoryInMemory implements DeputyRepository {
                     if (treatedLine == 1){ //skip first line with the titles
                         return true;
                     }
-                    final String line = s + " ";
+                    final String line = s.replace(" ", " ") + " ";//Some weird character, is not a normal space, replace by space
                     final String[] fields = line.split(";");
 
                     final String site = fields[8].trim();
 
-                    Person person = new Person(idCounter,fields[0], fields[1], fields[2], fields[3], fields[4], fields[5], fields[6], fields[7], site, PersonFunction.DEPUTY);
+                    Person person = new Person(idCounter, fields[0], fields[1], fields[2], fields[3], fields[4], fields[5], fields[6], fields[7], site, PersonFunction.DEPUTY);
                     result.add(person);
                     idCounter++;
                     return true;
