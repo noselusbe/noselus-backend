@@ -8,8 +8,8 @@ public class Question {
 
     public Integer id;
     public int asked_by;
-    public PersonSmall asked_to;
-    public PersonSmall answered_by;
+    public int asked_to;
+    public int answered_by;
     public String session;
     public Integer year;
     public String number;
@@ -32,8 +32,8 @@ public class Question {
 
     public Question( PersonSmall asked_by,  PersonSmall asked_to, PersonSmall answered_by, String session, Integer year, String number, LocalDate date_asked, LocalDate dateAnswered, String title, String questionText, String answerText, Integer id, Assembly assembly) {
         this.asked_by = asked_by.id;
-        this.asked_to = asked_to;
-        this.answered_by = answered_by;
+        this.asked_to = asked_to.id;
+        this.answered_by = answered_by.id;
         this.session = session;
         this.year = year;
         this.number = number;
