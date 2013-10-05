@@ -2,6 +2,7 @@ package be.noselus.repository;
 
 import be.noselus.model.Person;
 import be.noselus.model.PersonFunction;
+import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
@@ -12,7 +13,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,7 +29,7 @@ public class DeputyRepositoryInMemory implements DeputyRepository {
         try {
             URL url = getClass().getResource("/liste_parl_pw-2013-10-04.csv");
             File file = new File(url.toURI());
-            deputies = Files.readLines(file, Charset.defaultCharset(),new LineProcessor<List<Person>>() {
+            deputies = Files.readLines(file, Charsets.UTF_8,new LineProcessor<List<Person>>() {
 
                 final List<Person> result = new ArrayList<>();
                 int treatedLine=0;
