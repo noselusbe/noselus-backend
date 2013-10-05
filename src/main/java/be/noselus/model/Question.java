@@ -3,27 +3,27 @@ package be.noselus.model;
 import org.joda.time.LocalDate;
 
 public class Question {
-    public Person askedBy;
-    public Person askedTo;
-    public Person answeredBy;
+    public Person asked_by;
+    public Person asked_to;
+    public Person answered_by;
     public String session;
     public Integer year;
     public String number;
-    public LocalDate dateAsked;
-    public LocalDate dateAnswered;
+    public LocalDate date_asked;
+    public LocalDate date_answered;
     public String title;
     public String questionText;
     public String answerText;
 
-    public Question( Person askedBy,  Person askedTo, Person answeredBy, String session, Integer year, String number, LocalDate dateAsked, LocalDate dateAnswered, String title, String questionText, String answerText) {
-        this.askedBy = askedBy;
-        this.askedTo = askedTo;
-        this.answeredBy = answeredBy;
+    public Question( Person asked_by,  Person asked_to, Person answered_by, String session, Integer year, String number, LocalDate date_asked, LocalDate dateAnswered, String title, String questionText, String answerText) {
+        this.asked_by = asked_by;
+        this.asked_to = asked_to;
+        this.answered_by = answered_by;
         this.session = session;
         this.year = year;
         this.number = number;
-        this.dateAsked = dateAsked;
-        this.dateAnswered = dateAnswered;
+        this.date_asked = date_asked;
+        this.date_answered = dateAnswered;
         this.title = title;
         this.questionText = questionText;
         this.answerText = answerText;

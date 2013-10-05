@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class DeputyRepositoryStub implements DeputyRepository {
+public class DeputyRepositoryInMemory implements DeputyRepository {
 
     @Override
     public List<Person> getDeputies() {
@@ -32,10 +32,12 @@ public class DeputyRepositoryStub implements DeputyRepository {
                     if (treatedLine == 1){ //skip first line with the titles
                         return true;
                     }
+                    final String line = s + " ";
+                    final String[] fields = line.split(";");
 
-                    final String[] split = s.split(";");
-                    //TODO split first and last name. Hint first name start with upper then lower case.
-                    Person person = new Person(split[0], "");
+                    final String site = fields[8].trim();
+
+                    Person person = new Person(fields[0], fields[1], fields[2], fields[3], fields[4], fields[5], fields[6], fields[7], site);
                     result.add(person);
                     return true;
                 }
@@ -53,4 +55,5 @@ public class DeputyRepositoryStub implements DeputyRepository {
         }
         return Collections.emptyList();
     }
+
 }
