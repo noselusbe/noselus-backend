@@ -2,7 +2,7 @@ package be.noselus.scraping;
 
 import be.noselus.model.PersonSmall;
 import be.noselus.model.Question;
-import be.noselus.repository.DeputyRepository;
+import be.noselus.repository.PoliticianRepository;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormatter;
@@ -19,10 +19,10 @@ import java.util.List;
 
 public class QuestionParser {
 
-    private DeputyRepository deputyRepository;
+    private PoliticianRepository politicianRepository;
 
-    public QuestionParser(final DeputyRepository deputyRepository) {
-        this.deputyRepository = deputyRepository;
+    public QuestionParser(final PoliticianRepository politicianRepository) {
+        this.politicianRepository = politicianRepository;
     }
 
     public Question parse(String url) throws IOException {
@@ -43,13 +43,15 @@ public class QuestionParser {
 		fields = extract(doc, "h2");
 		
 		model.date_asked = LocalDate.parse(fields.get(0).replace("Question écrite du ", "").replace(" ", ""), dateFormatter);
-		model.date_answered = LocalDate.parse(fields.get(1).replace("Réponse du ", "").replace(" ", ""), dateFormatter);
+		if (fields.size() > 1) {
+			model.date_answered = LocalDate.parse(fields.get(1).replace("Réponse du ", "").replace(" ", ""), dateFormatter);
+		}
         
 		// Extract From/To
 		fields = extract(doc, "li.evid02");
 
         final String askedByName = fields.get(0).replace("de ", "");
-        model.asked_by = deputyRepository.getDeputyByName(askedByName).get(0);
+        model.asked_by = politicianRepository.getPoliticianByName(askedByName).get(0).id;
 
 		// Separate title from askedTo field
 		String askedTo = fields.get(1).replace("à ", "");
@@ -61,7 +63,9 @@ public class QuestionParser {
 			model.asked_to = new PersonSmall(askedTo);
 		}
 		
-		model.answered_by = new PersonSmall(fields.get(2).replace("de ", ""));
+		if (fields.size() > 2) {
+			model.answered_by = new PersonSmall(fields.get(2).replace("de ", ""));
+		}
 		
         // Extract Metadata
         fields = extract(doc, "div#print_container > ul li");
@@ -72,8 +76,10 @@ public class QuestionParser {
         
 		// Extract Texts
 		fields = extract(doc, "div#print_container div + div");
-		model.questionText = fields.get(0);
-		model.answerText = fields.get(2);
+		model.question_text = fields.get(0);
+		if (fields.size() > 2) {
+			model.answer_text = fields.get(2);
+		}
 		
         return model;
 	}

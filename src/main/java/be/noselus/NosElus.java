@@ -1,7 +1,7 @@
 package be.noselus;
 
-import be.noselus.repository.DeputyRepository;
-import be.noselus.repository.DeputyRepositoryInMemory;
+import be.noselus.repository.PoliticianRepository;
+import be.noselus.repository.PoliticianRepositoryInMemory;
 import be.noselus.repository.QuestionRepository;
 import be.noselus.repository.QuestionRepositoryStub;
 import be.noselus.service.JsonTransformer;
@@ -17,7 +17,7 @@ import static spark.Spark.setPort;
 public class NosElus {
 
     public static QuestionRepository questionRepository = new QuestionRepositoryStub();
-    public static DeputyRepository deputyRepository = new DeputyRepositoryInMemory();
+    public static PoliticianRepository politicianRepository = new PoliticianRepositoryInMemory();
 
     public static void main(String[] args) throws IOException {
         final String port = System.getenv("PORT");
@@ -33,18 +33,35 @@ public class NosElus {
             }
         });
 
-        get(new JsonTransformer("/questions") {
+        get(new JsonTransformer("/questions", "questions") {
 
             @Override
-            public Object handle(final Request request, final Response response) {
+            public Object myHandle(final Request request, final Response response) {
                 return questionRepository.getQuestions();
             }
         });
 
-        get(new JsonTransformer("/persons") {
+        get(new JsonTransformer("/questions/:id", "question") {
+
             @Override
-            public Object handle(final Request request, final Response response) {
-                return deputyRepository.getDeputies();
+            public Object myHandle(final Request request, final Response response) {
+                final String params = request.params(":id");
+                return questionRepository.getQuestionById(Integer.parseInt(params));
+            }
+        });
+
+        get(new JsonTransformer("/politicians", "politicians") {
+            @Override
+            public Object myHandle(final Request request, final Response response) {
+                return politicianRepository.getPoliticians();
+            }
+        });
+
+        get(new JsonTransformer("/politicians/:id", "politician") {
+            @Override
+            public Object myHandle(final Request request, final Response response) {
+                final String params = request.params(":id");
+                return politicianRepository.getPoliticianById(Integer.parseInt(params));
             }
         });
 
