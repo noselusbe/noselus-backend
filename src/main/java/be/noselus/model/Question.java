@@ -19,12 +19,18 @@ public class Question {
     public String question_text;
     public String answer_text;
     public String excerpt;
+    public Assembly assembly;
 
     public Question() {
 
     }
 
     public Question(PersonSmall asked_by, PersonSmall asked_to, PersonSmall answered_by, String session, Integer year, String number, LocalDate date_asked, LocalDate dateAnswered, String title, String question_text, String answer_text, Integer id) {
+        this.asked_by = asked_by.id;
+    }
+    
+
+    public Question( PersonSmall asked_by,  PersonSmall asked_to, PersonSmall answered_by, String session, Integer year, String number, LocalDate date_asked, LocalDate dateAnswered, String title, String questionText, String answerText, Integer id, Assembly assembly) {
         this.asked_by = asked_by.id;
         this.asked_to = asked_to;
         this.answered_by = answered_by;
@@ -34,13 +40,14 @@ public class Question {
         this.date_asked = date_asked;
         this.date_answered = dateAnswered;
         this.title = title;
-        this.question_text = question_text;
-        this.answer_text = answer_text;
-        if (question_text.length() < EXCERPT_SIZE) {
-            this.excerpt = question_text;
+        if (questionText.length() < EXCERPT_SIZE) {
+            this.excerpt = questionText;
         } else {
-            this.excerpt = question_text.substring(0, EXCERPT_SIZE) + "...";
+            this.excerpt = questionText.substring(0, EXCERPT_SIZE) + "...";
         }
         this.id = id;
+        this.question_text = questionText;
+        this.answer_text = answerText;
+        this.assembly = assembly;
     }
 }
