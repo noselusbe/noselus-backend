@@ -8,7 +8,7 @@ import java.util.List;
 
 public class QuestionRepositoryTest {
 
-    private QuestionRepository repo = new QuestionRepositoryInDatabase();
+    private QuestionRepository repo = new QuestionRepositoryInDatabase(new AssemblyRegistryInDatabase());
 
     @Test
     public void containData(){

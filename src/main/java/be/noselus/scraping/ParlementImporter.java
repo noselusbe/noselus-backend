@@ -1,18 +1,21 @@
 package be.noselus.scraping;
 
+import be.noselus.NosElusModule;
+import be.noselus.db.DatabaseHelper;
+import be.noselus.db.SqlRequester;
+import be.noselus.repository.PoliticianRepository;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import be.noselus.db.DatabaseHelper;
-import be.noselus.db.SqlRequester;
-import be.noselus.repository.PoliticianRepository;
-import be.noselus.repository.PoliticianRepositoryInDatabase;
-
 public class ParlementImporter {
 	
 	public static void main(String[] args) throws SQLException, ClassNotFoundException {
-		PoliticianRepository deputyRepository = new PoliticianRepositoryInDatabase();
+        Injector injector = Guice.createInjector(new NosElusModule());
+		PoliticianRepository deputyRepository = injector.getInstance(PoliticianRepository.class);
 		QuestionParser parser = new QuestionParser(deputyRepository);
 		
 		String url = "http://parlement.wallonie.be/content/print_container.php?print=quest_rep_voir.php&type=all&id_doc=";

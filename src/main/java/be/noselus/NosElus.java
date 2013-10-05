@@ -1,32 +1,33 @@
 package be.noselus;
 
-import static spark.Spark.get;
-import static spark.Spark.setPort;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
+import be.noselus.pictures.PictureManager;
+import be.noselus.repository.AssemblyRegistry;
+import be.noselus.repository.PoliticianRepository;
+import be.noselus.repository.QuestionRepository;
+import be.noselus.service.JsonTransformer;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.apache.commons.io.IOUtils;
-
 import spark.Request;
 import spark.Response;
 import spark.Route;
-import be.noselus.pictures.PictureManager;
-import be.noselus.repository.PoliticianRepository;
-import be.noselus.repository.PoliticianRepositoryInDatabase;
-import be.noselus.repository.QuestionRepository;
-import be.noselus.repository.QuestionRepositoryInDatabase;
-import be.noselus.service.JsonTransformer;
 
-import com.google.common.io.ByteStreams;
+import java.io.IOException;
+import java.io.InputStream;
+
+import static spark.Spark.get;
+import static spark.Spark.setPort;
 
 public class NosElus {
 
-    public static QuestionRepository questionRepository = new QuestionRepositoryInDatabase();
-    public static PoliticianRepository politicianRepository = new PoliticianRepositoryInDatabase();
-
     public static void main(String[] args) throws IOException {
+        Injector injector = Guice.createInjector(new NosElusModule());
+
+        final AssemblyRegistry assemblyRegistry = injector.getInstance(AssemblyRegistry.class);
+        final QuestionRepository questionRepository = injector.getInstance(QuestionRepository.class);
+        final PoliticianRepository politicianRepository = injector.getInstance(PoliticianRepository.class);
+        final PictureManager pictureManager = injector.getInstance(PictureManager.class);
+
         final String port = System.getenv("PORT");
         if (port != null){
           setPort(Integer.parseInt(port));
@@ -78,7 +79,7 @@ public class NosElus {
         		try {
 	        		final String id = request.params(":id");
 	        		byte[] out = null;
-	        		InputStream is = PictureManager.get(Integer.valueOf(id));
+	        		InputStream is = pictureManager.get(Integer.valueOf(id));
 	        		
 	        		if (is == null) {
 	        			response.status(404);
