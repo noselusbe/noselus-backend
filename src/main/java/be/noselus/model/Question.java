@@ -3,6 +3,7 @@ package be.noselus.model;
 import org.joda.time.LocalDate;
 
 public class Question {
+    public Integer id;
     public PersonSmall asked_by;
     public PersonSmall asked_to;
     public PersonSmall answered_by;
@@ -15,7 +16,6 @@ public class Question {
     public String questionText;
     public String answerText;
     public String excerpt;
-    public Integer id;
 
     public Question() {
     	
@@ -36,7 +36,7 @@ public class Question {
         if (questionText.length()< 50){
             this.excerpt = questionText;
         } else {
-            this.excerpt = questionText.substring(0,50) + "...";
+            this.excerpt = questionText.substring(0,150) + "...";
         }
         this.id = id;
     }
