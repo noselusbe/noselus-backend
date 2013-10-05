@@ -3,12 +3,9 @@ package be.noselus.scraping;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import be.noselus.db.DatabaseHelper;
 import be.noselus.db.SqlRequester;
-import be.noselus.model.Question;
 import be.noselus.repository.PoliticianRepository;
 import be.noselus.repository.PoliticianRepositoryInDatabase;
 
@@ -20,12 +17,11 @@ public class ParlementImporter {
 		
 		String url = "http://parlement.wallonie.be/content/print_container.php?print=quest_rep_voir.php&type=all&id_doc=";
 		
-		Connection db = DatabaseHelper.openConnection(false, true); 
+		Connection db = DatabaseHelper.openConnection(true, false); 
 		
-		List<Question> questions = new ArrayList<>();
-		for (int id = 50000; id < 50005; id++) {
+		for (int id = 50061; id < 50400; id++) {
 			try {
-				questions.add(parser.parse(id));
+				SqlRequester.insertQuestion(db, parser.parse(id));
 				Thread.sleep(1500);
 			} catch (IOException | IllegalArgumentException | InterruptedException e) {
 				System.out.println(url + id);
@@ -33,11 +29,6 @@ public class ParlementImporter {
 			}
 		}
 		
-		for (Question question : questions) {
-			SqlRequester.insertQuestion(db, question);
-		}
-		
-		db.commit();
 		db.close();
 	}
 	
