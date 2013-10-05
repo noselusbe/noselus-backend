@@ -5,6 +5,7 @@ import static spark.Spark.setPort;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.SQLException;
 
 import org.apache.commons.io.IOUtils;
 
@@ -77,7 +78,7 @@ public class NosElus {
 //	        		int width = Integer.valueOf((String)request.attribute("w"));
 //	        		int height = Integer.valueOf((String)request.attribute("h"));
 	        		byte[] out = null;
-	        		InputStream is = PictureManager.get(Integer.valueOf(id));
+	        		InputStream is = PictureManager.get().get(Integer.valueOf(id));
 	        		
 	        		if (is == null) {
 	        			response.status(404);
@@ -88,7 +89,7 @@ public class NosElus {
 		        		response.raw().getOutputStream().write(out, 0, out.length);
 						return out;
 	        		}
-				} catch (NumberFormatException | IOException e) {
+				} catch (NumberFormatException | IOException | ClassNotFoundException | SQLException e) {
 					response.status(404);
 					return null;
 				}
