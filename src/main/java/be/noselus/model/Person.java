@@ -1,23 +1,36 @@
 package be.noselus.model;
 
 public class Person {
-    public String name;
-    public String firstName;
 
-    public Person(String fullName) {
-    	int pos = fullName.lastIndexOf(' ');
-		this.firstName = fullName.substring(0, pos);
-		this.name = fullName.substring(pos+1);
-	}
-    
-    public Person(final String name, final String firstName) {
-        this.name = name;
-        this.firstName = firstName;
+    public Integer id;
+    public String full_name;
+    public String party;
+    public String address;
+    public String postal_code;
+    public String town;
+    public String phone;
+    public String fax;
+    public String email;
+    public String site;
+    public PersonFunction function;
+
+    public Person(Integer id, String full_name, String party, String address, String postal_code, String town, String phone, String fax, String email, String site, PersonFunction function) {
+        this.id = id;
+        this.full_name = full_name;
+        this.party = party;
+        this.address = address;
+        this.postal_code = postal_code;
+        this.town = town;
+        this.phone = phone;
+        this.fax = fax;
+        this.email = email;
+        this.site = site;
+        this.function = function;
     }
     
     @Override
     public String toString() {
-    	return firstName + " " + name;
+    	return full_name;
     }
     
 }
