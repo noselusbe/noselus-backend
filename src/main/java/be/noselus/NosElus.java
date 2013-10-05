@@ -1,9 +1,6 @@
 package be.noselus;
 
-import be.noselus.repository.PoliticianRepository;
-import be.noselus.repository.PoliticianRepositoryInMemory;
-import be.noselus.repository.QuestionRepository;
-import be.noselus.repository.QuestionRepositoryStub;
+import be.noselus.repository.*;
 import be.noselus.service.JsonTransformer;
 import spark.Request;
 import spark.Response;
@@ -16,8 +13,8 @@ import static spark.Spark.setPort;
 
 public class NosElus {
 
-    public static QuestionRepository questionRepository = new QuestionRepositoryStub();
-    public static PoliticianRepository politicianRepository = new PoliticianRepositoryInMemory();
+    public static QuestionRepository questionRepository = new QuestionRepositoryInDatabase();
+    public static PoliticianRepository politicianRepository = new PoliticianRepositoryInDatabase();
 
     public static void main(String[] args) throws IOException {
         final String port = System.getenv("PORT");

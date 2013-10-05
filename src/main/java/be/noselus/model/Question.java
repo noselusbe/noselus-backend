@@ -25,15 +25,10 @@ public class Question {
 
     }
 
-    public Question(PersonSmall asked_by, PersonSmall asked_to, PersonSmall answered_by, String session, Integer year, String number, LocalDate date_asked, LocalDate dateAnswered, String title, String question_text, String answer_text, Integer id) {
-        this.asked_by = asked_by.id;
-    }
-    
-
-    public Question( PersonSmall asked_by,  PersonSmall asked_to, PersonSmall answered_by, String session, Integer year, String number, LocalDate date_asked, LocalDate dateAnswered, String title, String questionText, String answerText, Integer id, Assembly assembly) {
-        this.asked_by = asked_by.id;
-        this.asked_to = asked_to.id;
-        this.answered_by = answered_by.id;
+    public Question(Integer id, int asked_by, int asked_to, int answered_by, String session, Integer year, String number, LocalDate date_asked, LocalDate dateAnswered, String title, String questionText, String answerText, Assembly assembly) {
+        this.asked_by = asked_by;
+        this.asked_to = asked_to;
+        this.answered_by = answered_by;
         this.session = session;
         this.year = year;
         this.number = number;

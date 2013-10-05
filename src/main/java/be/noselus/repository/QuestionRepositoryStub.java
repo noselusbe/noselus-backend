@@ -1,8 +1,7 @@
 package be.noselus.repository;
 
-import be.noselus.model.PersonSmall;
-import be.noselus.model.Question;
 import be.noselus.model.Assembly;
+import be.noselus.model.Question;
 import com.google.common.collect.Lists;
 import org.joda.time.LocalDate;
 
@@ -10,11 +9,7 @@ import java.util.List;
 
 public class QuestionRepositoryStub implements QuestionRepository {
 
-
-    private PersonSmall askingPerson = new PersonSmall("DISABATO Emmanuel",1);
-    private PersonSmall askedToPerson = new PersonSmall("FURLAN Paul", 2);
-
-    private Question question = new Question(askingPerson,askedToPerson,askedToPerson,"2010-2011",2011, "594 (2010-2011) 1", LocalDate.parse("2011-08-29"), LocalDate.parse("2011-10-07"),
+    private Question question = new Question(1, 1,2,2,"2010-2011",2011, "594 (2010-2011) 1", LocalDate.parse("2011-08-29"), LocalDate.parse("2011-10-07"),
             "Open Data - Open Government",
             "Les informations publiques, ou données ouvertes (open data), sont aujourd'hui en termes de potentiel, d'opportunités et d'enjeu au c?ur du développement de multiples innovations sociales et économiques. En effet, grâce à leur mise en ligne par l'administration et les collectivités territoriales, elles peuvent contribuer à la création de nouveaux services tout en favorisant la transparence de l'action publique.\n" +
                     "\n" +
@@ -44,9 +39,8 @@ public class QuestionRepositoryStub implements QuestionRepository {
                     "- d'évaluer son action.\n" +
                     "\n" +
                     "Appliqué au secteur public, le principe de l'Open Data consiste donc à permettre l'usage, commercial ou non, par d'autres acteurs (organismes publics, entreprises, associations, pouvoirs locaux ou citoyens) des données collectées par un organisme public donné.\n" +
-                    "C'est en 2006 que le gouvernement adoptait définitivement le décret transposant la directive précitée.\n", 
-                    1,
-                    new Assembly("Parlement Wallon", Assembly.Level.REGION));
+                    "C'est en 2006 que le gouvernement adoptait définitivement le décret transposant la directive précitée.\n",
+            new Assembly(1, "Parlement Wallon", Assembly.Level.REGION));
 
 
     @Override
