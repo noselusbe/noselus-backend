@@ -1,11 +1,13 @@
 package be.noselus.repository;
 
-import be.noselus.model.Assembly;
-import be.noselus.model.Question;
-import com.google.common.collect.Lists;
+import java.util.List;
+
 import org.joda.time.LocalDate;
 
-import java.util.List;
+import be.noselus.model.Assembly;
+import be.noselus.model.Question;
+
+import com.google.common.collect.Lists;
 
 public class QuestionRepositoryStub implements QuestionRepository {
 

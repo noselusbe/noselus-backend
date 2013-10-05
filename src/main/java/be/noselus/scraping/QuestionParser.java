@@ -59,7 +59,7 @@ public class QuestionParser {
         if (politicianRepository.getPoliticianByName(askedByName).size() > 0) {
         	model.asked_by = politicianRepository.getPoliticianByName(askedByName).get(0).id;
         } else {
-        	model.asked_by = id;
+        	model.asked_by = 0;
         }
 
 		// Separate title from askedTo field
