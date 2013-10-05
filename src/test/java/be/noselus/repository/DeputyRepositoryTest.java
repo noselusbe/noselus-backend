@@ -52,4 +52,10 @@ public class DeputyRepositoryTest {
         assertEquals(1,found.size());
         assertEquals("ONKELINX Alain", found.get(0).full_name);
     }
+
+    @Test
+    public void findByAlmostName(){
+        final List<PersonSmall> found = repo.getDeputyByName("KAPOMPOLE Joëlle");
+        assertEquals(1, found.size());
+    }
 }

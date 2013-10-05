@@ -83,9 +83,9 @@ public class QuestionParser {
         
 		// Extract Texts
 		fields = extract(doc, "div#print_container div + div");
-		model.questionText = fields.get(0);
+		model.question_text = fields.get(0);
 		if (fields.size() > 2) {
-			model.answerText = fields.get(2);
+			model.answer_text = fields.get(2);
 		}
 		
         return model;

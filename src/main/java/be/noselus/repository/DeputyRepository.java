@@ -11,4 +11,6 @@ public interface DeputyRepository {
 
     List<Person> getFullDeputyByName(String name);
     List<PersonSmall> getDeputyByName(String name);
+
+    Person getDeputyById(int i);
 }
