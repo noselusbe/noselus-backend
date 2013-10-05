@@ -81,4 +81,10 @@ public class QuestionParserTest {
 		
 		System.out.println(tmp);
 	}
+	
+	@Test
+	public void reponseProvisoire() {
+		Assert.assertEquals("02/10/2013", "Réponse du 02/10/2013 ".replaceFirst("Réponse(.)* du ", "").trim());
+		Assert.assertEquals("02/10/2013", "Réponse provisoire du 02/10/2013 ".replaceFirst("Réponse(.)* du ", "").trim());
+	}
 }

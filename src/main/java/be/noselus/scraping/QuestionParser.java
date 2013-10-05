@@ -42,16 +42,23 @@ public class QuestionParser {
 		// Extract Question & Response
 		fields = extract(doc, "h2");
 		
+		// TODO remove after debug
+		System.out.println(fields.get(0));
+		
 		model.date_asked = LocalDate.parse(fields.get(0).replace("Question écrite du ", "").replace(" ", ""), dateFormatter);
 		if (fields.size() > 1) {
-			model.date_answered = LocalDate.parse(fields.get(1).replace("Réponse du ", "").replace(" ", ""), dateFormatter);
+			model.date_answered = LocalDate.parse(fields.get(1).replaceFirst("Réponse(.)* du ", "").replace(" ", ""), dateFormatter);
 		}
         
 		// Extract From/To
 		fields = extract(doc, "li.evid02");
 
         final String askedByName = fields.get(0).replace("de ", "");
-        model.asked_by = deputyRepository.getDeputyByName(askedByName).get(0);
+        if (deputyRepository.getDeputyByName(askedByName).size() > 0) {
+        	model.asked_by = deputyRepository.getDeputyByName(askedByName).get(0);
+        } else {
+        	model.asked_by = new PersonSmall(askedByName, 0);
+        }
 
 		// Separate title from askedTo field
 		String askedTo = fields.get(1).replace("à ", "");
