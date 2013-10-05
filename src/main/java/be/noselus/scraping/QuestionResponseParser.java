@@ -11,7 +11,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import be.noselus.model.Question;
 import be.noselus.model.QuestionResponse;
 
 public class QuestionResponseParser {
@@ -30,23 +29,28 @@ public class QuestionResponseParser {
 		// Extract Question & Response
 		fields = extract(doc, "h2");
 		
-		model.question_date = fields.get(0);
-		model.response_date = fields.get(1);
+		model.question_date = fields.get(0).replace("Question écrite du ", "");
+		model.response_date = fields.get(1).replace("Réponse du ", "");
         
 		// Extract From/To
 		fields = extract(doc, "li.evid02");
         
-		model.question_from = fields.get(0);
-		model.question_to = fields.get(1);
-		model.response_from = fields.get(2);
+		model.question_from = fields.get(0).replace("de ", "");
+		model.question_to = fields.get(1).replace("à ", "");
+		model.response_from = fields.get(2).replace("de ", "");
 		
         // Extract Metadata
         fields = extract(doc, "div#print_container > ul li");
         
-		model.session = fields.get(0);
-		model.year = fields.get(1);
-		model.number = fields.get(2);
+		model.session = fields.get(0).replace("Session : ", "");
+		model.year = fields.get(1).replace("Année : ", "");
+		model.number = fields.get(2).replace("N° : ", "");
         
+		// Extract Texts
+		fields = extract(doc, "div#print_container div + div");
+		model.questionText = fields.get(0);
+		model.responseText = fields.get(2);
+		
         return model;
 	}
 
