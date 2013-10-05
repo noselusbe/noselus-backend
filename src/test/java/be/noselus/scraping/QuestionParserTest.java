@@ -1,8 +1,8 @@
 package be.noselus.scraping;
 
 import be.noselus.model.Question;
-import be.noselus.repository.DeputyRepository;
-import be.noselus.repository.DeputyRepositoryInMemory;
+import be.noselus.repository.PoliticianRepository;
+import be.noselus.repository.PoliticianRepositoryInMemory;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
@@ -17,8 +17,8 @@ import java.util.List;
 
 public class QuestionParserTest {
 
-    DeputyRepository deputyRepository = new DeputyRepositoryInMemory();
-    QuestionParser parser = new QuestionParser(deputyRepository);
+    PoliticianRepository politicianRepository = new PoliticianRepositoryInMemory();
+    QuestionParser parser = new QuestionParser(politicianRepository);
 
 	@Test
 	public void openData() throws IOException {
@@ -30,7 +30,7 @@ public class QuestionParserTest {
 		Assert.assertEquals(2011, qr.year.intValue());
 		Assert.assertEquals("594 (2010-2011) 1", qr.number);
 		Assert.assertEquals("2011-08-29", qr.date_asked.toString());
-		Assert.assertEquals("DISABATO Emmanuel", qr.asked_by.toString());
+		Assert.assertEquals(21, qr.asked_by);
 		Assert.assertEquals("FURLAN Paul", qr.asked_to.toString());
 		Assert.assertEquals("2011-10-07", qr.date_answered.toString());
 		Assert.assertEquals("FURLAN Paul", qr.answered_by.toString());
@@ -48,7 +48,7 @@ public class QuestionParserTest {
 		Assert.assertEquals(2013, qr.year.intValue());
 		Assert.assertEquals("51 (2013-2014) 1", qr.number);
 		Assert.assertEquals("2013-10-04", qr.date_asked.toString());
-		Assert.assertEquals("STOFFELS Edmund", qr.asked_by.toString());
+		Assert.assertEquals(63, qr.asked_by);
 		Assert.assertEquals("NOLLET Jean-Marc", qr.asked_to.toString());
 		Assert.assertEquals(null, qr.date_answered);
 		Assert.assertEquals(null, qr.answered_by);

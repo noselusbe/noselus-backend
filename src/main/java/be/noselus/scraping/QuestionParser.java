@@ -2,8 +2,7 @@ package be.noselus.scraping;
 
 import be.noselus.model.PersonSmall;
 import be.noselus.model.Question;
-import be.noselus.repository.DeputyRepository;
-
+import be.noselus.repository.PoliticianRepository;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormatter;
@@ -22,10 +21,10 @@ public class QuestionParser {
 
 	private String url = "http://parlement.wallonie.be/content/print_container.php?print=quest_rep_voir.php&type=all&id_doc=";
 	
-    private DeputyRepository deputyRepository;
+    private PoliticianRepository politicianRepository;
 
-    public QuestionParser(final DeputyRepository deputyRepository) {
-        this.deputyRepository = deputyRepository;
+    public QuestionParser(final PoliticianRepository politicianRepository) {
+        this.politicianRepository = politicianRepository;
     }
 
     public Question parse(int id) throws IOException {
@@ -56,20 +55,26 @@ public class QuestionParser {
 		fields = extract(doc, "li.evid02");
 
         final String askedByName = fields.get(0).replace("de ", "");
-        if (deputyRepository.getDeputyByName(askedByName).size() > 0) {
-        	model.asked_by = deputyRepository.getDeputyByName(askedByName).get(0);
+        if (politicianRepository.getPoliticianByName(askedByName).size() > 0) {
+        	model.asked_by = politicianRepository.getPoliticianByName(askedByName).get(0).id;
         } else {
-        	model.asked_by = new PersonSmall(askedByName, 0);
+        	model.asked_by = id;
         }
 
 		// Separate title from askedTo field
 		String askedTo = fields.get(1).replace("à ", "");
 		int pos = askedTo.indexOf(',');
+		String name = "";
 		if (pos > 0) {
-			model.asked_to = new PersonSmall(askedTo.substring(0, pos));
+			name = askedTo.substring(0, pos).trim();
 			// String title = askedTo.substring(pos+1)
 		} else {
-			model.asked_to = new PersonSmall(askedTo);
+			name = askedTo.trim();
+		}
+		
+		List<PersonSmall> list = politicianRepository.getPoliticianByName(name);
+		if (list.size() > 0) {
+			model.asked_to = list.get(0);
 		}
 		
 		if (fields.size() > 2) {
