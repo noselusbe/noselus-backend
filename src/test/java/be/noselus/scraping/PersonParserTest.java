@@ -25,8 +25,8 @@ import be.noselus.db.SqlRequester;
 
 public class PersonParserTest {
 
-	String urlParlement = "http://www.parlement-wallon.be/content/default.php?p=01-01";
-	String urlChamber = "http://www.dekamer.be/site/wwwroot/images/cv/";
+	String urlParlement = "http://www.parlement-wallon.be/content/default.php?p=01-01"; // .jpg
+	String urlChamber = "http://www.dekamer.be/site/wwwroot/images/cv/"; // .gif
 	Connection db;
 	
 	
