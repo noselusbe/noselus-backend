@@ -1,6 +1,8 @@
 package be.noselus.model;
 
 public class Person {
+
+    public Integer id;
     public String full_name;
     public String party;
     public String address;
@@ -10,12 +12,10 @@ public class Person {
     public String fax;
     public String email;
     public String site;
+    public PersonFunction function;
 
-    public Person(final String full_name) {
-        this.full_name = full_name;
-    }
-
-    public Person(String full_name, String party, String address, String postal_code, String town, String phone, String fax, String email, String site) {
+    public Person(Integer id, String full_name, String party, String address, String postal_code, String town, String phone, String fax, String email, String site, PersonFunction function) {
+        this.id = id;
         this.full_name = full_name;
         this.party = party;
         this.address = address;
@@ -25,5 +25,6 @@ public class Person {
         this.fax = fax;
         this.email = email;
         this.site = site;
+        this.function = function;
     }
 }

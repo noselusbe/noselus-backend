@@ -3,9 +3,9 @@ package be.noselus.model;
 import org.joda.time.LocalDate;
 
 public class Question {
-    public Person asked_by;
-    public Person asked_to;
-    public Person answered_by;
+    public PersonSmall asked_by;
+    public PersonSmall asked_to;
+    public PersonSmall answered_by;
     public String session;
     public Integer year;
     public String number;
@@ -15,7 +15,7 @@ public class Question {
     public String questionText;
     public String answerText;
 
-    public Question( Person asked_by,  Person asked_to, Person answered_by, String session, Integer year, String number, LocalDate date_asked, LocalDate dateAnswered, String title, String questionText, String answerText) {
+    public Question( PersonSmall asked_by,  PersonSmall asked_to, PersonSmall answered_by, String session, Integer year, String number, LocalDate date_asked, LocalDate dateAnswered, String title, String questionText, String answerText) {
         this.asked_by = asked_by;
         this.asked_to = asked_to;
         this.answered_by = answered_by;
