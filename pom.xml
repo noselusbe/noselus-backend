@@ -48,11 +48,12 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.jdbi</groupId>
-            <artifactId>jdbi</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>net.coobird</groupId>
+			<artifactId>thumbnailator</artifactId>
+		</dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>
@@ -80,7 +81,6 @@
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
 				<version>4.11</version>
-				<scope>test</scope>
 			</dependency>
             <dependency>
                 <groupId>joda-time</groupId>
@@ -102,11 +102,11 @@
 				<artifactId>postgresql</artifactId>
 				<version>9.1-901.jdbc3</version>
 			</dependency>
-            <dependency>
-                <groupId>org.jdbi</groupId>
-                <artifactId>jdbi</artifactId>
-                <version>2.50</version>
-            </dependency>
+			<dependency>
+				<groupId>net.coobird</groupId>
+				<artifactId>thumbnailator</artifactId>
+				<version>[0.4, 0.5)</version>
+			</dependency>
         </dependencies>
     </dependencyManagement>
 
