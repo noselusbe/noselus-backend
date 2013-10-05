@@ -17,14 +17,14 @@ public class Question {
     public LocalDate date_answered;
     public String title;
     public String question_text;
-    public String answer_Text;
+    public String answer_text;
     public String excerpt;
 
     public Question() {
 
     }
 
-    public Question(PersonSmall asked_by, PersonSmall asked_to, PersonSmall answered_by, String session, Integer year, String number, LocalDate date_asked, LocalDate dateAnswered, String title, String question_text, String answer_Text, Integer id) {
+    public Question(PersonSmall asked_by, PersonSmall asked_to, PersonSmall answered_by, String session, Integer year, String number, LocalDate date_asked, LocalDate dateAnswered, String title, String question_text, String answer_text, Integer id) {
         this.asked_by = asked_by;
         this.asked_to = asked_to;
         this.answered_by = answered_by;
@@ -35,7 +35,7 @@ public class Question {
         this.date_answered = dateAnswered;
         this.title = title;
         this.question_text = question_text;
-        this.answer_Text = answer_Text;
+        this.answer_text = answer_text;
         if (question_text.length() < EXCERPT_SIZE) {
             this.excerpt = question_text;
         } else {

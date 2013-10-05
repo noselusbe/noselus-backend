@@ -35,7 +35,7 @@ public class QuestionParserTest {
 		Assert.assertEquals("2011-10-07", qr.date_answered.toString());
 		Assert.assertEquals("FURLAN Paul", qr.answered_by.toString());
 		Assert.assertEquals(2596, qr.question_text.length());
-		Assert.assertEquals(5663, qr.answer_Text.length());
+		Assert.assertEquals(5663, qr.answer_text.length());
 	}
 	
 	@Test
@@ -53,7 +53,7 @@ public class QuestionParserTest {
 		Assert.assertEquals(null, qr.date_answered);
 		Assert.assertEquals(null, qr.answered_by);
 		Assert.assertEquals(2044, qr.question_text.length());
-		Assert.assertEquals(null, qr.answer_Text);
+		Assert.assertEquals(null, qr.answer_text);
 	}
 	
 	@Test
