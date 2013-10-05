@@ -74,9 +74,6 @@ public class PoliticianRepositoryInMemory implements PoliticianRepository {
         } catch (IOException|URISyntaxException e) {
            logger.error("Error reading file", e);
         }
-        final ArrayList<Person> persons = Lists.newArrayList(politicians);
-        persons.addAll(getMinisters());
-        politicians = persons;
     }
 
     private List<? extends Person> getMinisters() {
