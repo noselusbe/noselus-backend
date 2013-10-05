@@ -75,7 +75,15 @@ public class DeputyRepositoryInMemory implements DeputyRepository {
     public List<Person> getFullDeputyByName(final String name) {
         Predicate<Person> hasName = new Predicate<Person>() {
             public boolean apply(Person p) {
-                return p != null && (name.equals(p.full_name) || p.full_name.contains(name));
+                final int endIndex = name.lastIndexOf(" ");
+                final String lastName;
+                if (endIndex == -1){
+                    lastName = name;
+                } else {
+                    lastName = name.substring(0, endIndex);
+                }
+
+                return p != null && (name.equals(p.full_name) || p.full_name.contains(name) || p.full_name.contains(lastName));
             }
         };
 
