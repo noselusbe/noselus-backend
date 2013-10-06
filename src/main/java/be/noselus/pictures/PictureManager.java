@@ -3,7 +3,6 @@ package be.noselus.pictures;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -18,6 +17,7 @@ import com.google.inject.Inject;
 
 public class PictureManager {
 
+
     private Map<Integer, Integer> mapping = null;
 
     PoliticianRepository politicianRepository;
@@ -27,7 +27,7 @@ public class PictureManager {
         this.politicianRepository = politicianRepository;
         Connection db = null;
         try {
-            db = DatabaseHelper.openConnection(false, true);
+            db = DatabaseHelper.getInstance().getConnection(false, true);
 
             PreparedStatement stat = db.prepareStatement("SELECT id, assembly_id FROM person;");
             stat.execute();
@@ -42,13 +42,12 @@ public class PictureManager {
             stat.close();
             db.close();
         } catch (SQLException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            throw new RuntimeException(e);
         }
     }
 
     public InputStream get(int id) {
+
         String path = null;
         String ext = null;
         if (id >= 77 && id <= 150) {
