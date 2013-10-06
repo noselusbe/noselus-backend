@@ -152,7 +152,7 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
     }
 
     @Override
-    public List<Integer> questionAskedBy(final int askedById) {
+    public List<Integer> questionIndexAskedBy(final int askedById) {
         try {
             Connection db = DatabaseHelper.getInstance().getConnection(false, true);
             PreparedStatement questionsStat = db.prepareStatement("SELECT id FROM written_question WHERE asked_by = ?;");
@@ -170,6 +170,7 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
         }
         return Collections.emptyList();
     }
+
     
     private void addEurovocsToQuestion(Question q, Connection db) {
     	try {
@@ -194,4 +195,29 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
     		logger.error("ERROR while loading eurovocs from question "+ q.id.toString(), e );
     	}
     }
+
+
+	@Override
+	public List<Question> questionAskedBy(int askedById) {
+        try {
+            Connection db = DatabaseHelper.getInstance().getConnection(false, true);
+            PreparedStatement questionsStat = db.prepareStatement("SELECT * FROM written_question WHERE asked_by = ?;");
+            questionsStat.setInt(1, askedById);
+
+            questionsStat.execute();
+            List<Question> questionsAskedBy = Lists.newArrayList();
+            
+            QuestionMapper mapper = new QuestionMapper(assemblyRegistry);
+            
+            while (questionsStat.getResultSet().next()){
+                questionsAskedBy.add(mapper.map(questionsStat.getResultSet()));
+            }
+            questionsStat.close();
+            return questionsAskedBy;
+        } catch (SQLException e) {
+            logger.error("Error loading questions asked by " + askedById, e);
+        }
+        return Collections.emptyList();
+	}
+
 }

@@ -16,6 +16,7 @@ public class Person {
     public String site;
     public PersonFunction function;
 	public int assembly_id;
+	public AssemblyEnum assembly;
 	public double latitude;
 	public double longitude;
     public List<Integer> asked_questions;
@@ -37,6 +38,7 @@ public class Person {
         this.site = site;
         this.function = function;
         this.assembly_id = assembly_id;
+        this.assembly = AssemblyEnum.getFromAssemblyId(belongToAssembly.getId());
         this.belong_to_assembly = belongToAssembly;
         this.latitude = latitude;
         this.longitude = longitude;
