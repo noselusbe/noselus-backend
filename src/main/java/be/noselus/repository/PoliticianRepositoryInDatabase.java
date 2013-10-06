@@ -37,9 +37,10 @@ public class PoliticianRepositoryInDatabase implements PoliticianRepository {
         try {
             Connection db = DatabaseHelper.getInstance().getConnection(false, true);
         	PreparedStatement stat = db.prepareStatement("SELECT person.*, assembly.label as assembly_label,"
-        			+ " assembly.level as assembly_level, assembly.id as belong_to_assembly_id FROM person "
-        			+ "JOIN assembly "
-        			+ "ON assembly.id = person.belong_to_assembly;");
+        			+ " assembly.level as assembly_level, assembly.id as belong_to_assembly_id FROM person"
+                    + " JOIN assembly"
+        			+ " ON assembly.id = person.belong_to_assembly"
+                    + " WHERE person.id != 0;");
         	
         	stat.execute();
         	
