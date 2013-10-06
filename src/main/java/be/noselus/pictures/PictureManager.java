@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import net.coobird.thumbnailator.Thumbnails;
+import net.coobird.thumbnailator.geometry.Positions;
 import be.noselus.db.DatabaseHelper;
 import be.noselus.repository.PoliticianRepository;
 
@@ -84,7 +85,8 @@ public class PictureManager {
 
         if (path != null && ext != null) {
             Thumbnails.of(PictureManager.class.getResourceAsStream(path + mapping.get(id) + ext))
-        	.size(width, height)
+            .size(width, height)
+            .crop(Positions.CENTER)
         	.outputFormat("jpg")
         	.toOutputStream(os);
         }
