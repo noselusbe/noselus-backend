@@ -31,7 +31,7 @@ public class GeocodeTest {
 	@Test
 	@Ignore
 	public void runner() throws IOException, SQLException, ClassNotFoundException {
-		Connection db = DatabaseHelper.openConnection(true, false);
+		Connection db = DatabaseHelper.getInstance().getConnection(true, false);
 		
 		PreparedStatement update = db.prepareStatement("UPDATE person SET long = ?, lat = ? WHERE id = ?;");
 		
