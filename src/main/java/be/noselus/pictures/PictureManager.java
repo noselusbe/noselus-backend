@@ -1,12 +1,16 @@
 package be.noselus.pictures;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.TreeMap;
 
+import net.coobird.thumbnailator.Thumbnails;
 import be.noselus.db.DatabaseHelper;
 import be.noselus.repository.PoliticianRepository;
 
@@ -62,6 +66,28 @@ public class PictureManager {
             return PictureManager.class.getResourceAsStream(path + mapping.get(id) + ext);
         } else {
             return null;
+        }
+    }
+    
+    public void get(int id, int width, int height, OutputStream os) throws IOException {
+        String path = null;
+        String ext = null;
+        if (id >= 77 && id <= 150) {
+            path = "/pictures/parlement/";
+            ext = ".jpg";
+        } else if (id >= 151 && id <= 158) {
+            path = "/pictures/minister/";
+            ext = ".jpg";        	
+        } else if (id >= 849 && id <= 998) {
+            path = "/pictures/chamber/";
+            ext = ".gif";
+        }
+
+        if (path != null && ext != null) {
+            Thumbnails.of(PictureManager.class.getResourceAsStream(path + mapping.get(id) + ext))
+        	.size(width, height)
+        	.outputFormat("jpg")
+        	.toOutputStream(os);
         }
     }
 
