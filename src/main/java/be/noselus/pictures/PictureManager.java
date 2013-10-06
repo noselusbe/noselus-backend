@@ -1,10 +1,5 @@
 package be.noselus.pictures;
 
-import be.noselus.db.DatabaseHelper;
-import be.noselus.model.Person;
-import be.noselus.repository.PoliticianRepository;
-import com.google.inject.Inject;
-
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,8 +7,12 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class PictureManager {
+import be.noselus.db.DatabaseHelper;
+import be.noselus.repository.PoliticianRepository;
 
+import com.google.inject.Inject;
+
+public class PictureManager {
 
     private Map<Integer, Integer> mapping = null;
 
@@ -46,9 +45,6 @@ public class PictureManager {
     }
 
     public InputStream get(int id) {
-
-        Person politician = politicianRepository.getPoliticianById(id);
-
         String path = null;
         String ext = null;
         if (id >= 77 && id <= 150) {
