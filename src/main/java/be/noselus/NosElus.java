@@ -149,5 +149,16 @@ public class NosElus {
         	}
         });
         
+        
+        get(new JsonTransformer("/questions/byEurovoc/:id", "questions") {
+			
+			@Override
+			protected Object myHandle(Request request, Response response) {
+				final String id = request.params(":id");
+				return questionRepository.questionAssociatedToEurovoc(Integer.valueOf(id));
+			}
+        	
+        });
+        
     }
 }
