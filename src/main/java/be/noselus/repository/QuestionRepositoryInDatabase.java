@@ -222,4 +222,35 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
         return Collections.emptyList();
 	}
 
+	@Override
+	public List<Question> questionAssociatedToEurovoc(int eurovocId) {
+		try {
+			Connection db = DatabaseHelper.getInstance().getConnection(false, true);
+			PreparedStatement questionsStat = db.prepareStatement(""
+					+ "SELECT * from written_question "
+					+ "JOIN written_question_eurovoc "
+					+ "WHERE written_question_eurovoc.id_eurovoc = ? ");
+			questionsStat.setInt(1, eurovocId);
+			questionsStat.execute();
+			
+			List<Question> questionAssociatedToEurovoc = Lists.newArrayList(); 
+			
+			QuestionMapper mapper = new QuestionMapper(this.assemblyRegistry);
+			
+			while (questionsStat.getResultSet().next()) {
+				Question q = mapper.map(questionsStat.getResultSet());
+				this.addEurovocsToQuestion(q, db);
+				questionAssociatedToEurovoc.add(q);
+			}
+				
+			questionsStat.close();
+			
+			return questionAssociatedToEurovoc;
+			
+		} catch (SQLException e) {
+			logger.error("Error loading questions asked by " + eurovocId, e);
+		}
+		return Collections.emptyList();
+	}
+
 }
