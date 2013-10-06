@@ -34,7 +34,7 @@ public class PoliticianRepositoryInDatabase implements PoliticianRepository {
 
     private void initPoliticians() {
         try {
-            Connection db = DatabaseHelper.getInstance().getConnection(false, true);
+        	Connection db = DatabaseHelper.openConnection(false, true);
         	PreparedStatement stat = db.prepareStatement("SELECT * FROM person;");
         	
         	stat.execute();
@@ -64,7 +64,7 @@ public class PoliticianRepositoryInDatabase implements PoliticianRepository {
         	stat.close();
         	db.close();
 
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
            logger.error("Error loading person from DB", e);
         }
         
