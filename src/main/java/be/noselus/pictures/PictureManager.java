@@ -1,6 +1,7 @@
 package be.noselus.pictures;
 
 import be.noselus.db.DatabaseHelper;
+import be.noselus.model.Person;
 import be.noselus.repository.PoliticianRepository;
 import com.google.inject.Inject;
 
@@ -49,6 +50,9 @@ public class PictureManager {
         if (id >= 77 && id <= 150) {
             path = "/pictures/parlement/";
             ext = ".jpg";
+        } else if (id >= 151 && id <= 158) {
+            path = "/pictures/minister/";
+            ext = ".jpg";        	
         } else if (id >= 849 && id <= 998) {
             path = "/pictures/chamber/";
             ext = ".gif";

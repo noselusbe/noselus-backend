@@ -78,31 +78,32 @@ public class NosElus {
                 return politicianRepository.getPoliticianById(Integer.parseInt(params));
             }
         });
-
+        
         get(new Route("/politicians/picture/:id") {
-            @Override
-            public Object handle(final Request request, final Response response) {
-                try {
-                    final String id = request.params(":id");
+        	@Override
+        	public Object handle(final Request request, final Response response) {
+        		try {
+	        		final String id = request.params(":id");
 //	        		int width = Integer.valueOf((String)request.attribute("w"));
 //	        		int height = Integer.valueOf((String)request.attribute("h"));
-                    byte[] out = null;
-                    InputStream is = pictureManager.get(Integer.valueOf(id));
-
-                    if (is == null) {
-                        response.status(404);
-                        return null;
-                    } else {
-                        out = IOUtils.toByteArray(is);
-                        response.raw().setContentType("image/jpeg;charset=utf-8");
-                        response.raw().getOutputStream().write(out, 0, out.length);
-                        return out;
-                    }
-                } catch (NumberFormatException | IOException e) {
-                    response.status(404);
-                    return null;
-                }
-            }
+	        		byte[] out = null;
+	        		InputStream is = pictureManager.get(Integer.valueOf(id));
+	        		
+	        		if (is == null) {
+	        			response.status(404);
+	        			return null;
+	        		} else {
+		        		out = IOUtils.toByteArray(is);
+		        		response.raw().setContentType("image/jpeg;charset=utf-8");
+		        		response.raw().getOutputStream().write(out, 0, out.length);
+						return out;
+	        		}
+				} catch (NumberFormatException | IOException e) {
+					response.status(404);
+					return null;
+				}
+        	}
         });
+        
     }
 }
