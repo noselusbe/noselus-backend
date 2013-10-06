@@ -46,12 +46,12 @@ public class NosElus {
             }
         });
 
-        post(new JsonTransformer("/questions/:keywords", "questions") {
+        post(new JsonTransformer("/questions", "questions") {
 
             @Override
             protected Object myHandle(final Request request, final Response response) {
-                final String keywords = request.params("keywords");
-                return questionRepository.searchByKeyword(keywords.split("%20"));
+                final String keywords = request.queryParams("q").replace("\"","");
+                return questionRepository.searchByKeyword(keywords.split(" "));
             }
         });
 
