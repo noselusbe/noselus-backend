@@ -39,7 +39,7 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
         
         try {
             Connection db = DatabaseHelper.getInstance().getConnection(false, true);
-            PreparedStatement stat = db.prepareStatement("SELECT * FROM written_question order by id desc LIMIT 50;");
+            PreparedStatement stat = db.prepareStatement("SELECT * FROM written_question LIMIT 50;");
 
             stat.execute();
 
@@ -80,7 +80,7 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
             	
             	
             }
-
+            eurovocs.close();
             stat.close();
             db.close();
 
@@ -102,6 +102,8 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
             stat.getResultSet().next();
 
             result = mapper.map(stat.getResultSet());
+            
+            this.addEurovocsToQuestion(result, db);
 
             stat.close();
             db.close();
@@ -136,6 +138,7 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
 
             while (stat.getResultSet().next()) {
                 final Question question = mapper.map(stat.getResultSet());
+                this.addEurovocsToQuestion(question, db);
                 results.add(question);
             }
 
@@ -166,5 +169,29 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
             logger.error("Error loading questions asked by " + askedById, e);
         }
         return Collections.emptyList();
+    }
+    
+    private void addEurovocsToQuestion(Question q, Connection db) {
+    	try {
+    		PreparedStatement stat = db.prepareStatement("SELECT label, id from eurovoc JOIN written_question_eurovoc "
+    				+ "ON written_question_eurovoc.id_eurovoc = eurovoc.id "
+    				+ "WHERE written_question_eurovoc.id_written_question = ? ");
+    		stat.setInt(1, q.id);
+    		
+    		stat.execute();
+    		
+    		while(stat.getResultSet().next()){
+    			String label  = stat.getResultSet().getString("label");
+    			Integer eurovoc_id = stat.getResultSet().getInt("id");
+    			
+    			Eurovoc eurovoc = new Eurovoc(eurovoc_id, label);
+    			
+    			q.addEurovoc(eurovoc);
+    		}
+    		
+    		stat.close();
+    	} catch (SQLException e) {
+    		logger.error("ERROR while loading eurovocs from question "+ q.id.toString(), e );
+    	}
     }
 }
