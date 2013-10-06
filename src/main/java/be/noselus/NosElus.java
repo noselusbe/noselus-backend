@@ -1,6 +1,18 @@
 package be.noselus;
 
-import be.noselus.model.Person;
+import static spark.Spark.get;
+import static spark.Spark.post;
+import static spark.Spark.setPort;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
+import org.apache.commons.io.IOUtils;
+
+import spark.Request;
+import spark.Response;
+import spark.Route;
 import be.noselus.model.PersonSmall;
 import be.noselus.pictures.PictureManager;
 import be.noselus.repository.PoliticianRepository;
@@ -9,18 +21,6 @@ import be.noselus.service.JsonTransformer;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-
-import org.apache.commons.io.IOUtils;
-
-import spark.Request;
-import spark.Response;
-import spark.Route;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-
-import static spark.Spark.*;
 
 public class NosElus {
 
