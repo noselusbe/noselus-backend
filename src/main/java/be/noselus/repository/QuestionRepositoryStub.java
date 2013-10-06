@@ -70,4 +70,11 @@ public class QuestionRepositoryStub implements QuestionRepository {
     public List<Question> questionAskedBy(final int askedById) {
     	return Lists.newArrayList(question);
     }
+
+	@Override
+	public List<Question> questionAssociatedToEurovoc(int id) {
+		return Lists.newArrayList(question);
+	}
+    
+    
 }

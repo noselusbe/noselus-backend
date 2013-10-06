@@ -1,13 +1,17 @@
 package be.noselus;
 
+import be.noselus.model.Person;
 import be.noselus.model.PersonSmall;
 import be.noselus.pictures.PictureManager;
 import be.noselus.repository.PoliticianRepository;
 import be.noselus.repository.QuestionRepository;
 import be.noselus.service.JsonTransformer;
+
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+
 import org.apache.commons.io.IOUtils;
+
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -16,8 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import static spark.Spark.get;
-import static spark.Spark.setPort;
+import static spark.Spark.*;
 
 public class NosElus {
 
@@ -144,6 +147,17 @@ public class NosElus {
                 }
             }
         });
-
+        
+        
+        get(new JsonTransformer("/questions/byEurovoc/:id", "questions") {
+			
+			@Override
+			protected Object myHandle(Request request, Response response) {
+				final String id = request.params(":id");
+				return questionRepository.questionAssociatedToEurovoc(Integer.valueOf(id));
+			}
+        	
+        });
+        
     }
 }

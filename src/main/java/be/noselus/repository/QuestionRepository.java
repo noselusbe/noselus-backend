@@ -15,4 +15,6 @@ public interface QuestionRepository {
     List<Integer> questionIndexAskedBy(int askedById);
     
     List<Question> questionAskedBy(int askedById);
+    
+    List<Question> questionAssociatedToEurovoc(int id);
 }
