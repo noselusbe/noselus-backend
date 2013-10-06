@@ -105,5 +105,23 @@ public class NosElus {
         	}
         });
         
+        get(new Route("/politicians/picture/:id/*/*") {
+        	@Override
+        	public Object handle(final Request request, final Response response) {
+        		try {
+        			final String id = request.params(":id");
+	        		int width = Integer.valueOf(request.splat()[0]);
+	        		int height = Integer.valueOf(request.splat()[1]);
+        			
+    				response.raw().setContentType("image/jpeg;charset=utf-8");
+    				pictureManager.get(Integer.valueOf(id),width, height, response.raw().getOutputStream());
+    				return null;
+        		} catch (NumberFormatException | IOException e) {
+        			response.status(404);
+        			return null;
+        		}
+        	}
+        });
+        
     }
 }
