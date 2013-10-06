@@ -1,16 +1,14 @@
 package be.noselus.tools;
 
+import be.noselus.db.DatabaseHelper;
+import org.junit.Assert;
+import org.junit.Test;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Map;
-
-import org.apache.commons.lang.StringEscapeUtils;
-import org.junit.Assert;
-import org.junit.Test;
-
-import be.noselus.db.DatabaseHelper;
 
 public class GeocodeTest {
 
@@ -29,7 +27,7 @@ public class GeocodeTest {
 	
 	@Test
 	public void runner() throws IOException, SQLException, ClassNotFoundException {
-		Connection db = DatabaseHelper.openConnection(true, false);
+		Connection db = DatabaseHelper.getInstance().getConnection(true, false);
 		
 		PreparedStatement update = db.prepareStatement("UPDATE person SET long = ?, lat = ? WHERE id = ?;");
 		
