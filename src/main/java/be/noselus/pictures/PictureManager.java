@@ -1,7 +1,6 @@
 package be.noselus.pictures;
 
 import be.noselus.db.DatabaseHelper;
-import be.noselus.model.Person;
 import be.noselus.repository.PoliticianRepository;
 import com.google.inject.Inject;
 
@@ -24,7 +23,7 @@ public class PictureManager {
         this.politicianRepository = politicianRepository;
         Connection db = null;
         try {
-            db = DatabaseHelper.openConnection(false, true);
+            db = DatabaseHelper.getInstance().getConnection(false, true);
 
             PreparedStatement stat = db.prepareStatement("SELECT id, assembly_id FROM person;");
             stat.execute();
@@ -39,15 +38,11 @@ public class PictureManager {
             stat.close();
             db.close();
         } catch (SQLException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            throw new RuntimeException(e);
         }
     }
 
     public InputStream get(int id) {
-
-        Person politician = politicianRepository.getPoliticianById(id);
 
         String path = null;
         String ext = null;

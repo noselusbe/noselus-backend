@@ -32,7 +32,7 @@ public class PersonParserTest {
 	
 	@Before
 	public void init() throws ClassNotFoundException, SQLException {
-		db = DatabaseHelper.openConnection(true, false);
+        db = DatabaseHelper.getInstance().getConnection(true, false);
 	}
 	
 	@After
