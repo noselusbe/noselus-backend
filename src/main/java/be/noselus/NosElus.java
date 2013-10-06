@@ -98,14 +98,6 @@ public class NosElus {
             }
         });
 
-        get(new JsonTransformer("/politicians/:id/askedBy", "questions") {
-            @Override
-            public Object myHandle(final Request request, final Response response) {
-                final String params = request.params(":id");
-                return questionRepository.questionAskedBy(Integer.valueOf(params));
-            }
-        });
-
         get(new Route("/politicians/picture/:id") {
             @Override
             public Object handle(final Request request, final Response response) {
