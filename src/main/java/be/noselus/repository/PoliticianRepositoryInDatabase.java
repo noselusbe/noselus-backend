@@ -4,6 +4,7 @@ import be.noselus.db.DatabaseHelper;
 import be.noselus.model.Person;
 import be.noselus.model.PersonFunction;
 import be.noselus.model.PersonSmall;
+import be.noselus.model.Assembly;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
@@ -35,7 +36,9 @@ public class PoliticianRepositoryInDatabase implements PoliticianRepository {
     private void initPoliticians() {
         try {
             Connection db = DatabaseHelper.getInstance().getConnection(false, true);
-        	PreparedStatement stat = db.prepareStatement("SELECT * FROM person;");
+        	PreparedStatement stat = db.prepareStatement("SELECT person.*, assembly.label as assembly_label,"
+        			+ " assembly.level as assembly_level, assembly.id as assembly_id FROM person JOIN assembly "
+        			+ "ON assembly.id = person.belong_to_assembly;");
         	
         	stat.execute();
         	
@@ -52,12 +55,17 @@ public class PoliticianRepositoryInDatabase implements PoliticianRepository {
         		String fax = stat.getResultSet().getString("fax");
         		String email = stat.getResultSet().getString("email");
         		String site = stat.getResultSet().getString("site");
+        		String assemblyLabel = stat.getResultSet().getString("assembly_label");
+        		String assemblyLevel = stat.getResultSet().getString("assembly_level");
+        		Integer assemblyId = stat.getResultSet().getInt("assembly_id");
         		PersonFunction function = PersonFunction.valueOf(stat.getResultSet().getString("function"));
         		int assembly_id = stat.getResultSet().getInt("assembly_id");
+        		
+        		Assembly assembly = new Assembly(assemblyId, assemblyLabel, Assembly.Level.valueOf(assemblyLevel));
 
                 List<Integer> questions = Collections.emptyList();
 
-        		Person person = new Person(id, full_name, party, address, postal_code, town, phone, fax, email, site, function, assembly_id, questions);
+        		Person person = new Person(id, full_name, party, address, postal_code, town, phone, fax, email, site, function, assembly_id, questions, assembly);
         		politicians.add(person);
         	}
         	

@@ -8,7 +8,8 @@ public class Assembly {
 		REGION,
 		LOCAL,
 		PROVINCE,
-		EUROPE
+		EUROPE,
+		FEDERAL
 	}
 
     private final int id;
