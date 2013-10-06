@@ -21,7 +21,7 @@ public class AssemblyRegistryInDatabase implements AssemblyRegistry {
     public Assembly findId(final int id) {
         if (!assemblies.containsKey(id)){
             try {
-                Connection db = DatabaseHelper.getInstance().getConnection(false, true);
+                Connection db = DatabaseHelper.openConnection(false, true);
                 PreparedStatement stat = db.prepareStatement("SELECT * FROM assembly where id = ?;");
 
                 stat.setInt(1, id);
@@ -38,7 +38,7 @@ public class AssemblyRegistryInDatabase implements AssemblyRegistry {
 
                 assemblies.put(id,result);
 
-            } catch (SQLException e) {
+            } catch (SQLException | ClassNotFoundException e) {
                 logger.error("Error loading assembly from DB", e);
             }
         }

@@ -30,7 +30,7 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
     public List<Question> getQuestions() {
         List<Question> results = Lists.newArrayList();
         try {
-            Connection db = DatabaseHelper.getInstance().getConnection(false, true);
+            Connection db = DatabaseHelper.openConnection(false, true);
             PreparedStatement stat = db.prepareStatement("SELECT * FROM written_question LIMIT 50;");
 
             stat.execute();
@@ -43,7 +43,7 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
             stat.close();
             db.close();
 
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             logger.error("Error loading person from DB", e);
         }
         return results;
@@ -53,7 +53,7 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
     public Question getQuestionById(final int id) {
         Question result = null;
         try {
-            Connection db = DatabaseHelper.getInstance().getConnection(false, true);
+            Connection db = DatabaseHelper.openConnection(false, true);
             PreparedStatement stat = db.prepareStatement("SELECT * FROM written_question WHERE id = ?;");
 
             stat.setInt(1, id);
@@ -65,7 +65,7 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
             stat.close();
             db.close();
 
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             logger.error("Error loading person from DB", e);
         }
 
@@ -76,7 +76,7 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
     public List<Question> searchByKeyword(final String... keywords) {
         List<Question> results = Lists.newArrayList();
         try {
-            Connection db = DatabaseHelper.getInstance().getConnection(false, true);
+            Connection db = DatabaseHelper.openConnection(false, true);
             final StringBuffer sql = new StringBuffer("SELECT * FROM written_question WHERE title LIKE ");
             for (int i = 0; i < keywords.length; i++) {
                 String keyword = keywords[i];
@@ -101,7 +101,7 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
             stat.close();
             db.close();
 
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             logger.error("Error loading person from DB", e);
         }
         return results;
@@ -110,7 +110,7 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
     @Override
     public List<Integer> questionAskedBy(final int askedById) {
         try {
-            Connection db = DatabaseHelper.getInstance().getConnection(false, true);
+            Connection db = DatabaseHelper.openConnection(false, true);
             PreparedStatement questionsStat = db.prepareStatement("SELECT id FROM written_question WHERE asked_by = ?;");
             questionsStat.setInt(1, askedById);
 
@@ -121,7 +121,7 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
             }
             questionsStat.close();
             return questionsAskedBy;
-        } catch (SQLException e) {
+        } catch (SQLException|ClassNotFoundException e) {
             logger.error("Error loading questions asked by " + askedById, e);
         }
         return Collections.emptyList();
