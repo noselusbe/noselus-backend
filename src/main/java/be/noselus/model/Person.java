@@ -19,10 +19,12 @@ public class Person {
 	public double latitude;
 	public double longitude;
     public List<Integer> asked_questions;
+    public Assembly belong_to_assembly;
 
     public Person(Integer id, String full_name, String party, String address, String postal_code, String town, String phone,
-                  String fax, String email, String site, PersonFunction function, int assembly_id, double latitude, double longitude, 
-                  List<Integer> askedQuestionIds) {
+                  String fax, String email, String site, PersonFunction function, int assembly_id, List<Integer> askedQuestionIds,
+                  Assembly belongToAssembly, double latitude, double longitude) {
+
         this.id = id;
         this.full_name = full_name;
         this.party = party;
@@ -35,6 +37,7 @@ public class Person {
         this.site = site;
         this.function = function;
         this.assembly_id = assembly_id;
+        this.belong_to_assembly = belongToAssembly;
         this.latitude = latitude;
         this.longitude = longitude;
         this.asked_questions = askedQuestionIds;
