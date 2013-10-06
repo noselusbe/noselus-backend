@@ -210,7 +210,9 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
             QuestionMapper mapper = new QuestionMapper(assemblyRegistry);
             
             while (questionsStat.getResultSet().next()){
-                questionsAskedBy.add(mapper.map(questionsStat.getResultSet()));
+            	Question q = mapper.map(questionsStat.getResultSet());
+            	this.addEurovocsToQuestion(q, db);
+                questionsAskedBy.add(q);
             }
             questionsStat.close();
             return questionsAskedBy;
