@@ -53,11 +53,13 @@ public class PoliticianRepositoryInDatabase implements PoliticianRepository {
         		String email = stat.getResultSet().getString("email");
         		String site = stat.getResultSet().getString("site");
         		PersonFunction function = PersonFunction.valueOf(stat.getResultSet().getString("function"));
+        		double latitude = stat.getResultSet().getDouble("lat");
+        		double longitude = stat.getResultSet().getDouble("long");
         		int assembly_id = stat.getResultSet().getInt("assembly_id");
 
                 List<Integer> questions = Collections.emptyList();
 
-        		Person person = new Person(id, full_name, party, address, postal_code, town, phone, fax, email, site, function, assembly_id, questions);
+        		Person person = new Person(id, full_name, party, address, postal_code, town, phone, fax, email, site, function, assembly_id, latitude, longitude, questions);
         		politicians.add(person);
         	}
         	

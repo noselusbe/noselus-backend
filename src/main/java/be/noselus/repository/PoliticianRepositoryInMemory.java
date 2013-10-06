@@ -57,7 +57,7 @@ public class PoliticianRepositoryInMemory implements PoliticianRepository {
 
                     final String site = fields[8].trim();
 
-                    Person person = new Person(politicanIdGenerator.getAndIncrement(), fields[0], fields[1], fields[2], fields[3], fields[4], fields[5], fields[6], fields[7], site, PersonFunction.DEPUTY, 0, Arrays.asList(1));
+                    Person person = new Person(politicanIdGenerator.getAndIncrement(), fields[0], fields[1], fields[2], fields[3], fields[4], fields[5], fields[6], fields[7], site, PersonFunction.DEPUTY, 0, 0, 0, Arrays.asList(1));
                     result.add(person);
                     return true;
                 }

@@ -1,28 +1,31 @@
 package be.noselus;
 
-import be.noselus.pictures.PictureManager;
-import be.noselus.repository.AssemblyRegistry;
-import be.noselus.repository.PoliticianRepository;
-import be.noselus.repository.QuestionRepository;
-import be.noselus.service.JsonTransformer;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import org.apache.commons.io.IOUtils;
-import spark.Request;
-import spark.Response;
-import spark.Route;
+import static spark.Spark.get;
+import static spark.Spark.post;
+import static spark.Spark.setPort;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import static spark.Spark.*;
+import org.apache.commons.io.IOUtils;
+
+import spark.Request;
+import spark.Response;
+import spark.Route;
+import be.noselus.pictures.PictureManager;
+import be.noselus.repository.PoliticianRepository;
+import be.noselus.repository.QuestionRepository;
+import be.noselus.service.JsonTransformer;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 public class NosElus {
 
     public static void main(String[] args) throws IOException {
         Injector injector = Guice.createInjector(new NosElusModule());
 
-        final AssemblyRegistry assemblyRegistry = injector.getInstance(AssemblyRegistry.class);
+//        final AssemblyRegistry assemblyRegistry = injector.getInstance(AssemblyRegistry.class);
         final QuestionRepository questionRepository = injector.getInstance(QuestionRepository.class);
         final PoliticianRepository politicianRepository = injector.getInstance(PoliticianRepository.class);
         final PictureManager pictureManager = injector.getInstance(PictureManager.class);
