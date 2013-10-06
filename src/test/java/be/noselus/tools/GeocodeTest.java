@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import be.noselus.db.DatabaseHelper;
@@ -28,6 +29,7 @@ public class GeocodeTest {
 	}
 	
 	@Test
+	@Ignore
 	public void runner() throws IOException, SQLException, ClassNotFoundException {
 		Connection db = DatabaseHelper.openConnection(true, false);
 		
