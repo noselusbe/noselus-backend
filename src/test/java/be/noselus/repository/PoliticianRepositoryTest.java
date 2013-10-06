@@ -39,6 +39,8 @@ public class PoliticianRepositoryTest {
         assertEquals("087 32 22 69", person.fax);
         assertEquals("sec.jpbastin@lecdh.be", person.email);
         assertEquals("", person.site);
+        assertEquals(0.0, person.latitude, 0.1);
+        assertEquals(0.0, person.longitude, 0.1);
     }
 
     @Test
