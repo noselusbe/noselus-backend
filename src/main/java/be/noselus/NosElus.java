@@ -1,18 +1,24 @@
 package be.noselus;
 
+import be.noselus.model.Person;
+import be.noselus.model.PersonSmall;
 import be.noselus.pictures.PictureManager;
 import be.noselus.repository.PoliticianRepository;
 import be.noselus.repository.QuestionRepository;
 import be.noselus.service.JsonTransformer;
+
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+
 import org.apache.commons.io.IOUtils;
+
 import spark.Request;
 import spark.Response;
 import spark.Route;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import static spark.Spark.*;
 
@@ -63,6 +69,20 @@ public class NosElus {
                 return questionRepository.getQuestionById(Integer.parseInt(params));
             }
         });
+        
+        get(new JsonTransformer("/questions/askedBy/:name", "questions") {
+        	@Override
+        	public Object myHandle(final Request request, final Response response) {
+        		final String params = request.params(":name");
+        		List<PersonSmall> list = politicianRepository.getPoliticianByName(params);
+        		if (list.size() > 0) {
+        			return questionRepository.questionAskedBy(list.get(0).id);
+        		} else {
+        			return null;
+        		}
+        		
+        	}
+        });
 
         get(new JsonTransformer("/politicians", "politicians") {
             @Override
@@ -79,13 +99,19 @@ public class NosElus {
             }
         });
         
+        get(new JsonTransformer("/politicians/:id/askedBy", "questions") {
+        	@Override
+        	public Object myHandle(final Request request, final Response response) {
+        		final String params = request.params(":id");
+    			return questionRepository.questionAskedBy(Integer.valueOf(params));
+        	}
+        });
+        
         get(new Route("/politicians/picture/:id") {
         	@Override
         	public Object handle(final Request request, final Response response) {
         		try {
 	        		final String id = request.params(":id");
-//	        		int width = Integer.valueOf((String)request.attribute("w"));
-//	        		int height = Integer.valueOf((String)request.attribute("h"));
 	        		byte[] out = null;
 	        		InputStream is = pictureManager.get(Integer.valueOf(id));
 	        		
