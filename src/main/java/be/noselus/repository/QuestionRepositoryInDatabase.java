@@ -227,6 +227,7 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
 			PreparedStatement questionsStat = db.prepareStatement(""
 					+ "SELECT * from written_question "
 					+ "JOIN written_question_eurovoc "
+					+ "ON written_question_eurovoc.id_written_question = written_question.id "
 					+ "WHERE written_question_eurovoc.id_eurovoc = ? ");
 			questionsStat.setInt(1, eurovocId);
 			questionsStat.execute();
