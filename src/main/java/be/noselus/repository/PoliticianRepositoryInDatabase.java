@@ -37,7 +37,8 @@ public class PoliticianRepositoryInDatabase implements PoliticianRepository {
         try {
             Connection db = DatabaseHelper.getInstance().getConnection(false, true);
         	PreparedStatement stat = db.prepareStatement("SELECT person.*, assembly.label as assembly_label,"
-        			+ " assembly.level as assembly_level, assembly.id as assembly_id FROM person JOIN assembly "
+        			+ " assembly.level as assembly_level, assembly.id as belong_to_assembly_id FROM person "
+        			+ "JOIN assembly "
         			+ "ON assembly.id = person.belong_to_assembly;");
         	
         	stat.execute();
@@ -59,13 +60,18 @@ public class PoliticianRepositoryInDatabase implements PoliticianRepository {
         		String assemblyLevel = stat.getResultSet().getString("assembly_level");
         		Integer assemblyId = stat.getResultSet().getInt("assembly_id");
         		PersonFunction function = PersonFunction.valueOf(stat.getResultSet().getString("function"));
-        		int assembly_id = stat.getResultSet().getInt("assembly_id");
+        		double latitude = stat.getResultSet().getDouble("lat");
+        		double longitude = stat.getResultSet().getDouble("long");
+        		Integer belong_to_assembly_id = stat.getResultSet().getInt("belong_to_assembly");
         		
-        		Assembly assembly = new Assembly(assemblyId, assemblyLabel, Assembly.Level.valueOf(assemblyLevel));
+        		Assembly assembly = new Assembly(belong_to_assembly_id, assemblyLabel, Assembly.Level.valueOf(assemblyLevel));
 
                 List<Integer> questions = Collections.emptyList();
 
-        		Person person = new Person(id, full_name, party, address, postal_code, town, phone, fax, email, site, function, assembly_id, questions, assembly);
+
+        		Person person = new Person(id, full_name, party, address, postal_code, 
+        				town, phone, fax, email, site, function, assemblyId, 
+        				questions, assembly, latitude, longitude);
         		politicians.add(person);
         	}
         	
