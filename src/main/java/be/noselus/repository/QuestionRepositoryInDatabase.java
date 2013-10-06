@@ -37,7 +37,7 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
         
         try {
             Connection db = DatabaseHelper.getInstance().getConnection(false, true);
-            PreparedStatement stat = db.prepareStatement("SELECT * FROM written_question OFFSET random() * (select count(*) from written_question) LIMIT 50;");
+            PreparedStatement stat = db.prepareStatement("SELECT * FROM written_question ORDER BY date_asked DESC LIMIT 50;");
 
             stat.execute();
 
