@@ -1,5 +1,13 @@
 package be.noselus.repository;
 
+import be.noselus.db.DatabaseHelper;
+import be.noselus.model.Eurovoc;
+import be.noselus.model.Question;
+import com.google.common.collect.Lists;
+import com.google.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -7,16 +15,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import be.noselus.db.DatabaseHelper;
-import be.noselus.model.Question;
-import be.noselus.model.Eurovoc;
-
-import com.google.common.collect.Lists;
-import com.google.inject.Inject;
 
 public class QuestionRepositoryInDatabase implements QuestionRepository {
 
@@ -39,7 +37,7 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
         
         try {
             Connection db = DatabaseHelper.getInstance().getConnection(false, true);
-            PreparedStatement stat = db.prepareStatement("SELECT * FROM written_question LIMIT 50;");
+            PreparedStatement stat = db.prepareStatement("SELECT * FROM written_question OFFSET random() * (select count(*) from written_question) LIMIT 50;");
 
             stat.execute();
 
