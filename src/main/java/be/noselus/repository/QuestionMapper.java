@@ -34,11 +34,16 @@ public class QuestionMapper {
         } else {
             date_answered = null;
         }
-        final String title = r.getString("title");
+        final String title = capitalizeFirstLetter(r.getString("title"));
         final String question_text = r.getString("question_text");
         final String answer_text = r.getString("answer_text");
         final int assembly_id = r.getInt("assembly_id");
         final Assembly assembly = assemblyRegistry.findId(assembly_id);
         return new Question(id, asked_by, asked_to, answered_by, session, year, number, date_asked, date_answered, title, question_text, answer_text, assembly);
+    }
+
+    private String capitalizeFirstLetter(String original){
+        final String result = Character.toUpperCase(original.charAt(0)) + original.substring(1);
+        return result;
     }
 }

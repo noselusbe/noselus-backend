@@ -12,5 +12,7 @@ public interface QuestionRepository {
 
     List<Question> searchByKeyword(String... keywords);
 
-    List<Integer> questionAskedBy(int askedById);
+    List<Integer> questionIndexAskedBy(int askedById);
+    
+    List<Question> questionAskedBy(int askedById);
 }
