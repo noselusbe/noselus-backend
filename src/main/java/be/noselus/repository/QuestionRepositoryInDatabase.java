@@ -118,12 +118,12 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
         List<Question> results = Lists.newArrayList();
         try {
             Connection db = DatabaseHelper.getInstance().getConnection(false, true);
-            final StringBuffer sql = new StringBuffer("SELECT * FROM written_question WHERE title LIKE ");
+            final StringBuffer sql = new StringBuffer("SELECT * FROM written_question WHERE lower(title) LIKE ");
             for (int i = 0; i < keywords.length; i++) {
                 String keyword = keywords[i];
-                sql.append("'%");
+                sql.append("lower('%");
                 sql.append(keyword);
-                sql.append("%'");
+                sql.append("%')");
                 if (i < keywords.length - 1){
                     sql.append(" OR title LIKE  ");
                 }
