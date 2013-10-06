@@ -19,8 +19,8 @@ public class ParlementImporter {
 		QuestionParser parser = new QuestionParser(deputyRepository);
 		
 		String url = "http://parlement.wallonie.be/content/print_container.php?print=quest_rep_voir.php&type=all&id_doc=";
-		
-		Connection db = DatabaseHelper.openConnection(true, false); 
+
+        Connection db = DatabaseHelper.getInstance().getConnection(true, false);
 		
 		for (int id = 50061; id < 50400; id++) {
 			try {
