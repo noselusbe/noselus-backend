@@ -1,5 +1,8 @@
 package be.noselus.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.joda.time.LocalDate;
 
 public class Question {
@@ -20,6 +23,7 @@ public class Question {
     public String answer_text;
     public String excerpt;
     public Assembly assembly;
+    public List<Eurovoc> eurovocs = new ArrayList<Eurovoc>();
 
     public Question() {
 
@@ -44,5 +48,13 @@ public class Question {
         this.question_text = questionText;
         this.answer_text = answerText;
         this.assembly = assembly;
+    }
+    
+    public void addEurovoc(List<Eurovoc> list) {
+    	this.eurovocs = list;
+    }
+    
+    public void addEurovoc(Eurovoc eurovoc){
+    	this.eurovocs.add(eurovoc);
     }
 }

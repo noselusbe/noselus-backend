@@ -1,6 +1,7 @@
 package be.noselus.repository;
 
 import be.noselus.db.DatabaseHelper;
+import be.noselus.model.Eurovoc;
 import be.noselus.model.Question;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
@@ -12,6 +13,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class QuestionRepositoryInDatabase implements QuestionRepository {
 
@@ -29,17 +32,53 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
     @Override
     public List<Question> getQuestions() {
         List<Question> results = Lists.newArrayList();
+        Map<Integer, Question> tempQuestionMapper = new TreeMap<>();
+        Map<Integer, Eurovoc> eurovocMappers = new TreeMap<>();
+        
         try {
             Connection db = DatabaseHelper.getInstance().getConnection(false, true);
-            PreparedStatement stat = db.prepareStatement("SELECT * FROM written_question LIMIT 50;");
+            PreparedStatement stat = db.prepareStatement("SELECT * FROM written_question OFFSET random() * (select count(*) from written_question) LIMIT 50;");
 
             stat.execute();
 
             while (stat.getResultSet().next()) {
                 final Question question = mapper.map(stat.getResultSet());
                 results.add(question);
+                tempQuestionMapper.put(question.id, question);
             }
-
+            
+            PreparedStatement eurovocs = db.prepareStatement("SELECT "
+            		+ "written_question_eurovoc.id_written_question as written_question_id, "
+            		+ "eurovoc.label as eurovoc_label, "
+            		+ "eurovoc.id as eurovoc_id "
+            		+ "FROM written_question_eurovoc "
+            		+ "join eurovoc on written_question_eurovoc.id_eurovoc = eurovoc.id"
+            		+ "");
+            
+            eurovocs.execute();
+            
+            while(eurovocs.getResultSet().next()){
+            	Integer written_question_id = eurovocs.getResultSet().getInt("written_question_id");
+            	String written_question_label = eurovocs.getResultSet().getString("eurovoc_label");
+            	Integer eurovoc_id = eurovocs.getResultSet().getInt("eurovoc_id");
+            	
+            	Eurovoc eurovoc;
+            	
+            	if (eurovocMappers.get(eurovoc_id) == null) {
+            		eurovoc = new Eurovoc(eurovoc_id, written_question_label);
+            		eurovocMappers.put(eurovoc.id, eurovoc);
+            	} else {
+            		eurovoc = eurovocMappers.get(eurovoc_id);
+            	}
+            	
+            	if (tempQuestionMapper.get(written_question_id) != null) {
+            		Question q = tempQuestionMapper.get(written_question_id);
+            		q.addEurovoc(eurovoc);
+            	}
+            	
+            	
+            }
+            eurovocs.close();
             stat.close();
             db.close();
 
@@ -61,6 +100,8 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
             stat.getResultSet().next();
 
             result = mapper.map(stat.getResultSet());
+            
+            this.addEurovocsToQuestion(result, db);
 
             stat.close();
             db.close();
@@ -95,6 +136,7 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
 
             while (stat.getResultSet().next()) {
                 final Question question = mapper.map(stat.getResultSet());
+                this.addEurovocsToQuestion(question, db);
                 results.add(question);
             }
 
@@ -127,6 +169,32 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
         return Collections.emptyList();
     }
 
+    
+    private void addEurovocsToQuestion(Question q, Connection db) {
+    	try {
+    		PreparedStatement stat = db.prepareStatement("SELECT label, id from eurovoc JOIN written_question_eurovoc "
+    				+ "ON written_question_eurovoc.id_eurovoc = eurovoc.id "
+    				+ "WHERE written_question_eurovoc.id_written_question = ? ");
+    		stat.setInt(1, q.id);
+    		
+    		stat.execute();
+    		
+    		while(stat.getResultSet().next()){
+    			String label  = stat.getResultSet().getString("label");
+    			Integer eurovoc_id = stat.getResultSet().getInt("id");
+    			
+    			Eurovoc eurovoc = new Eurovoc(eurovoc_id, label);
+    			
+    			q.addEurovoc(eurovoc);
+    		}
+    		
+    		stat.close();
+    	} catch (SQLException e) {
+    		logger.error("ERROR while loading eurovocs from question "+ q.id.toString(), e );
+    	}
+    }
+
+
 	@Override
 	public List<Question> questionAskedBy(int askedById) {
         try {
@@ -140,7 +208,9 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
             QuestionMapper mapper = new QuestionMapper(assemblyRegistry);
             
             while (questionsStat.getResultSet().next()){
-                questionsAskedBy.add(mapper.map(questionsStat.getResultSet()));
+            	Question q = mapper.map(questionsStat.getResultSet());
+            	this.addEurovocsToQuestion(q, db);
+                questionsAskedBy.add(q);
             }
             questionsStat.close();
             return questionsAskedBy;
@@ -149,4 +219,5 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
         }
         return Collections.emptyList();
 	}
+
 }
