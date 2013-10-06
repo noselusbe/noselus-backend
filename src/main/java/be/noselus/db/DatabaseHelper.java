@@ -40,7 +40,6 @@ public class DatabaseHelper {
             config.setMinConnectionsPerPartition(5);
             config.setMaxConnectionsPerPartition(18);
             config.setPartitionCount(1);
-            config.setCloseConnectionWatch(true);
             connectionPool = new BoneCP(config); // setup the connection pool
         } catch (SQLException e) {
             throw new RuntimeException(e);
