@@ -80,10 +80,7 @@ public class DatabaseHelper {
             final String database_url = System.getenv("DATABASE_URL");
 
             if (database_url == null) {
-                url = "jdbc:postgresql://hackathon01.cblue.be:5432/noselus?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory";
-                user = "noselus2";
-                password = "noselus";
-
+                url = "jdbc:postgresql://localhost:5432/";
             } else {
                 URI dbUri = null;
                 try {
