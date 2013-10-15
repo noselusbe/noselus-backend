@@ -14,8 +14,8 @@ import java.util.Map;
 
 public abstract class JsonTransformer extends ResponseTransformerRoute {
 
-    private String rootKey;
-    private Gson gson;
+    private final String rootKey;
+    private final Gson gson;
 
     protected JsonTransformer(String path, String rootKey) {
         super(path, "application/json");
@@ -27,37 +27,30 @@ public abstract class JsonTransformer extends ResponseTransformerRoute {
 
     @Override
     public String render(Object model) {
-        Object actualObject;
-        if (rootKey == null) {
-            actualObject = model;
-        } else {
-            Map<String, Object> objectWithRoot = new HashMap<>();
-            objectWithRoot.put(rootKey, model);
-            actualObject = objectWithRoot;
-        }
-        return gson.toJson(actualObject);
+        Map<String, Object> objectWithRoot = new HashMap<>();
+        objectWithRoot.put(rootKey, model);
+        return gson.toJson(objectWithRoot);
     }
 
-
+    @Override
     public Object handle(Request request, Response response) {
         response.type("application/json");
         response.header("Access-Control-Allow-Origin", "*");
         return myHandle(request, response);
     }
 
-    protected abstract Object myHandle(final Request request, final Response response);
+    protected abstract Object myHandle(Request request, Response response);
 
     public final class LocalDateAdapter implements JsonDeserializer<LocalDate>, JsonSerializer<LocalDate> {
         final org.joda.time.format.DateTimeFormatter DATE_TIME_FORMATTER = ISODateTimeFormat.date();
 
         @Override
-        public LocalDate deserialize(final JsonElement je, final Type type,
-                                     final JsonDeserializationContext jdc) throws JsonParseException {
-            return je.getAsString().length() == 0 ? null : DATE_TIME_FORMATTER.parseLocalDate(je.getAsString());
+        public LocalDate deserialize(JsonElement je, Type type, JsonDeserializationContext jdc) throws JsonParseException {
+            return je.getAsString().isEmpty() ? null : DATE_TIME_FORMATTER.parseLocalDate(je.getAsString());
         }
 
         @Override
-        public JsonElement serialize(final LocalDate localDate, final Type type, final JsonSerializationContext jsonSerializationContext) {
+        public JsonElement serialize(LocalDate localDate, Type type, JsonSerializationContext jsonSerializationContext) {
             return new JsonPrimitive(localDate == null ? StringUtils.EMPTY : DATE_TIME_FORMATTER.print(localDate));
         }
     }
