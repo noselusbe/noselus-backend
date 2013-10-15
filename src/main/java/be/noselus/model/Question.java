@@ -3,9 +3,11 @@ package be.noselus.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.solr.common.SolrInputDocument;
 import org.joda.time.LocalDate;
+import be.noselus.search.HasIndexableDocument;
 
-public class Question {
+public class Question implements HasIndexableDocument {
 
     private static final int EXCERPT_SIZE = 150;
 
@@ -57,4 +59,20 @@ public class Question {
     public void addEurovoc(Eurovoc eurovoc){
     	this.eurovocs.add(eurovoc);
     }
+
+	@Override
+	public SolrInputDocument getIndexableDocument() {
+		SolrInputDocument doc = new SolrInputDocument();
+		
+		doc.addField(HasIndexableDocument.TYPE, 
+				HasIndexableDocument.WRITTEN_QUESTION);
+		
+		doc.addField("title", this.title);
+		doc.addField("question", this.question_text);
+		doc.addField("answer", this.answer_text);
+		doc.addField("date_asked", this.date_asked);
+		doc.addField("date_answered", this.date_answered);
+		
+		return doc;
+	}
 }
