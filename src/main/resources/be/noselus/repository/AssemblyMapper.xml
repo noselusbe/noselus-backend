@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE mapper PUBLIC '-//mybatis.org//DTD Mapper 3.0//EN'
+        'http://mybatis.org/dtd/mybatis-3-mapper.dtd'>
+
+<mapper namespace='be.noselus.repository.AssemblyRegistry'>
+
+    <select id='findId' parameterType='int' resultMap="assemblyResult">
+     SELECT *
+     FROM assembly
+     WHERE id = #{userId}
+    </select>
+
+    <resultMap type='be.noselus.model.Assembly' id='assemblyResult'>
+        <constructor>
+            <idArg column='id' javaType="_int"/>
+            <arg column='label' javaType="String"/>
+            <arg column='level' javaType="be.noselus.model.Assembly$Level" typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
+        </constructor>
+    </resultMap>
+
+</mapper>
