@@ -1,11 +1,17 @@
 package be.noselus.model;
 
+import java.net.URI;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.apache.solr.common.SolrInputDocument;
 import org.joda.time.LocalDate;
+
 import be.noselus.search.HasIndexableDocument;
+import be.noselus.search.SolrHelper;
 
 public class Question implements HasIndexableDocument {
 
@@ -61,18 +67,46 @@ public class Question implements HasIndexableDocument {
     }
 
 	@Override
-	public SolrInputDocument getIndexableDocument() {
-		SolrInputDocument doc = new SolrInputDocument();
-		
-		doc.addField(HasIndexableDocument.TYPE, 
-				HasIndexableDocument.WRITTEN_QUESTION);
-		
-		doc.addField("title", this.title);
-		doc.addField("question", this.question_text);
-		doc.addField("answer", this.answer_text);
-		doc.addField("date_asked", this.date_asked);
-		doc.addField("date_answered", this.date_answered);
+	public Map<SolrHelper.Fields, Object> getIndexableFields() {
+		Map<SolrHelper.Fields, Object> doc = new HashMap<SolrHelper.Fields, Object>();
+		doc.put(SolrHelper.StringFields.TITLE, this.title);
+		doc.put(SolrHelper.StringFields.QUESTION_FR, this.question_text);
+		doc.put(SolrHelper.StringFields.ANSWER_FR, this.answer_text);
+		doc.put(SolrHelper.DateFields.DATE_ASKED, this.date_asked);
+		doc.put(SolrHelper.DateFields.DATE_ANSWERED, this.date_answered);
 		
 		return doc;
+	}
+
+	@Override
+	public URI getURI() {
+		
+		if (this.id == null) {
+			throw new NullPointerException("Id must not be null");
+		}
+		
+		MessageDigest md = null;
+		
+		try {
+			md = MessageDigest.getInstance("MD5");
+			
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		String mdid = this.id.byteValue() + 
+				String.valueOf(this.getType());
+		URI u = URI.create("urn:md5:" + md.digest(mdid.getBytes()));
+		
+		return u;
+		
+		
+		
+	}
+
+	@Override
+	public type getType() {
+		return HasIndexableDocument.type.WRITTEN_QUESTION;
 	}
 }

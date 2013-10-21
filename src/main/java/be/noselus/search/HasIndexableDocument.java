@@ -1,12 +1,18 @@
 package be.noselus.search;
 
-import org.apache.solr.common.SolrInputDocument;
+import java.net.URI;
+import java.util.Map;
+
 
 public interface HasIndexableDocument {
 	
-	public static String TYPE = "type";
-	
+	public enum type {
+		WRITTEN_QUESTION
+	}
+		
 	public static final String WRITTEN_QUESTION = "WRITTEN_QUESTION";
 
-	public SolrInputDocument getIndexableDocument();
+	public Map<SolrHelper.Fields, Object> getIndexableFields();
+	public URI getURI();
+	public type getType();
 }
