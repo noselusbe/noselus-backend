@@ -45,7 +45,7 @@ public class QuestionRepositoryStub implements QuestionRepository {
 
 
     @Override
-    public List<Question> getQuestions() {
+    public List<Question> getQuestions(int offset, int limit) {
 
         return Lists.newArrayList(question);
     }

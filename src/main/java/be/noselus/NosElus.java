@@ -56,7 +56,7 @@ public class NosElus {
                 } else if (askedBy != null) {
                     return questionRepository.questionAskedBy(Integer.valueOf(askedBy));
                 }
-                return questionRepository.getQuestions();
+                return questionRepository.getQuestions(50, 0);
             }
         });
 
