@@ -19,10 +19,10 @@ public class AssemblyRegistryInDatabase implements AssemblyRegistry {
 
     @Override
     public Assembly findId(final int id) {
-        if (!assemblies.containsKey(id)){
+        if (!assemblies.containsKey(id)) {
             try {
                 Connection db = DatabaseHelper.getInstance().getConnection(false, true);
-                PreparedStatement stat = db.prepareStatement("SELECT * FROM assembly where id = ?;");
+                PreparedStatement stat = db.prepareStatement("SELECT * FROM assembly WHERE id = ?;");
 
                 stat.setInt(1, id);
                 stat.execute();
@@ -36,10 +36,10 @@ public class AssemblyRegistryInDatabase implements AssemblyRegistry {
                 stat.close();
                 db.close();
 
-                assemblies.put(id,result);
+                assemblies.put(id, result);
 
             } catch (SQLException e) {
-                logger.error("Error loading assembly from DB", e);
+                throw new RuntimeException(e);
             }
         }
         return assemblies.get(id);
