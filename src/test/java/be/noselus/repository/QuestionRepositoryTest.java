@@ -13,6 +13,7 @@ public class QuestionRepositoryTest {
     @Test
     public void containData(){
         final List<Question> questions = repo.getQuestions(50, 0);
+
         Assert.assertTrue(questions.size() == 50);
     }
 

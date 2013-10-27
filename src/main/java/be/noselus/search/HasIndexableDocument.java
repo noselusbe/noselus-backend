@@ -1,5 +1,6 @@
 package be.noselus.search;
 
+
 import java.net.URI;
 import java.util.Map;
 
@@ -15,4 +16,5 @@ public interface HasIndexableDocument {
 	public Map<SolrHelper.Fields, Object> getIndexableFields();
 	public URI getURI();
 	public type getType();
+
 }

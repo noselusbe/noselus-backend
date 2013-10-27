@@ -6,7 +6,9 @@ import java.util.List;
 
 public interface QuestionRepository {
 
+
     public List<Question> getQuestions(int limit, int offset);
+
     
     Question getQuestionById(int id);
 

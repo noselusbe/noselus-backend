@@ -11,11 +11,21 @@ import java.util.Map;
 import org.joda.time.LocalDate;
 
 import be.noselus.search.HasIndexableDocument;
+
+import be.noselus.search.SolrHelper.Fields;
+public class Question implements HasIndexableDocument {
+
+    private static final int EXCERPT_SIZE = 150;
+
+
+
+import be.noselus.search.HasIndexableDocument;
 import be.noselus.search.SolrHelper;
 
 public class Question implements HasIndexableDocument {
 
     private static final int EXCERPT_SIZE = 150;
+
 
     public Integer id;
     public int asked_by;
@@ -36,6 +46,7 @@ public class Question implements HasIndexableDocument {
     public Question() {
 
     }
+
 
     public Question(Integer id, int asked_by, int asked_to, int answered_by, String session, Integer year, String number, LocalDate date_asked, LocalDate dateAnswered, String title, String questionText, String answerText, Assembly assembly) {
         this.asked_by = asked_by;
@@ -67,7 +78,7 @@ public class Question implements HasIndexableDocument {
     }
 
 	@Override
-	public Map<SolrHelper.Fields, Object> getIndexableFields() {
+	public Map<Fields, Object> getIndexableFields() {
 		Map<SolrHelper.Fields, Object> doc = new HashMap<SolrHelper.Fields, Object>();
 		doc.put(SolrHelper.StringFields.TITLE, this.title);
 		doc.put(SolrHelper.StringFields.QUESTION_FR, this.question_text);
@@ -108,5 +119,6 @@ public class Question implements HasIndexableDocument {
 	@Override
 	public type getType() {
 		return HasIndexableDocument.type.WRITTEN_QUESTION;
+
 	}
 }

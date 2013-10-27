@@ -12,10 +12,12 @@ import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.core.CoreContainer;
 import org.joda.time.LocalDate;
 
+
 public class SolrHelper {
 	
 	private static SolrServer solrServer;
 	
+
 	public interface Fields{}
 	
 	public enum DateFields implements Fields {
@@ -28,15 +30,18 @@ public class SolrHelper {
 	
 	public static final String DATE_FORMAT = "yyyy-mm-dd";
 	
+
 	public static SolrServer getSolrServer() {
 		if (solrServer == null) {
 			String solrUrl = System.getenv("SOLR_URL");
 			
 			if (solrUrl == null){
+
 				/*System.setProperty("solr.solr.home", "/home/shalinsmangar/work/oss/branch-1.3/example/solr");
 				CoreContainer.Initializer initializer = new CoreContainer.Initializer();
 				CoreContainer coreContainer = initializer.initialize();
 				solrServer = new EmbeddedSolrServer(coreContainer, "");*/
+
 			} else {
 				solrServer = new HttpSolrServer(solrUrl);
 			}
@@ -68,6 +73,7 @@ public class SolrHelper {
 		
 		try {
 			SolrHelper.getSolrServer().add(indexableDoc);
+
 		} catch (SolrServerException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -86,5 +92,6 @@ public class SolrHelper {
 //	public static void add(SolrInputDocument doc) {
 //		SolrHelper.add(doc, false);
 //	}
+
 
 }

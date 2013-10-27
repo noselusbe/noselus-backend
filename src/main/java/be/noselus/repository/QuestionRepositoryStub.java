@@ -65,6 +65,7 @@ public class QuestionRepositoryStub implements QuestionRepository {
     public List<Integer> questionIndexAskedBy(final int askedById) {
         return Arrays.asList(1);
     }
+
     
     @Override
     public List<Question> questionAskedBy(final int askedById) {

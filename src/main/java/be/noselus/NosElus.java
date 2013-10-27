@@ -98,6 +98,7 @@ public class NosElus {
             }
         });
 
+
         get(new Route("/politicians/picture/:id") {
             @Override
             public Object handle(final Request request, final Response response) {
@@ -121,6 +122,7 @@ public class NosElus {
                 }
             }
         });
+
 
         get(new Route("/politicians/picture/:id/*/*") {
             @Override

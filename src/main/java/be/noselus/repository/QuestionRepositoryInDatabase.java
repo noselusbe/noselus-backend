@@ -31,6 +31,7 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
 
     @Override
     public List<Question> getQuestions(int limit, int offset) {
+
         List<Question> results = Lists.newArrayList();
         Map<Integer, Question> tempQuestionMapper = new TreeMap<>();
         Map<Integer, Eurovoc> eurovocMappers = new TreeMap<>();
@@ -40,6 +41,7 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
             PreparedStatement stat = db.prepareStatement("SELECT * FROM written_question "
             		+ "ORDER BY date_asked DESC "
             		+ "OFFSET "+ String.valueOf(offset) +" LIMIT " + String.valueOf(limit) + ";");
+
 
             stat.execute();
 
