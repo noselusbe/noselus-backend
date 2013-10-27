@@ -6,8 +6,10 @@ import java.util.Map;
 
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.common.SolrInputDocument;
+import org.apache.solr.core.CoreContainer;
 import org.joda.time.LocalDate;
 
 public class SolrHelper {
@@ -31,7 +33,10 @@ public class SolrHelper {
 			String solrUrl = System.getenv("SOLR_URL");
 			
 			if (solrUrl == null){
-				// TODO add maven dependency solrServer = new EmbeddedSolrServer();
+				/*System.setProperty("solr.solr.home", "/home/shalinsmangar/work/oss/branch-1.3/example/solr");
+				CoreContainer.Initializer initializer = new CoreContainer.Initializer();
+				CoreContainer coreContainer = initializer.initialize();
+				solrServer = new EmbeddedSolrServer(coreContainer, "");*/
 			} else {
 				solrServer = new HttpSolrServer(solrUrl);
 			}
