@@ -13,10 +13,6 @@ import org.joda.time.LocalDate;
 import be.noselus.search.HasIndexableDocument;
 
 import be.noselus.search.SolrHelper.Fields;
-public class Question implements HasIndexableDocument {
-
-    private static final int EXCERPT_SIZE = 150;
-
 
 
 import be.noselus.search.HasIndexableDocument;
