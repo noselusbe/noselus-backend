@@ -37,7 +37,7 @@ public class QuestionParser {
 
         Question model = new Question();
 
-        model.id = id;
+        model.assembly_ref = id + "";
         model.assembly = walloonParliament;
         Document doc = Jsoup.parse(new URL(url + id).openStream(), "iso-8859-1", url + id);
         List<String> fields;

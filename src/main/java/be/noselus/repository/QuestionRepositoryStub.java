@@ -75,6 +75,10 @@ public class QuestionRepositoryStub implements QuestionRepository {
 	public List<Question> questionAssociatedToEurovoc(int id) {
 		return Lists.newArrayList(question);
 	}
-    
-    
+
+    @Override
+    public void insertOrUpdateQuestion(final Question question) {
+        //mop
+    }
+
 }

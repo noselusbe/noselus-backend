@@ -17,4 +17,6 @@ public interface QuestionRepository {
     List<Question> questionAskedBy(int askedById);
     
     List<Question> questionAssociatedToEurovoc(int id);
+
+    void insertOrUpdateQuestion(Question question);
 }

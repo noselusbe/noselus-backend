@@ -23,6 +23,7 @@ public class Question {
     public String answer_text;
     public String excerpt;
     public Assembly assembly;
+    public String assembly_ref;
     public List<Eurovoc> eurovocs = new ArrayList<Eurovoc>();
 
     public Question() {
