@@ -262,6 +262,7 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
             } else {
                 insertQuestion(db, question);
             }
+            db.commit();
             db.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
