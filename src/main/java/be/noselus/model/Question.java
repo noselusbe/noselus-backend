@@ -76,11 +76,24 @@ public class Question implements HasIndexableDocument {
 	@Override
 	public Map<Fields, Object> getIndexableFields() {
 		Map<SolrHelper.Fields, Object> doc = new HashMap<SolrHelper.Fields, Object>();
-		doc.put(SolrHelper.StringFields.TITLE, this.title);
-		doc.put(SolrHelper.StringFields.QUESTION_FR, this.question_text);
-		doc.put(SolrHelper.StringFields.ANSWER_FR, this.answer_text);
-		doc.put(SolrHelper.DateFields.DATE_ASKED, this.date_asked);
-		doc.put(SolrHelper.DateFields.DATE_ANSWERED, this.date_answered);
+		if (this.title != null ) {
+			doc.put(SolrHelper.StringFields.TITLE_FR, this.title);
+		}
+		if (this.question_text != null) {
+			doc.put(SolrHelper.StringFields.QUESTION_FR, this.question_text);
+		}
+		if (this.answer_text != null) {
+			doc.put(SolrHelper.StringFields.ANSWER_FR, this.answer_text);
+		}
+		if (this.date_asked != null) {
+			doc.put(SolrHelper.DateFields.DATE_ASKED, this.date_asked);
+		}
+		if (this.date_answered != null) {
+			doc.put(SolrHelper.DateFields.DATE_ANSWERED, this.date_answered);
+		}
+		if (this.assembly != null) {
+			doc.put(SolrHelper.StringFields.ASSEMBLY, this.assembly.getLabel());
+		}
 		
 		return doc;
 	}

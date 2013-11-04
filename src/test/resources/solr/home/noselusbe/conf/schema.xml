@@ -111,16 +111,24 @@
 
 <!--  NOSELUSBE  -->
 
-   <field name="type" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="type" type="string" indexed="true" stored="true" multiValued="false"/>
  
-   <field name="question" type="text_fr" indexed="true" stored="false" required="true" />
+   <field name="question_fr" type="text_fr" indexed="true" stored="false" required="false" />
 
-   <field name="answer" type="text_fr" indexed="true" stored="false" required="true" />
+   <field name="answer_fr" type="text_fr" indexed="true" stored="false" required="false" />
+   
+   <field name="title_fr" type="text_fr" indexed="true" stored="false" required="false" />
+   
+   <field name="date_asked" type="tdate" indexed="true" stored="false" required="false" />
+   <field name="date_answered" type="tdate" indexed="true" stored="false" required="false" />
+   
+   <field name="assembly" type="string" indexed="true" stored="false" required="true" />
 
    <field name="_version_" type="long" indexed="true" stored="true" multiValued="false" />
 
 
    <field name="text" type="text_fr" indexed="true" stored="false" multiValued="true" />
+   <field name="date" type="tdate" indexed="true" stored="false" multiValued="true" />
 
    <!-- points to the root document of a block of nested documents 
    <field name="_root_" type="string" indexed="true" stored="false"/>
@@ -254,9 +262,17 @@
       Unless this field is marked with required="false", it will be a required field
    -->
  <uniqueKey>id</uniqueKey>
-
-  <copyField source="question" dest="text" />
-  <copyField source="answer" dest="text" />
+<!--    NOSELUS . BE -->
+  <!--  create unique field for question and answer search -->
+  <copyField source="question_fr" dest="text" />
+  <copyField source="answer_fr" dest="text" />
+  <copyField source="title_fr" dest="text" />
+  
+  <!-- create unique field for research on date -->
+  <copyField source="date_asked" dest="date" />
+  <copyField source="date_answered" dest="date" />
+  
+  
 
  <!-- DEPRECATED: The defaultSearchField is consulted by various query parsers when
   parsing a query string that isn't explicit about the field.  Machine (non-user)

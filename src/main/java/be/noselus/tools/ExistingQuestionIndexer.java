@@ -32,7 +32,8 @@ public class ExistingQuestionIndexer {
 			
 			Iterator<Question> i = questions.iterator();
 			while (i.hasNext()) {
-				SolrHelper.add(i.next(), false);
+				Question q = i.next();
+				SolrHelper.add(q, false);
 			}
 			
 			if (questions.size() == 50) {

@@ -25,10 +25,10 @@ public class SolrHelper {
 	}
 	
 	public enum StringFields implements Fields {
-		TITLE, QUESTION_FR, ANSWER_FR
+		TITLE_FR, QUESTION_FR, ANSWER_FR, ASSEMBLY
 	}
 	
-	public static final String DATE_FORMAT = "yyyy-mm-dd";
+	public static final String DATE_FORMAT = "yyyy-MM-dd'T00:00:00Z'";
 	
 
 	public static SolrServer getSolrServer() {
@@ -56,35 +56,44 @@ public class SolrHelper {
 		
 		SolrInputDocument indexableDoc = new SolrInputDocument();
 		
-		for (Map.Entry<Fields, Object> entry : doc.getIndexableFields().entrySet()) {
-			if (entry.getKey() instanceof DateFields) {
-				LocalDate date = (LocalDate) entry.getValue();
-				indexableDoc.addField(String.valueOf(entry.getKey()), 
-						date.toString(DATE_FORMAT));
-				
-			} else if (entry.getKey() instanceof StringFields) {
-				String field = (String) entry.getValue();
-				indexableDoc.addField(String.valueOf(entry.getKey()), 
-						field);
-				
+		if (!doc.getIndexableFields().isEmpty()) {
+			
+			indexableDoc.addField("id", doc.getURI().toASCIIString());
+			indexableDoc.addField("type", doc.getType());
+			
+			for (Map.Entry<Fields, Object> entry : doc.getIndexableFields().entrySet()) {
+				if (entry.getKey() instanceof DateFields) {
+					LocalDate date = (LocalDate) entry.getValue();
+					indexableDoc.addField(String.valueOf(entry.getKey()).toLowerCase(), 
+							date.toString(DATE_FORMAT));
+					
+				} else if (entry.getKey() instanceof StringFields) {
+					String field = (String) entry.getValue();
+					indexableDoc.addField(String.valueOf(entry.getKey()).toLowerCase(), 
+							field);
+					
+				}
 			}
-		}
-		
-		
-		try {
-			SolrHelper.getSolrServer().add(indexableDoc);
-
-		} catch (SolrServerException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		if (commitNow == true) {
+			
+			
+			
+			
 			try {
-				SolrHelper.getSolrServer().commit();
+				SolrHelper.getSolrServer().add(indexableDoc);
+		
 			} catch (SolrServerException | IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			}
+			
+			
+			if (commitNow == true) {
+				try {
+					SolrHelper.getSolrServer().commit();
+				} catch (SolrServerException | IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 	}
