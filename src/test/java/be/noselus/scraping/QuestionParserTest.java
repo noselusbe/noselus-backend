@@ -28,7 +28,7 @@ public class QuestionParserTest {
     public void openData() throws IOException {
         Question qr = parser.parse(36256);
 
-        Assert.assertEquals(36256, qr.id.intValue());
+        Assert.assertEquals("36256", qr.assembly_ref);
         Assert.assertEquals("l'\"Open Data - Open Government\"", qr.title);
         Assert.assertEquals("2010-2011", qr.session);
         Assert.assertEquals(2011, qr.year.intValue());
@@ -47,7 +47,7 @@ public class QuestionParserTest {
     public void eolien() throws IOException {
         Question qr = parser.parse(50370);
 
-        Assert.assertEquals(50370, qr.id.intValue());
+        Assert.assertEquals("50370", qr.assembly_ref);
         Assert.assertEquals("le coût élevé de l'éolien", qr.title);
         Assert.assertEquals("2013-2014", qr.session);
         Assert.assertEquals(2013, qr.year.intValue());
@@ -65,7 +65,7 @@ public class QuestionParserTest {
     public void andreAntoine() throws IOException {
         Question qr = parser.parse(50054);
 
-        Assert.assertEquals(50054, qr.id.intValue());
+        Assert.assertEquals("50054", qr.assembly_ref);
         Assert.assertEquals("la baisse de l'emploi dans les P.M.E.", qr.title);
         Assert.assertEquals("2012-2013", qr.session);
         Assert.assertEquals(2013, qr.year.intValue());

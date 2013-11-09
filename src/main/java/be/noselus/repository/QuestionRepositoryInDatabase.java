@@ -125,7 +125,7 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
                 sql.append(keyword);
                 sql.append("%')");
                 if (i < keywords.length - 1){
-                    sql.append(" OR title LIKE  ");
+                    sql.append(" OR lower(title) LIKE  ");
                 }
 
             }
