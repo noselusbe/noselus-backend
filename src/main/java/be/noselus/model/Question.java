@@ -11,10 +11,7 @@ import java.util.Map;
 import org.joda.time.LocalDate;
 
 import be.noselus.search.HasIndexableDocument;
-
 import be.noselus.search.SolrHelper.Fields;
-
-
 import be.noselus.search.HasIndexableDocument;
 import be.noselus.search.SolrHelper;
 
@@ -105,19 +102,36 @@ public class Question implements HasIndexableDocument {
 			throw new NullPointerException("Id must not be null");
 		}
 		
-		MessageDigest md = null;
-		
-		try {
-			md = MessageDigest.getInstance("MD5");
-			
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (this.assembly == null) {
+			throw new NullPointerException("Assembly is null. Please avoid this!");
 		}
 		
-		String mdid = this.id.byteValue() + 
-				String.valueOf(this.getType());
-		URI u = URI.create("urn:md5:" + md.digest(mdid.getBytes()));
+		String uriString = "urn:x-noselusbe:";
+		
+		//until now, we just have documents from parliement, waloon region and 
+		// parliement. Improve this when rewriting assembly class.
+		switch (this.assembly.getLevel()) {
+		case DEPUTY_CHAMBER:
+		case FEDERAL:
+			uriString = uriString + "federal.belgium:chamber.parliement";
+			break;
+		case REGION:
+			uriString = uriString + "region.wallonia:parliement";
+			break;
+		default:
+			try {
+				throw new Exception(String.valueOf(this.assembly.getLevel()) + " not supported yet");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		
+		uriString = uriString + 
+				":written_question:" + this.id;
+		
+		
+		URI u = URI.create(uriString);
 		
 		return u;
 		

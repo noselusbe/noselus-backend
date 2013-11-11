@@ -33,6 +33,7 @@ public class ExistingQuestionIndexer {
 			Iterator<Question> i = questions.iterator();
 			while (i.hasNext()) {
 				Question q = i.next();
+				System.out.print("Indexing " + q.id.toString() + " - " + q.title + " \n");
 				SolrHelper.add(q, false);
 			}
 			
