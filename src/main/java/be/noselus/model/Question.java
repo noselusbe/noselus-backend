@@ -113,7 +113,7 @@ public class Question implements HasIndexableDocument {
 		switch (this.assembly.getLevel()) {
 		case DEPUTY_CHAMBER:
 		case FEDERAL:
-			uriString = uriString + "federal.belgium:chamber.parliement";
+			uriString = uriString + "federal.belgium.chamber:parliement";
 			break;
 		case REGION:
 			uriString = uriString + "region.wallonia:parliement";
