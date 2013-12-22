@@ -14,6 +14,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ public class QuestionParser {
     private final PoliticianRepository politicianRepository;
     private final Assembly walloonParliament;
 
+    @Inject
     public QuestionParser(final PoliticianRepository politicianRepository, final AssemblyRegistry assemblyRegistry) {
         this.politicianRepository = politicianRepository;
         walloonParliament = assemblyRegistry.findId(1);
