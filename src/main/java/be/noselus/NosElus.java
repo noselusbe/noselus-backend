@@ -36,6 +36,7 @@ public class NosElus {
         if (port != null) {
             setPort(Integer.parseInt(port));
         }
+        staticFileLocation("/public");
 
         get(new Route("/hello") {
             @Override

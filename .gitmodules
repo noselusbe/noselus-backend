@@ -1,0 +1,3 @@
+[submodule "yo"]
+	path = yo
+	url = https://github.com/noselusbe/noselus-frontend.git
