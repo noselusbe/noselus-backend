@@ -1,17 +1,14 @@
 package be.noselus;
 
-import be.noselus.model.Person;
+import be.noselus.db.DatabaseUpdater;
 import be.noselus.model.PersonSmall;
 import be.noselus.pictures.PictureManager;
 import be.noselus.repository.PoliticianRepository;
 import be.noselus.repository.QuestionRepository;
 import be.noselus.service.JsonTransformer;
-
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-
 import org.apache.commons.io.IOUtils;
-
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -31,6 +28,9 @@ public class NosElus {
         final QuestionRepository questionRepository = injector.getInstance(QuestionRepository.class);
         final PoliticianRepository politicianRepository = injector.getInstance(PoliticianRepository.class);
         final PictureManager pictureManager = injector.getInstance(PictureManager.class);
+
+        final DatabaseUpdater databaseUpdater = injector.getInstance(DatabaseUpdater.class);
+        databaseUpdater.update();
 
         final String port = System.getenv("PORT");
         if (port != null) {
@@ -140,17 +140,17 @@ public class NosElus {
                 }
             }
         });
-        
-        
+
+
         get(new JsonTransformer("/questions/byEurovoc/:id", "questions") {
-			
-			@Override
-			protected Object myHandle(Request request, Response response) {
-				final String id = request.params(":id");
-				return questionRepository.questionAssociatedToEurovoc(Integer.valueOf(id));
-			}
-        	
+
+            @Override
+            protected Object myHandle(Request request, Response response) {
+                final String id = request.params(":id");
+                return questionRepository.questionAssociatedToEurovoc(Integer.valueOf(id));
+            }
+
         });
-        
+
     }
 }

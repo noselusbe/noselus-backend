@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+    <changeSet author="nhurion" id="initial">
+        <createTable tableName="assembly">
+            <column name="id" autoIncrement="true" type="int"/>
+            <column name="label" type="varchar(200)"/>
+            <column name="level" type="varchar(30)"/>
+        </createTable>
+        <createTable tableName="eurovoc">
+            <column name="id" autoIncrement="true" type="int"/>
+            <column name="label" type="text"/>
+        </createTable>
+        <createTable tableName="person">
+            <column name="id" autoIncrement="true" type="int"/>
+            <column name="full_name" type="varchar(255)"/>
+            <column name="party" type="char(20)"/>
+            <column name="address" type="varchar(255)"/>
+            <column name="postal_code" type="char(20)"/>
+            <column name="town" type="varchar(200)"/>
+            <column name="phone" type="char(255)"/>
+            <column name="fax" type="varchar(255)"/>
+            <column name="email" type="varchar(255)"/>
+            <column name="site" type="varchar(255)"/>
+            <column name="function" type="varchar(200)"/>
+            <column name="assembly_id" type="int"/>
+            <column name="long" type="float(19)"/>
+            <column name="lat" type="float(19)"/>
+            <column name="belong_to_assembly" type="int"/>
+        </createTable>
+        <createTable tableName="written_question">
+            <column name="id" autoIncrement="true" type="bigint"/>
+            <column name="session" type="varchar(40)"/>
+            <column name="year" type="int"/>
+            <column name="number" type="varchar(100)"/>
+            <column name="date_asked" type="date"/>
+            <column name="date_answer" type="date"/>
+            <column name="title" type="varchar(600)"/>
+            <column name="question_text" type="text"/>
+            <column name="answer_text" type="text"/>
+            <column name="asked_by" type="bigint"/>
+            <column name="asked_to" type="bigint"/>
+            <column name="assembly_ref" type="varchar(200)"/>
+            <column name="assembly_id" type="int"/>
+            <column name="answered_by" type="bigint"/>
+        </createTable>
+        <createTable tableName="written_question_eurovoc">
+            <column name="id_written_question" type="int"/>
+            <column name="id_eurovoc" type="int"/>
+        </createTable>
+
+        <addPrimaryKey columnNames="id" constraintName="assembly_pkey" tableName="assembly"/>
+
+        <addPrimaryKey columnNames="id" constraintName="eurovoc_primary" tableName="eurovoc"/>
+
+        <addPrimaryKey columnNames="id" constraintName="id" tableName="written_question"/>
+
+        <addPrimaryKey columnNames="id" constraintName="primary_key" tableName="person"/>
+
+        <addForeignKeyConstraint baseColumnNames="id_eurovoc" baseTableName="written_question_eurovoc"
+                                 constraintName="id_eurovoc_external" deferrable="false" initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
+                                 referencedTableName="eurovoc"/>
+
+        <addForeignKeyConstraint baseColumnNames="id_written_question" baseTableName="written_question_eurovoc"
+                                 constraintName="id_written_question_external" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="written_question"/>
+
+        <addForeignKeyConstraint baseColumnNames="belong_to_assembly" baseTableName="person"
+                                 constraintName="person_belong_to_assembly_constraint" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="assembly"/>
+
+        <addForeignKeyConstraint baseColumnNames="answered_by" baseTableName="written_question"
+                                 constraintName="written_question_answered_by_person_constraint" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="person"/>
+
+        <addForeignKeyConstraint baseColumnNames="asked_by" baseTableName="written_question"
+                                 constraintName="written_question_asked_by_person" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="person"/>
+
+        <addForeignKeyConstraint baseColumnNames="asked_to" baseTableName="written_question"
+                                 constraintName="written_question_asked_to_person" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="person"/>
+
+        <addForeignKeyConstraint baseColumnNames="assembly_id" baseTableName="written_question"
+                                 constraintName="written_question_assembly_id_assembly_constraint" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="assembly"/>
+
+        <createIndex indexName="asked_by_asked_to_index" tableName="written_question" unique="false">
+            <column name="asked_by"/>
+            <column name="asked_to"/>
+        </createIndex>
+
+        <createIndex indexName="asked_by_index" tableName="written_question" unique="false">
+            <column name="asked_by"/>
+        </createIndex>
+
+        <createIndex indexName="asked_to_index" tableName="written_question" unique="false">
+            <column name="asked_to"/>
+        </createIndex>
+
+        <createIndex indexName="fki_person_belong_to_assembly_constraint" tableName="person" unique="false">
+            <column name="belong_to_assembly"/>
+        </createIndex>
+
+        <createIndex indexName="index_label" tableName="eurovoc" unique="false">
+            <column name="label"/>
+        </createIndex>
+
+        <createIndex indexName="index_written_question_eurovoc" tableName="written_question_eurovoc" unique="false">
+            <column name="id_written_question"/>
+            <column name="id_eurovoc"/>
+        </createIndex>
+        <loadData tableName="assembly" file="db/assembly.csv">
+            <column name="id" type="NUMERIC"/>
+            <column name="label" type="STRING"/>
+            <column name="level" type="STRING"/>
+        </loadData>
+        <loadData tableName="person" file="db/person.csv">
+            <column name="id" type="NUMERIC"/>
+            <column name="full_name" type="STRING"/>
+            <column name="party" type="STRING"/>
+            <column name="address" type="STRING"/>
+            <column name="postal_code" type="STRING"/>
+            <column name="town" type="STRING"/>
+            <column name="phone" type="STRING"/>
+            <column name="fax" type="STRING"/>
+            <column name="email" type="STRING"/>
+            <column name="site" type="STRING"/>
+            <column name="function" type="STRING"/>
+            <column name="assembly_id" type="NUMERIC"/>
+            <column name="long" type="NUMERIC"/>
+            <column name="lat" type="NUMERIC"/>
+            <column name="belong_to_assembly" type="NUMERIC"/>
+        </loadData>
+    </changeSet>
+</databaseChangeLog>
