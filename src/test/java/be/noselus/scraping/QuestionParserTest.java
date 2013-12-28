@@ -50,10 +50,10 @@ public class QuestionParserTest {
 		Assert.assertEquals("2013-10-04", qr.date_asked.toString());
 		Assert.assertEquals(63, qr.asked_by);
 		Assert.assertEquals(75, qr.asked_to);
-		Assert.assertEquals(null, qr.date_answered);
-		Assert.assertEquals(0, qr.answered_by);
+		Assert.assertEquals("2013-10-25", qr.date_answered.toString());
+		Assert.assertEquals(75, qr.answered_by);
 		Assert.assertEquals(2044, qr.question_text.length());
-		Assert.assertEquals(null, qr.answer_text);
+		Assert.assertNotNull( qr.answer_text);
 	}
 	
 	@Test
