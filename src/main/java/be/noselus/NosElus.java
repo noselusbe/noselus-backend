@@ -38,13 +38,6 @@ public class NosElus {
         }
         staticFileLocation("/public");
 
-        get(new Route("/hello") {
-            @Override
-            public Object handle(Request request, Response response) {
-                return "<html><head></head><body>Hello World!</body></html>";
-            }
-        });
-
         get(new JsonTransformer("/questions", "questions") {
 
             @Override
