@@ -1,3 +1,5 @@
+Build status: [![Build Status](http://jenkins.hurion.eu/buildStatus/icon?job=nos elus - backend)](http://jenkins.hurion.eu/job/nos%20elus%20-%20backend/)
+
 Bulding
 =======
 
