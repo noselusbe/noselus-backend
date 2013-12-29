@@ -2,25 +2,23 @@ package be.noselus.db;
 
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.inject.Singleton;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+@Singleton
 public class DatabaseHelper {
 
-    private static DatabaseHelper instance;
-
-    public static DatabaseHelper getInstance() {
-        if (instance == null) {
-            instance = new DatabaseHelper();
-            instance.setUp();
-        }
-        return instance;
-    }
-
+    private static final Logger logger = LoggerFactory.getLogger(DatabaseHelper.class);
     private BoneCP connectionPool;
+
+    public DatabaseHelper() {
+        setUp();
+    }
 
     public void setUp() {
         DbConfig dbConfig = new DbConfig().invoke();
@@ -78,30 +76,25 @@ public class DatabaseHelper {
 
         public DbConfig invoke() {
             final String database_url = System.getenv("DATABASE_URL");
-            
 
             if (database_url == null) {
                 url = "jdbc:postgresql://localhost:5432/";
             } else {
-	        	user = System.getenv("DATABASE_USER");
-	        	password = System.getenv("DATABASE_PASSWORD");
-	        	url = database_url;
-	        	
-	        	if (user == null && password == null) {
-	        		URI dbUri = null;
-	                try {
-	                    dbUri = new URI(database_url);
-	                    user = dbUri.getUserInfo().split(":")[0];
-		                password = dbUri.getUserInfo().split(":")[1];
-		                url = "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath();
-	                } catch (URISyntaxException e) {
-	                    e.printStackTrace(); //To change body of catch statement use File | Settings | File Templates.
-	                } catch (Exception e) {
-	                	e.printStackTrace();
-	                }
-	                
-	        	} 
-	        	
+                user = System.getenv("DATABASE_USER");
+                password = System.getenv("DATABASE_PASSWORD");
+                url = database_url;
+
+                if (user == null && password == null) {
+                    URI dbUri = null;
+                    try {
+                        dbUri = new URI(database_url);
+                        user = dbUri.getUserInfo().split(":")[0];
+                        password = dbUri.getUserInfo().split(":")[1];
+                        url = "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath();
+                    } catch (Exception e) {
+                        logger.error("error connecting to database", e);
+                    }
+                }
             }
             return this;
         }

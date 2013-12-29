@@ -1,5 +1,6 @@
 package be.noselus.scraping;
 
+import be.noselus.db.DatabaseHelper;
 import be.noselus.model.Question;
 import be.noselus.repository.AssemblyRegistry;
 import be.noselus.repository.AssemblyRegistryInDatabase;
@@ -21,7 +22,7 @@ import java.util.List;
 public class QuestionParserTest {
 
     PoliticianRepository politicianRepository = new PoliticianRepositoryInMemory();
-    AssemblyRegistry assemblyRegistry = new AssemblyRegistryInDatabase();
+    AssemblyRegistry assemblyRegistry = new AssemblyRegistryInDatabase(new DatabaseHelper());
     QuestionParser parser = new QuestionParser(politicianRepository, assemblyRegistry);
 
     @Test

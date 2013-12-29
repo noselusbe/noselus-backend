@@ -1,8 +1,9 @@
 package be.noselus.repository;
 
-import static org.junit.Assert.assertEquals;
+import be.noselus.NosElusModule;
 import be.noselus.model.Person;
-
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -10,21 +11,25 @@ import org.junit.Test;
 
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+
 
 public class PoliticianRepositoryInDatabaseTest {
 
-	List<Person> store;
-	
-	@Before
-	public void init() {
-		store = new PoliticianRepositoryInDatabase().getPoliticians();
-	}
-	
-	@Test
-	public void size() {
-		Assert.assertTrue(store.size() > 0);
-	}
-	
+    List<Person> store;
+
+    @Before
+    public void init() {
+        Injector injector = Guice.createInjector(new NosElusModule());
+        PoliticianRepository repo = injector.getInstance(PoliticianRepositoryInDatabase.class);
+        store = repo.getPoliticians();
+    }
+
+    @Test
+    public void size() {
+        Assert.assertTrue(store.size() > 0);
+    }
+
     @Test
     @Ignore("TODO with ORDER")
     public void data() {

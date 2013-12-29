@@ -8,6 +8,7 @@ import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -16,17 +17,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class QuestionRepositoryInDatabase implements QuestionRepository {
+@Singleton
+public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase implements QuestionRepository {
 
     private static final Logger logger = LoggerFactory.getLogger(QuestionRepositoryInDatabase.class);
     private final AssemblyRegistry assemblyRegistry;
-
-    private QuestionMapper mapper;
+    private final QuestionMapper mapper;
 
     @Inject
-    public QuestionRepositoryInDatabase(final AssemblyRegistry assemblyRegistry) {
+    public QuestionRepositoryInDatabase(final AssemblyRegistry assemblyRegistry, final DatabaseHelper dbHelper) {
+        super(dbHelper);
         this.assemblyRegistry = assemblyRegistry;
-        mapper = new QuestionMapper(this.assemblyRegistry);
+        this.mapper = new QuestionMapper(this.assemblyRegistry);
     }
 
     @Override
@@ -36,7 +38,7 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
         Map<Integer, Eurovoc> eurovocMappers = new TreeMap<>();
 
         try {
-            Connection db = DatabaseHelper.getInstance().getConnection(false, true);
+            Connection db = dbHelper.getConnection(false, true);
             PreparedStatement stat = db.prepareStatement("SELECT * FROM written_question ORDER BY date_asked DESC LIMIT 50;");
 
             stat.execute();
@@ -48,33 +50,33 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
             }
 
             PreparedStatement eurovocs = db.prepareStatement("SELECT "
-            		+ "written_question_eurovoc.id_written_question as written_question_id, "
-            		+ "eurovoc.label as eurovoc_label, "
-            		+ "eurovoc.id as eurovoc_id "
-            		+ "FROM written_question_eurovoc "
-            		+ "join eurovoc on written_question_eurovoc.id_eurovoc = eurovoc.id"
-            		+ "");
+                    + "written_question_eurovoc.id_written_question AS written_question_id, "
+                    + "eurovoc.label AS eurovoc_label, "
+                    + "eurovoc.id AS eurovoc_id "
+                    + "FROM written_question_eurovoc "
+                    + "JOIN eurovoc ON written_question_eurovoc.id_eurovoc = eurovoc.id"
+                    + "");
 
             eurovocs.execute();
 
-            while(eurovocs.getResultSet().next()){
-            	Integer written_question_id = eurovocs.getResultSet().getInt("written_question_id");
-            	String written_question_label = eurovocs.getResultSet().getString("eurovoc_label");
-            	Integer eurovoc_id = eurovocs.getResultSet().getInt("eurovoc_id");
+            while (eurovocs.getResultSet().next()) {
+                Integer written_question_id = eurovocs.getResultSet().getInt("written_question_id");
+                String written_question_label = eurovocs.getResultSet().getString("eurovoc_label");
+                Integer eurovoc_id = eurovocs.getResultSet().getInt("eurovoc_id");
 
-            	Eurovoc eurovoc;
+                Eurovoc eurovoc;
 
-            	if (eurovocMappers.get(eurovoc_id) == null) {
-            		eurovoc = new Eurovoc(eurovoc_id, written_question_label);
-            		eurovocMappers.put(eurovoc.id, eurovoc);
-            	} else {
-            		eurovoc = eurovocMappers.get(eurovoc_id);
-            	}
+                if (eurovocMappers.get(eurovoc_id) == null) {
+                    eurovoc = new Eurovoc(eurovoc_id, written_question_label);
+                    eurovocMappers.put(eurovoc.id, eurovoc);
+                } else {
+                    eurovoc = eurovocMappers.get(eurovoc_id);
+                }
 
-            	if (tempQuestionMapper.get(written_question_id) != null) {
-            		Question q = tempQuestionMapper.get(written_question_id);
-            		q.addEurovoc(eurovoc);
-            	}
+                if (tempQuestionMapper.get(written_question_id) != null) {
+                    Question q = tempQuestionMapper.get(written_question_id);
+                    q.addEurovoc(eurovoc);
+                }
 
 
             }
@@ -91,9 +93,9 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
     @Override
     public Question getQuestionById(final int id) {
         Question result = null;
-        try {
-            Connection db = DatabaseHelper.getInstance().getConnection(false, true);
-            PreparedStatement stat = db.prepareStatement("SELECT * FROM written_question WHERE id = ?;");
+        try (Connection db = dbHelper.getConnection(false, true);
+             PreparedStatement stat = db.prepareStatement("SELECT * FROM written_question WHERE id = ?;");) {
+
 
             stat.setInt(1, id);
             stat.execute();
@@ -102,9 +104,6 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
             result = mapper.map(stat.getResultSet());
 
             this.addEurovocsToQuestion(result, db);
-
-            stat.close();
-            db.close();
 
         } catch (SQLException e) {
             logger.error("Error loading person from DB", e);
@@ -116,21 +115,21 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
     @Override
     public List<Question> searchByKeyword(final String... keywords) {
         List<Question> results = Lists.newArrayList();
-        try {
-            Connection db = DatabaseHelper.getInstance().getConnection(false, true);
-            final StringBuffer sql = new StringBuffer("SELECT * FROM written_question WHERE lower(title) LIKE ");
-            for (int i = 0; i < keywords.length; i++) {
-                String keyword = keywords[i];
-                sql.append("lower('%");
-                sql.append(keyword);
-                sql.append("%')");
-                if (i < keywords.length - 1){
-                    sql.append(" OR lower(title) LIKE  ");
-                }
-
+        final StringBuffer sql = new StringBuffer("SELECT * FROM written_question WHERE lower(title) LIKE ");
+        for (int i = 0; i < keywords.length; i++) {
+            String keyword = keywords[i];
+            sql.append("lower('%");
+            sql.append(keyword);
+            sql.append("%')");
+            if (i < keywords.length - 1) {
+                sql.append(" OR lower(title) LIKE  ");
             }
-            sql.append(";");
-            PreparedStatement stat = db.prepareStatement(sql.toString());
+
+        }
+        sql.append(";");
+        try (Connection db = dbHelper.getConnection(false, true);
+             PreparedStatement stat = db.prepareStatement(sql.toString());) {
+
 
             stat.execute();
 
@@ -140,9 +139,6 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
                 results.add(question);
             }
 
-            stat.close();
-            db.close();
-
         } catch (SQLException e) {
             logger.error("Error loading person from DB", e);
         }
@@ -151,17 +147,16 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
 
     @Override
     public List<Integer> questionIndexAskedBy(final int askedById) {
-        try {
-            Connection db = DatabaseHelper.getInstance().getConnection(false, true);
-            PreparedStatement questionsStat = db.prepareStatement("SELECT id FROM written_question WHERE asked_by = ?;");
+        try (Connection db = dbHelper.getConnection(false, true);
+             PreparedStatement questionsStat = db.prepareStatement("SELECT id FROM written_question WHERE asked_by = ?;");) {
+
             questionsStat.setInt(1, askedById);
 
             questionsStat.execute();
             List<Integer> questionsAskedBy = Lists.newArrayList();
-            while (questionsStat.getResultSet().next()){
+            while (questionsStat.getResultSet().next()) {
                 questionsAskedBy.add(questionsStat.getResultSet().getInt("id"));
             }
-            questionsStat.close();
             return questionsAskedBy;
         } catch (SQLException e) {
             logger.error("Error loading questions asked by " + askedById, e);
@@ -171,35 +166,33 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
 
 
     private void addEurovocsToQuestion(Question q, Connection db) {
-    	try {
-    		PreparedStatement stat = db.prepareStatement("SELECT label, id from eurovoc JOIN written_question_eurovoc "
-    				+ "ON written_question_eurovoc.id_eurovoc = eurovoc.id "
-    				+ "WHERE written_question_eurovoc.id_written_question = ? ");
-    		stat.setInt(1, q.id);
+        try (PreparedStatement stat = db.prepareStatement("SELECT label, id FROM eurovoc JOIN written_question_eurovoc "
+                + "ON written_question_eurovoc.id_eurovoc = eurovoc.id "
+                + "WHERE written_question_eurovoc.id_written_question = ? ");) {
 
-    		stat.execute();
+            stat.setInt(1, q.id);
 
-    		while(stat.getResultSet().next()){
-    			String label  = stat.getResultSet().getString("label");
-    			Integer eurovoc_id = stat.getResultSet().getInt("id");
+            stat.execute();
 
-    			Eurovoc eurovoc = new Eurovoc(eurovoc_id, label);
+            while (stat.getResultSet().next()) {
+                String label = stat.getResultSet().getString("label");
+                Integer eurovoc_id = stat.getResultSet().getInt("id");
 
-    			q.addEurovoc(eurovoc);
-    		}
+                Eurovoc eurovoc = new Eurovoc(eurovoc_id, label);
 
-    		stat.close();
-    	} catch (SQLException e) {
-    		logger.error("ERROR while loading eurovocs from question "+ q.id.toString(), e );
-    	}
+                q.addEurovoc(eurovoc);
+            }
+        } catch (SQLException e) {
+            logger.error("ERROR while loading eurovocs from question " + q.id.toString(), e);
+        }
     }
 
 
-	@Override
-	public List<Question> questionAskedBy(int askedById) {
-        try {
-            Connection db = DatabaseHelper.getInstance().getConnection(false, true);
-            PreparedStatement questionsStat = db.prepareStatement("SELECT * FROM written_question WHERE asked_by = ?;");
+    @Override
+    public List<Question> questionAskedBy(int askedById) {
+        try (Connection db = dbHelper.getConnection(false, true);
+             PreparedStatement questionsStat = db.prepareStatement("SELECT * FROM written_question WHERE asked_by = ?;");) {
+
             questionsStat.setInt(1, askedById);
 
             questionsStat.execute();
@@ -207,56 +200,54 @@ public class QuestionRepositoryInDatabase implements QuestionRepository {
 
             QuestionMapper mapper = new QuestionMapper(assemblyRegistry);
 
-            while (questionsStat.getResultSet().next()){
-            	Question q = mapper.map(questionsStat.getResultSet());
-            	this.addEurovocsToQuestion(q, db);
+            while (questionsStat.getResultSet().next()) {
+                Question q = mapper.map(questionsStat.getResultSet());
+                this.addEurovocsToQuestion(q, db);
                 questionsAskedBy.add(q);
             }
-            questionsStat.close();
             return questionsAskedBy;
         } catch (SQLException e) {
             logger.error("Error loading questions asked by " + askedById, e);
         }
         return Collections.emptyList();
-	}
+    }
 
-	@Override
-	public List<Question> questionAssociatedToEurovoc(int eurovocId) {
-		try {
-			Connection db = DatabaseHelper.getInstance().getConnection(false, true);
-			PreparedStatement questionsStat = db.prepareStatement(""
-					+ "SELECT * from written_question "
-					+ "JOIN written_question_eurovoc "
-					+ "ON written_question_eurovoc.id_written_question = written_question.id "
-					+ "WHERE written_question_eurovoc.id_eurovoc = ? ");
-			questionsStat.setInt(1, eurovocId);
-			questionsStat.execute();
+    @Override
+    public List<Question> questionAssociatedToEurovoc(int eurovocId) {
+        try (Connection db = dbHelper.getConnection(false, true);
+             PreparedStatement questionsStat = db.prepareStatement(""
+                     + "SELECT * FROM written_question "
+                     + "JOIN written_question_eurovoc "
+                     + "ON written_question_eurovoc.id_written_question = written_question.id "
+                     + "WHERE written_question_eurovoc.id_eurovoc = ? ");) {
 
-			List<Question> questionAssociatedToEurovoc = Lists.newArrayList();
+            questionsStat.setInt(1, eurovocId);
+            questionsStat.execute();
 
-			QuestionMapper mapper = new QuestionMapper(this.assemblyRegistry);
+            List<Question> questionAssociatedToEurovoc = Lists.newArrayList();
 
-			while (questionsStat.getResultSet().next()) {
-				Question q = mapper.map(questionsStat.getResultSet());
-				this.addEurovocsToQuestion(q, db);
-				questionAssociatedToEurovoc.add(q);
-			}
+            QuestionMapper mapper = new QuestionMapper(this.assemblyRegistry);
 
-			questionsStat.close();
+            while (questionsStat.getResultSet().next()) {
+                Question q = mapper.map(questionsStat.getResultSet());
+                this.addEurovocsToQuestion(q, db);
+                questionAssociatedToEurovoc.add(q);
+            }
 
-			return questionAssociatedToEurovoc;
+            questionsStat.close();
 
-		} catch (SQLException e) {
-			logger.error("Error loading questions asked by " + eurovocId, e);
-		}
-		return Collections.emptyList();
-	}
+            return questionAssociatedToEurovoc;
+
+        } catch (SQLException e) {
+            logger.error("Error loading questions asked by " + eurovocId, e);
+        }
+        return Collections.emptyList();
+    }
 
     @Override
     public void insertOrUpdateQuestion(final Question question) {
-        Connection db = null;
-        try {
-            db = DatabaseHelper.getInstance().getConnection(false, true);
+        try (Connection db = dbHelper.getConnection(false, true);) {
+
             if (questionIsPresent(db, question)) {
                 updateQuestion(db, question);
             } else {

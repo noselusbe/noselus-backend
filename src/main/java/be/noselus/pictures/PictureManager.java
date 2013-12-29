@@ -1,5 +1,11 @@
 package be.noselus.pictures;
 
+import be.noselus.db.DatabaseHelper;
+import be.noselus.repository.PoliticianRepository;
+import com.google.inject.Inject;
+import net.coobird.thumbnailator.Thumbnails;
+import net.coobird.thumbnailator.geometry.Positions;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -9,39 +15,24 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.TreeMap;
 
-import net.coobird.thumbnailator.Thumbnails;
-import net.coobird.thumbnailator.geometry.Positions;
-import be.noselus.db.DatabaseHelper;
-import be.noselus.repository.PoliticianRepository;
-
-import com.google.inject.Inject;
-
 public class PictureManager {
-
 
     private Map<Integer, Integer> mapping = null;
 
-    PoliticianRepository politicianRepository;
-
     @Inject
-    public PictureManager(final PoliticianRepository politicianRepository) {
-        this.politicianRepository = politicianRepository;
-        Connection db = null;
-        try {
-            db = DatabaseHelper.getInstance().getConnection(false, true);
+    public PictureManager(final PoliticianRepository politicianRepository, final DatabaseHelper dbHelper) {
+        try (Connection db = dbHelper.getConnection(false, true);
+             PreparedStatement stat = db.prepareStatement("SELECT id, assembly_id FROM person;");) {
 
-            PreparedStatement stat = db.prepareStatement("SELECT id, assembly_id FROM person;");
             stat.execute();
 
-            mapping = new TreeMap<Integer, Integer>();
+            mapping = new TreeMap<>();
             while (stat.getResultSet().next()) {
                 int id = stat.getResultSet().getInt("id");
                 int assembly_id = stat.getResultSet().getInt("assembly_id");
                 mapping.put(id, assembly_id);
             }
 
-            stat.close();
-            db.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -56,7 +47,7 @@ public class PictureManager {
             ext = ".jpg";
         } else if (id >= 151 && id <= 158) {
             path = "/pictures/minister/";
-            ext = ".jpg";        	
+            ext = ".jpg";
         } else if (id >= 849 && id <= 998) {
             path = "/pictures/chamber/";
             ext = ".gif";
@@ -68,7 +59,7 @@ public class PictureManager {
             return null;
         }
     }
-    
+
     public void get(int id, int width, int height, OutputStream os) throws IOException {
         String path = null;
         String ext = null;
@@ -77,7 +68,7 @@ public class PictureManager {
             ext = ".jpg";
         } else if (id >= 151 && id <= 158) {
             path = "/pictures/minister/";
-            ext = ".jpg";        	
+            ext = ".jpg";
         } else if (id >= 849 && id <= 998) {
             path = "/pictures/chamber/";
             ext = ".gif";
@@ -85,10 +76,10 @@ public class PictureManager {
 
         if (path != null && ext != null) {
             Thumbnails.of(PictureManager.class.getResourceAsStream(path + mapping.get(id) + ext))
-            .size(width, height)
-            .crop(Positions.CENTER)
-        	.outputFormat("jpg")
-        	.toOutputStream(os);
+                    .size(width, height)
+                    .crop(Positions.CENTER)
+                    .outputFormat("jpg")
+                    .toOutputStream(os);
         }
     }
 

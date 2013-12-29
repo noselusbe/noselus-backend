@@ -5,24 +5,31 @@ import be.noselus.model.Assembly;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class AssemblyRegistryInDatabase implements AssemblyRegistry {
+@Singleton
+public class AssemblyRegistryInDatabase extends AbstractRepositoryInDatabase implements AssemblyRegistry {
 
     private static final Logger logger = LoggerFactory.getLogger(AssemblyRegistryInDatabase.class);
 
     private Map<Integer, Assembly> assemblies = new ConcurrentHashMap<>();
 
+    @Inject
+    public AssemblyRegistryInDatabase(final DatabaseHelper dbHelper) {
+        super(dbHelper);
+    }
+
     @Override
     public Assembly findId(final int id) {
         if (!assemblies.containsKey(id)) {
-            try {
-                Connection db = DatabaseHelper.getInstance().getConnection(false, true);
-                PreparedStatement stat = db.prepareStatement("SELECT * FROM assembly WHERE id = ?;");
+            try (Connection db = dbHelper.getConnection(false, true);
+                 PreparedStatement stat = db.prepareStatement("SELECT * FROM assembly WHERE id = ?;");) {
 
                 stat.setInt(1, id);
                 stat.execute();
@@ -32,9 +39,6 @@ public class AssemblyRegistryInDatabase implements AssemblyRegistry {
                 final String level = stat.getResultSet().getString("level");
 
                 Assembly result = new Assembly(foundId, label, Assembly.Level.valueOf(level));
-
-                stat.close();
-                db.close();
 
                 assemblies.put(id, result);
 
