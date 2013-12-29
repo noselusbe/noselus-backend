@@ -37,9 +37,15 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
         Map<Integer, Question> tempQuestionMapper = new TreeMap<>();
         Map<Integer, Eurovoc> eurovocMappers = new TreeMap<>();
 
-        try {
-            Connection db = dbHelper.getConnection(false, true);
-            PreparedStatement stat = db.prepareStatement("SELECT * FROM written_question ORDER BY date_asked DESC LIMIT 50;");
+        try (Connection db = dbHelper.getConnection(false, true);
+             PreparedStatement stat = db.prepareStatement("SELECT * FROM written_question ORDER BY date_asked DESC LIMIT 50;");
+             PreparedStatement eurovocs = db.prepareStatement("SELECT "
+                     + "written_question_eurovoc.id_written_question AS written_question_id, "
+                     + "eurovoc.label AS eurovoc_label, "
+                     + "eurovoc.id AS eurovoc_id "
+                     + "FROM written_question_eurovoc "
+                     + "JOIN eurovoc ON written_question_eurovoc.id_eurovoc = eurovoc.id"
+                     + "");){
 
             stat.execute();
 
@@ -49,13 +55,7 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
                 tempQuestionMapper.put(question.id, question);
             }
 
-            PreparedStatement eurovocs = db.prepareStatement("SELECT "
-                    + "written_question_eurovoc.id_written_question AS written_question_id, "
-                    + "eurovoc.label AS eurovoc_label, "
-                    + "eurovoc.id AS eurovoc_id "
-                    + "FROM written_question_eurovoc "
-                    + "JOIN eurovoc ON written_question_eurovoc.id_eurovoc = eurovoc.id"
-                    + "");
+
 
             eurovocs.execute();
 
@@ -80,9 +80,6 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
 
 
             }
-            eurovocs.close();
-            stat.close();
-            db.close();
 
         } catch (SQLException e) {
             logger.error("Error loading person from DB", e);
@@ -267,27 +264,28 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
         String sql =
                 "INSERT INTO written_question (session, year, number, date_asked, date_answer, title, question_text, answer_text, asked_by, asked_to, assembly_ref, assembly_id) "
                         + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        PreparedStatement stat = db.prepareStatement(sql);
-        int idx = 1;
-        stat.setString(idx++, question.session);
-        stat.setInt(idx++, question.year);
-        stat.setString(idx++, question.number);
-        stat.setDate(idx++, new java.sql.Date(question.date_asked.toDate().getTime()));
-        if (question.date_answered != null) {
-            stat.setDate(idx++, new java.sql.Date(question.date_answered.toDate().getTime()));
-        } else {
-            stat.setNull(idx++, java.sql.Types.DATE);
-        }
-        stat.setString(idx++, question.title);
-        stat.setString(idx++, question.question_text);
-        stat.setString(idx++, question.answer_text);
-        stat.setInt(idx++, question.asked_by);
-        stat.setInt(idx++, question.asked_to);
-        stat.setString(idx++, question.assembly_ref);
-        stat.setInt(idx++, question.assembly.getId());
 
-        stat.execute();
-        stat.close();
+        try (PreparedStatement stat = db.prepareStatement(sql);) {
+            int idx = 1;
+            stat.setString(idx++, question.session);
+            stat.setInt(idx++, question.year);
+            stat.setString(idx++, question.number);
+            stat.setDate(idx++, new java.sql.Date(question.date_asked.toDate().getTime()));
+            if (question.date_answered != null) {
+                stat.setDate(idx++, new java.sql.Date(question.date_answered.toDate().getTime()));
+            } else {
+                stat.setNull(idx++, java.sql.Types.DATE);
+            }
+            stat.setString(idx++, question.title);
+            stat.setString(idx++, question.question_text);
+            stat.setString(idx++, question.answer_text);
+            stat.setInt(idx++, question.asked_by);
+            stat.setInt(idx++, question.asked_to);
+            stat.setString(idx++, question.assembly_ref);
+            stat.setInt(idx++, question.assembly.getId());
+
+            stat.execute();
+        }
     }
 
     private void updateQuestion(final Connection db, final Question question) throws SQLException {
@@ -296,41 +294,41 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
         String sql =
                 "UPDATE written_question SET session = ?,  year = ? , number = ?, date_asked = ?, date_answer = ?, title = ?, question_text = ?, answer_text = ?, asked_by = ?, asked_to = ? "
                         + "WHERE assembly_ref = ? AND assembly_id = ?";
-        PreparedStatement stat = db.prepareStatement(sql);
-        int idx = 1;
-        stat.setString(idx++, question.session);
-        stat.setInt(idx++, question.year);
-        stat.setString(idx++, question.number);
-        stat.setDate(idx++, new java.sql.Date(question.date_asked.toDate().getTime()));
-        if (question.date_answered != null) {
-            stat.setDate(idx++, new java.sql.Date(question.date_answered.toDate().getTime()));
-        } else {
-            stat.setNull(idx++, java.sql.Types.DATE);
-        }
-        stat.setString(idx++, question.title);
-        stat.setString(idx++, question.question_text);
-        stat.setString(idx++, question.answer_text);
-        stat.setInt(idx++, question.asked_by);
-        stat.setInt(idx++, question.asked_to);
-        stat.setString(idx++, question.assembly_ref);
-        stat.setInt(idx++, question.assembly.getId());
+        try (PreparedStatement stat = db.prepareStatement(sql);) {
+            int idx = 1;
+            stat.setString(idx++, question.session);
+            stat.setInt(idx++, question.year);
+            stat.setString(idx++, question.number);
+            stat.setDate(idx++, new java.sql.Date(question.date_asked.toDate().getTime()));
+            if (question.date_answered != null) {
+                stat.setDate(idx++, new java.sql.Date(question.date_answered.toDate().getTime()));
+            } else {
+                stat.setNull(idx++, java.sql.Types.DATE);
+            }
+            stat.setString(idx++, question.title);
+            stat.setString(idx++, question.question_text);
+            stat.setString(idx++, question.answer_text);
+            stat.setInt(idx++, question.asked_by);
+            stat.setInt(idx++, question.asked_to);
+            stat.setString(idx++, question.assembly_ref);
+            stat.setInt(idx++, question.assembly.getId());
 
-        stat.execute();
-        stat.close();
+            stat.execute();
+        }
     }
 
     private boolean questionIsPresent(final Connection db, final Question question) throws SQLException {
         logger.debug("Checking if question is present " + question.assembly.getLabel() + " " + question.assembly_ref);
         String sql = "SELECT id FROM written_question WHERE assembly_ref = ? AND assembly_id = ?";
-        PreparedStatement stat = db.prepareStatement(sql);
-        int idx = 1;
-        stat.setString(idx++, question.assembly_ref);
-        stat.setInt(idx++, question.assembly.getId());
-        stat.execute();
+        try (PreparedStatement stat = db.prepareStatement(sql);) {
+            int idx = 1;
+            stat.setString(idx++, question.assembly_ref);
+            stat.setInt(idx++, question.assembly.getId());
+            stat.execute();
 
-        final boolean next = stat.getResultSet().next();
-        stat.close();
-        return next;
+            final boolean next = stat.getResultSet().next();
+            return next;
+        }
     }
 
 }
