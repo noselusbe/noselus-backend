@@ -12,6 +12,9 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Response transformer route that is in charge of converting object response into Json response.
+ */
 public abstract class JsonTransformer extends ResponseTransformerRoute {
 
     private final String rootKey;
@@ -41,6 +44,9 @@ public abstract class JsonTransformer extends ResponseTransformerRoute {
 
     protected abstract Object myHandle(Request request, Response response);
 
+    /**
+     * Adapter to handle the serialization/deserialization of JodaTime LocalDate to Json.
+     */
     public final class LocalDateAdapter implements JsonDeserializer<LocalDate>, JsonSerializer<LocalDate> {
         final org.joda.time.format.DateTimeFormatter DATE_TIME_FORMATTER = ISODateTimeFormat.date();
 
