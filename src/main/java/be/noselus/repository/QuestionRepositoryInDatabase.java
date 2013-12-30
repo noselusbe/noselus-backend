@@ -55,32 +55,27 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
                 tempQuestionMapper.put(question.id, question);
             }
 
-
-
             eurovocs.execute();
 
             while (eurovocs.getResultSet().next()) {
-                Integer written_question_id = eurovocs.getResultSet().getInt("written_question_id");
-                String written_question_label = eurovocs.getResultSet().getString("eurovoc_label");
-                Integer eurovoc_id = eurovocs.getResultSet().getInt("eurovoc_id");
+                Integer writtenQuestionId = eurovocs.getResultSet().getInt("written_question_id");
+                String writtenQuestionLabel = eurovocs.getResultSet().getString("eurovoc_label");
+                Integer eurovocId = eurovocs.getResultSet().getInt("eurovoc_id");
 
                 Eurovoc eurovoc;
 
-                if (eurovocMappers.get(eurovoc_id) == null) {
-                    eurovoc = new Eurovoc(eurovoc_id, written_question_label);
+                if (eurovocMappers.get(eurovocId) == null) {
+                    eurovoc = new Eurovoc(eurovocId, writtenQuestionLabel);
                     eurovocMappers.put(eurovoc.id, eurovoc);
                 } else {
-                    eurovoc = eurovocMappers.get(eurovoc_id);
+                    eurovoc = eurovocMappers.get(eurovocId);
                 }
 
-                if (tempQuestionMapper.get(written_question_id) != null) {
-                    Question q = tempQuestionMapper.get(written_question_id);
+                if (tempQuestionMapper.get(writtenQuestionId) != null) {
+                    Question q = tempQuestionMapper.get(writtenQuestionId);
                     q.addEurovoc(eurovoc);
                 }
-
-
             }
-
         } catch (SQLException e) {
             logger.error("Error loading person from DB", e);
         }
@@ -92,7 +87,6 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
         Question result = null;
         try (Connection db = dbHelper.getConnection(false, true);
              PreparedStatement stat = db.prepareStatement("SELECT * FROM written_question WHERE id = ?;");) {
-
 
             stat.setInt(1, id);
             stat.execute();
@@ -112,7 +106,7 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
     @Override
     public List<Question> searchByKeyword(final String... keywords) {
         List<Question> results = Lists.newArrayList();
-        final StringBuffer sql = new StringBuffer("SELECT * FROM written_question WHERE lower(title) LIKE ");
+        final StringBuilder sql = new StringBuilder("SELECT * FROM written_question WHERE lower(title) LIKE ");
         for (int i = 0; i < keywords.length; i++) {
             String keyword = keywords[i];
             sql.append("lower('%");
@@ -121,12 +115,10 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
             if (i < keywords.length - 1) {
                 sql.append(" OR lower(title) LIKE  ");
             }
-
         }
         sql.append(";");
         try (Connection db = dbHelper.getConnection(false, true);
              PreparedStatement stat = db.prepareStatement(sql.toString());) {
-
 
             stat.execute();
 
@@ -173,9 +165,9 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
 
             while (stat.getResultSet().next()) {
                 String label = stat.getResultSet().getString("label");
-                Integer eurovoc_id = stat.getResultSet().getInt("id");
+                Integer eurovocId = stat.getResultSet().getInt("id");
 
-                Eurovoc eurovoc = new Eurovoc(eurovoc_id, label);
+                Eurovoc eurovoc = new Eurovoc(eurovocId, label);
 
                 q.addEurovoc(eurovoc);
             }
@@ -194,8 +186,6 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
 
             questionsStat.execute();
             List<Question> questionsAskedBy = Lists.newArrayList();
-
-            QuestionMapper mapper = new QuestionMapper(assemblyRegistry);
 
             while (questionsStat.getResultSet().next()) {
                 Question q = mapper.map(questionsStat.getResultSet());
@@ -326,8 +316,7 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
             stat.setInt(idx++, question.assembly.getId());
             stat.execute();
 
-            final boolean next = stat.getResultSet().next();
-            return next;
+            return stat.getResultSet().next();
         }
     }
 
