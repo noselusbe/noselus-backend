@@ -10,35 +10,35 @@ public class Question {
     private static final int EXCERPT_SIZE = 150;
 
     public Integer id;
-    public int asked_by;
-    public int asked_to;
-    public int answered_by;
+    public int askedBy;
+    public int askedTo;
+    public int answeredBy;
     public String session;
     public Integer year;
     public String number;
-    public LocalDate date_asked;
-    public LocalDate date_answered;
+    public LocalDate dateAsked;
+    public LocalDate dateAnswered;
     public String title;
-    public String question_text;
-    public String answer_text;
+    public String questionText;
+    public String answerText;
     public String excerpt;
     public Assembly assembly;
-    public String assembly_ref;
+    public String assemblyRef;
     public List<Eurovoc> eurovocs = new ArrayList<Eurovoc>();
 
     public Question() {
 
     }
 
-    public Question(Integer id, int asked_by, int asked_to, int answered_by, String session, Integer year, String number, LocalDate date_asked, LocalDate dateAnswered, String title, String questionText, String answerText, Assembly assembly) {
-        this.asked_by = asked_by;
-        this.asked_to = asked_to;
-        this.answered_by = answered_by;
+    public Question(Integer id, int askedBy, int askedTo, int answeredBy, String session, Integer year, String number, LocalDate dateAsked, LocalDate dateAnswered, String title, String questionText, String answerText, Assembly assembly) {
+        this.askedBy = askedBy;
+        this.askedTo = askedTo;
+        this.answeredBy = answeredBy;
         this.session = session;
         this.year = year;
         this.number = number;
-        this.date_asked = date_asked;
-        this.date_answered = dateAnswered;
+        this.dateAsked = dateAsked;
+        this.dateAnswered = dateAnswered;
         this.title = title;
         if (questionText.length() < EXCERPT_SIZE) {
             this.excerpt = questionText;
@@ -46,8 +46,8 @@ public class Question {
             this.excerpt = questionText.substring(0, EXCERPT_SIZE) + "...";
         }
         this.id = id;
-        this.question_text = questionText;
-        this.answer_text = answerText;
+        this.questionText = questionText;
+        this.answerText = answerText;
         this.assembly = assembly;
     }
     

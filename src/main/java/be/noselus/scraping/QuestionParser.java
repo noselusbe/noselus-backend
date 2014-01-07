@@ -39,7 +39,7 @@ public class QuestionParser {
 
         Question model = new Question();
 
-        model.assembly_ref = id + "";
+        model.assemblyRef = id + "";
         model.assembly = walloonParliament;
         Document doc = Jsoup.parse(new URL(url + id).openStream(), "iso-8859-1", url + id);
         List<String> fields;
@@ -52,9 +52,9 @@ public class QuestionParser {
         // Extract Question & Response
         fields = extract(doc, "h2");
 
-        model.date_asked = LocalDate.parse(fields.get(0).replace("Question écrite du ", "").replace(" ", ""), dateFormatter);
+        model.dateAsked = LocalDate.parse(fields.get(0).replace("Question écrite du ", "").replace(" ", ""), dateFormatter);
         if (fields.size() > 1) {
-            model.date_answered = LocalDate.parse(fields.get(1).replaceFirst("Réponse(.)* du ", "").replace(" ", ""), dateFormatter);
+            model.dateAnswered = LocalDate.parse(fields.get(1).replaceFirst("Réponse(.)* du ", "").replace(" ", ""), dateFormatter);
         }
 
         // Extract From/To
@@ -62,9 +62,9 @@ public class QuestionParser {
 
         final String askedByName = fields.get(0).replace("de ", "");
         if (!politicianRepository.getPoliticianByName(askedByName).isEmpty()) {
-            model.asked_by = politicianRepository.getPoliticianByName(askedByName).get(0).id;
+            model.askedBy = politicianRepository.getPoliticianByName(askedByName).get(0).id;
         } else {
-            model.asked_by = 0;
+            model.askedBy = 0;
         }
 
         // Separate title from askedTo field
@@ -80,11 +80,11 @@ public class QuestionParser {
 
         List<PersonSmall> list = politicianRepository.getPoliticianByName(name);
         if (!list.isEmpty()) {
-            model.asked_to = list.get(0).id;
+            model.askedTo = list.get(0).id;
         }
 
         if (fields.size() > 2) {
-            model.answered_by = politicianRepository.getPoliticianByName(fields.get(2).replace("de ", "")).get(0).id;
+            model.answeredBy = politicianRepository.getPoliticianByName(fields.get(2).replace("de ", "")).get(0).id;
         }
 
         // Extract Metadata
@@ -96,9 +96,9 @@ public class QuestionParser {
 
         // Extract Texts
         fields = extract(doc, "div#print_container div + div");
-        model.question_text = fields.get(0);
+        model.questionText = fields.get(0);
         if (fields.size() > 2) {
-            model.answer_text = fields.get(2);
+            model.answerText = fields.get(2);
         }
 
         return model;

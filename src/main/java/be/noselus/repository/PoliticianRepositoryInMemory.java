@@ -94,7 +94,7 @@ public class PoliticianRepositoryInMemory implements PoliticianRepository {
                     lastName = name.substring(0, endIndex);
                 }
 
-                return p != null && (name.equals(p.full_name) || p.full_name.contains(name) || p.full_name.contains(lastName));
+                return p != null && (name.equals(p.fullName) || p.fullName.contains(name) || p.fullName.contains(lastName));
             }
         };
 

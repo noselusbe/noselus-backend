@@ -5,41 +5,41 @@ import java.util.List;
 public class Person {
 
     public Integer id;
-    public String full_name;
+    public String fullName;
     public String party;
     public String address;
-    public String postal_code;
+    public String postalCode;
     public String town;
     public String phone;
     public String fax;
     public String email;
     public String site;
     public PersonFunction function;
-	public int assembly_id;
+	public int assemblyId;
 	public AssemblyEnum assembly;
 	public double latitude;
 	public double longitude;
     public List<Integer> asked_questions;
-    public Assembly belong_to_assembly;
+    public Assembly belongToAssembly;
 
-    public Person(Integer id, String full_name, String party, String address, String postal_code, String town, String phone,
-                  String fax, String email, String site, PersonFunction function, int assembly_id, List<Integer> askedQuestionIds,
+    public Person(Integer id, String fullName, String party, String address, String postalCode, String town, String phone,
+                  String fax, String email, String site, PersonFunction function, int assemblyId, List<Integer> askedQuestionIds,
                   Assembly belongToAssembly, double latitude, double longitude) {
 
         this.id = id;
-        this.full_name = full_name;
+        this.fullName = fullName;
         this.party = party;
         this.address = address;
-        this.postal_code = postal_code;
+        this.postalCode = postalCode;
         this.town = town;
         this.phone = phone;
         this.fax = fax;
         this.email = email;
         this.site = site;
         this.function = function;
-        this.assembly_id = assembly_id;
+        this.assemblyId = assemblyId;
         this.assembly = AssemblyEnum.getFromAssemblyId(belongToAssembly.getId());
-        this.belong_to_assembly = belongToAssembly;
+        this.belongToAssembly = belongToAssembly;
         this.latitude = latitude;
         this.longitude = longitude;
         this.asked_questions = askedQuestionIds;
@@ -47,7 +47,7 @@ public class Person {
     
     @Override
     public String toString() {
-    	return full_name;
+    	return fullName;
     }
     
 }

@@ -29,18 +29,18 @@ public class QuestionParserTest {
     public void openData() throws IOException {
         Question qr = parser.parse(36256);
 
-        Assert.assertEquals("36256", qr.assembly_ref);
+        Assert.assertEquals("36256", qr.assemblyRef);
         Assert.assertEquals("l'\"Open Data - Open Government\"", qr.title);
         Assert.assertEquals("2010-2011", qr.session);
         Assert.assertEquals(2011, qr.year.intValue());
         Assert.assertEquals("594 (2010-2011) 1", qr.number);
-        Assert.assertEquals("2011-08-29", qr.date_asked.toString());
-        Assert.assertEquals(21, qr.asked_by);
-        Assert.assertEquals(78, qr.asked_to);
-        Assert.assertEquals("2011-10-07", qr.date_answered.toString());
-        Assert.assertEquals(78, qr.answered_by);
-        Assert.assertEquals(2596, qr.question_text.length());
-        Assert.assertEquals(5663, qr.answer_text.length());
+        Assert.assertEquals("2011-08-29", qr.dateAsked.toString());
+        Assert.assertEquals(21, qr.askedBy);
+        Assert.assertEquals(78, qr.askedTo);
+        Assert.assertEquals("2011-10-07", qr.dateAnswered.toString());
+        Assert.assertEquals(78, qr.answeredBy);
+        Assert.assertEquals(2596, qr.questionText.length());
+        Assert.assertEquals(5663, qr.answerText.length());
     }
 
     @Test
@@ -48,36 +48,36 @@ public class QuestionParserTest {
     public void eolien() throws IOException {
         Question qr = parser.parse(50370);
 
-        Assert.assertEquals("50370", qr.assembly_ref);
+        Assert.assertEquals("50370", qr.assemblyRef);
         Assert.assertEquals("le coût élevé de l'éolien", qr.title);
         Assert.assertEquals("2013-2014", qr.session);
         Assert.assertEquals(2013, qr.year.intValue());
         Assert.assertEquals("51 (2013-2014) 1", qr.number);
-        Assert.assertEquals("2013-10-04", qr.date_asked.toString());
-        Assert.assertEquals(63, qr.asked_by);
-        Assert.assertEquals(75, qr.asked_to);
-        Assert.assertEquals(null, qr.date_answered);
-        Assert.assertEquals(0, qr.answered_by);
-        Assert.assertEquals(2044, qr.question_text.length());
-        Assert.assertEquals(null, qr.answer_text);
+        Assert.assertEquals("2013-10-04", qr.dateAsked.toString());
+        Assert.assertEquals(63, qr.askedBy);
+        Assert.assertEquals(75, qr.askedTo);
+        Assert.assertEquals(null, qr.dateAnswered);
+        Assert.assertEquals(0, qr.answeredBy);
+        Assert.assertEquals(2044, qr.questionText.length());
+        Assert.assertEquals(null, qr.answerText);
     }
 
     @Test
     public void andreAntoine() throws IOException {
         Question qr = parser.parse(50054);
 
-        Assert.assertEquals("50054", qr.assembly_ref);
+        Assert.assertEquals("50054", qr.assemblyRef);
         Assert.assertEquals("la baisse de l'emploi dans les P.M.E.", qr.title);
         Assert.assertEquals("2012-2013", qr.session);
         Assert.assertEquals(2013, qr.year.intValue());
         Assert.assertEquals("467 (2012-2013) 1", qr.number);
-        Assert.assertEquals("2013-09-13", qr.date_asked.toString());
-        Assert.assertEquals(31, qr.asked_by);
-        Assert.assertEquals(76, qr.asked_to);
-        Assert.assertEquals(null, qr.date_answered);
-        Assert.assertEquals(0, qr.answered_by);
-        Assert.assertEquals(2244, qr.question_text.length());
-        Assert.assertEquals(null, qr.answer_text);
+        Assert.assertEquals("2013-09-13", qr.dateAsked.toString());
+        Assert.assertEquals(31, qr.askedBy);
+        Assert.assertEquals(76, qr.askedTo);
+        Assert.assertEquals(null, qr.dateAnswered);
+        Assert.assertEquals(0, qr.answeredBy);
+        Assert.assertEquals(2244, qr.questionText.length());
+        Assert.assertEquals(null, qr.answerText);
     }
 
     @Test

@@ -34,10 +34,10 @@ public class PoliticianRepositoryInDatabaseTest {
     @Ignore("TODO with ORDER")
     public void data() {
         final Person person = store.get(1);
-        assertEquals("COLLIGNON Christophe", person.full_name);
+        assertEquals("COLLIGNON Christophe", person.fullName);
         assertEquals("PS", person.party.trim());
         assertEquals("rue du Marché, 45", person.address);
-        assertEquals("4500", person.postal_code.trim());
+        assertEquals("4500", person.postalCode.trim());
         assertEquals("HUY", person.town);
         assertEquals("085 31 82 00", person.phone.trim());
         assertEquals("085 31 80 99", person.fax.trim());

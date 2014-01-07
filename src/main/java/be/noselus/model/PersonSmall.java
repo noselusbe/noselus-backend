@@ -2,25 +2,25 @@ package be.noselus.model;
 
 public class PersonSmall {
 
-    public String full_name;
+    public String fullName;
     public Integer id;
 
-    public PersonSmall(final String full_name) {
-    	this.full_name = full_name;
+    public PersonSmall(final String fullName) {
+    	this.fullName = fullName;
     	this.id = 0;
 	}
     
-    public PersonSmall(final String full_name, final Integer id) {
-        this.full_name = full_name;
+    public PersonSmall(final String fullName, final Integer id) {
+        this.fullName = fullName;
         this.id = id;
     }
     
     @Override
     public String toString() {
-    	return full_name;
+    	return fullName;
     }
 
     public static PersonSmall fromPerson(final Person person){
-        return new PersonSmall(person.full_name, person.id);
+        return new PersonSmall(person.fullName, person.id);
     }
 }

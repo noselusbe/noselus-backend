@@ -9,7 +9,7 @@ public class PersonSmallTest {
 	@Test
 	public void full() {
 		PersonSmall person = new PersonSmall("Paul FURLAN");
-		Assert.assertEquals("Paul FURLAN", person.full_name);
+		Assert.assertEquals("Paul FURLAN", person.fullName);
 		Assert.assertEquals(0, person.id.intValue());
 	}
 	
