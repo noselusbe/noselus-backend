@@ -46,11 +46,6 @@
             <artifactId>postgresql</artifactId>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>
@@ -69,6 +64,13 @@
         <dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
+        </dependency>
+
+        <!-- Tests -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <dependencyManagement>
@@ -136,12 +138,12 @@
             <dependency>
                 <groupId>com.jolbox</groupId>
                 <artifactId>bonecp</artifactId>
-                <version>0.7.1.RELEASE</version>
+                <version>0.8.0.RELEASE</version>
             </dependency>
             <dependency>
                 <groupId>org.liquibase</groupId>
                 <artifactId>liquibase-core</artifactId>
-                <version>3.0.8</version>
+                <version>3.1.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
