@@ -1,0 +1,8 @@
+"id","label","level"
+1,"Parlement Wallon",REGION
+2,"Chambre des représentants",DEPUTY_CHAMBER
+3,"Parlement Bruxellois",REGION
+4,"Parlement de la Fédération Wallonie Bruxelles",COMMUNITY
+5,Sénat,SENAT
+6,"Gouvernement Wallon",REGION
+7,"Gouvernement Fédéral",FEDERAL
