@@ -1,5 +1,6 @@
 package be.noselus;
 
+import be.noselus.db.DatabaseUpdater;
 import be.noselus.model.PersonSmall;
 import be.noselus.pictures.PictureManager;
 import be.noselus.repository.PoliticianRepository;
@@ -29,12 +30,14 @@ public class NosElus {
     private final QuestionRepository questionRepository;
     private final PoliticianRepository politicianRepository;
     private final PictureManager pictureManager;
+    private final DatabaseUpdater dbUpdater;
 
     @Inject
-    public NosElus(final QuestionRepository questionRepository, final PoliticianRepository politicianRepository, final PictureManager pictureManager) {
+    public NosElus(final QuestionRepository questionRepository, final PoliticianRepository politicianRepository, final PictureManager pictureManager, final DatabaseUpdater dbUpdater) {
         this.questionRepository = questionRepository;
         this.politicianRepository = politicianRepository;
         this.pictureManager = pictureManager;
+        this.dbUpdater = dbUpdater;
     }
 
     public static void main(String[] args) throws IOException {
@@ -44,6 +47,7 @@ public class NosElus {
     }
 
     private void initialize() {
+        dbUpdater.update();
         final String port = System.getenv("PORT");
         if (port != null) {
             setPort(Integer.parseInt(port));

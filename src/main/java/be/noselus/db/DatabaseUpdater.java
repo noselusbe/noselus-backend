@@ -5,27 +5,41 @@ import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.database.core.PostgresDatabase;
 import liquibase.database.jvm.JdbcConnection;
-import liquibase.exception.DatabaseException;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import liquibase.resource.ResourceAccessor;
 import liquibase.structure.DatabaseObject;
 
+import javax.inject.Inject;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+/**
+ * Handle all responsibilities regarding database update management.
+ * <p/>
+ * Based on https://github.com/Athou/commafeed/blob/master/src/main/java/com/commafeed/backend/startup/DatabaseUpdater.java
+ */
 public class DatabaseUpdater {
 
+    private final DatabaseHelper dbHelper;
+
+    @Inject
+    public DatabaseUpdater(final DatabaseHelper dbHelper) {
+        this.dbHelper = dbHelper;
+    }
+
+    /**
+     * Update the database by executing all the required change sets.
+     */
     public void update() {
         try {
             Thread currentThread = Thread.currentThread();
             ClassLoader classLoader = currentThread.getContextClassLoader();
             ResourceAccessor accessor = new ClassLoaderResourceAccessor(classLoader);
-            Connection connection = DatabaseHelper.getInstance().getConnection(true, false);
+            Connection connection = dbHelper.getConnection(true, false);
             JdbcConnection jdbcConnection = new JdbcConnection(connection);
 
-            Database database = null;
-            database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(jdbcConnection);
+            Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(jdbcConnection);
 
             if (database instanceof PostgresDatabase) {
                 database = new PostgresDatabase() {
