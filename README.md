@@ -5,7 +5,7 @@ Bulding
 
 In order to build this application you need:
 * [Java 7](http://java.com/en/download/index.jsp). If you're using a mac [Java 7 on mac](http://www.monkehworks.com/set-java-7-as-default-jvm-on-mac-osx-mountain-lion)
-* [Maven 3.1.1](http://maven.apache.org/download.cgi)
+* [Maven 3.1.1](http://maven.apache.org/download.cgi). If you don't know maven, we highly recomand reading [Maven in 5 minutes](http://maven.apache.org/guides/getting-started/maven-in-five-minutes.html)
 * [PosgreSQL 9.2](http://www.postgresql.org/download/). If you're on a mac we recommend [Posgresql.app](http://postgresapp.com/)
 
 Once all installed, create a database.
