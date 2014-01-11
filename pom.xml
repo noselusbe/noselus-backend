@@ -178,11 +178,7 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <configuration>
-                    <executable>java</executable>
-                    <arguments>
-                        <argument>-classpath</argument><classpath />
-                        <argument>be.noselus.NosElus</argument>
-                    </arguments>
+                    <mainClass>be.noselus.NosElus</mainClass>
                 </configuration>
             </plugin>
             <plugin>
