@@ -34,7 +34,7 @@ public class PoliticianRepositoryInDatabase extends AbstractRepositoryInDatabase
     }
 
     @Override
-    public List<Person> getPoliticians() {
+    public synchronized List<Person> getPoliticians() {
         if (politicians == null) {
             initPoliticians();
         }
@@ -47,12 +47,12 @@ public class PoliticianRepositoryInDatabase extends AbstractRepositoryInDatabase
                      + " assembly.level AS assembly_level, assembly.id AS belong_to_assembly_id FROM person"
                      + " JOIN assembly"
                      + " ON assembly.id = person.belong_to_assembly"
-                     + " WHERE person.id != 0;");) {
+                     + " WHERE person.id != 0;")) {
 
 
             stat.execute();
 
-            politicians = new ArrayList<Person>();
+            politicians = new ArrayList<>();
             while (stat.getResultSet().next()) {
 
                 int id = stat.getResultSet().getInt("id");
@@ -91,13 +91,13 @@ public class PoliticianRepositoryInDatabase extends AbstractRepositoryInDatabase
             logger.error("Error loading person from DB", e);
         }
 
-        final ArrayList<Person> persons = Lists.newArrayList(politicians);
-        politicians = persons;
+        politicians = Lists.newArrayList(politicians);
     }
 
     @Override
     public List<Person> getFullPoliticianByName(final String name) {
         Predicate<Person> hasName = new Predicate<Person>() {
+            @Override
             public boolean apply(Person p) {
                 final int endIndex = name.lastIndexOf(" ");
                 final String lastName;
@@ -130,6 +130,7 @@ public class PoliticianRepositoryInDatabase extends AbstractRepositoryInDatabase
     @Override
     public Person getPoliticianById(final int id) {
         Predicate<Person> withId = new Predicate<Person>() {
+            @Override
             public boolean apply(Person p) {
                 return p != null && (p.id == id);
             }
