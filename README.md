@@ -32,3 +32,7 @@ You can then run the application with ```java -jar be.noselus-{VERSION}.jar```
 The application will then be accessible at ```http://localhost:4567/``` for example, the list of most recent questions is accessible at ```http://localhost:4567/questions```
 
 The documentation of the api will come soon.
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/noselusbe/noselus-backend/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
