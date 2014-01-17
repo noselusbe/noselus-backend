@@ -1,7 +1,9 @@
 package be.noselus;
 
 import be.noselus.db.DatabaseUpdater;
+import be.noselus.dto.PartialResult;
 import be.noselus.model.PersonSmall;
+import be.noselus.model.Question;
 import be.noselus.pictures.PictureManager;
 import be.noselus.repository.PoliticianRepository;
 import be.noselus.repository.QuestionRepository;
@@ -16,7 +18,9 @@ import spark.Route;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static spark.Spark.*;
 
@@ -27,6 +31,7 @@ import static spark.Spark.*;
 public class NosElus {
 
     public static final int NOT_FOUND = 404;
+    public static final int DEFAULT_RESULT_LIMIT = 50;
     private final QuestionRepository questionRepository;
     private final PoliticianRepository politicianRepository;
     private final PictureManager pictureManager;
@@ -59,18 +64,18 @@ public class NosElus {
     }
 
     private void politicianRoutes() {
-        get(new JsonTransformer("/politicians", "politicians") {
+        get(new JsonTransformer("/politicians") {
             @Override
             public Object myHandle(final Request request, final Response response) {
-                return politicianRepository.getPoliticians();
+                return resultAs("politicians", politicianRepository.getPoliticians());
             }
         });
 
-        get(new JsonTransformer("/politicians/:id", "politician") {
+        get(new JsonTransformer("/politicians/:id") {
             @Override
             public Object myHandle(final Request request, final Response response) {
                 final String params = request.params(":id");
-                return politicianRepository.getPoliticianById(Integer.parseInt(params));
+                return resultAs("politician", politicianRepository.getPoliticianById(Integer.parseInt(params)));
             }
         });
 
@@ -118,7 +123,7 @@ public class NosElus {
     }
 
     private void questionRoutes() {
-        get(new JsonTransformer("/questions", "questions") {
+        get(new JsonTransformer("/questions") {
 
             @Override
             public Object myHandle(final Request request, final Response response) {
@@ -126,24 +131,44 @@ public class NosElus {
                 final String askedBy = request.queryParams("asked_by");
                 if (q != null) {
                     final String keywords = q.replace("\"", "");
-                    return questionRepository.searchByKeyword(keywords.split(" "));
+                    return resultAs("questions", questionRepository.searchByKeyword(keywords.split(" ")));
                 } else if (askedBy != null) {
-                    return questionRepository.questionAskedBy(Integer.valueOf(askedBy));
+                    return resultAs("questions", questionRepository.questionAskedBy(Integer.valueOf(askedBy)));
                 }
-                return questionRepository.getQuestions();
+                return resultAs("questions", questionRepository.getQuestions());
             }
         });
 
-        get(new JsonTransformer("/questions/:id", "question") {
+        get(new JsonTransformer("/questionsLimit") {
+
+            @Override
+            public Object myHandle(final Request request, final Response response) {
+                final String firstElement = request.queryParams("first_element");
+                final String limitAsked = request.queryParams("limit");
+                final int limit;
+                if (limitAsked == null){
+                    limit = DEFAULT_RESULT_LIMIT;
+                } else {
+                    limit = Integer.valueOf(limitAsked);
+                }
+                if (firstElement == null){
+                    return resultAs("questions", questionRepository.getQuestions(limit));
+                } else {
+                    return resultAs("questions", questionRepository.getQuestions(limit, Integer.valueOf(firstElement)));
+                }
+            }
+        });
+
+        get(new JsonTransformer("/questions/:id") {
 
             @Override
             public Object myHandle(final Request request, final Response response) {
                 final String params = request.params(":id");
-                return questionRepository.getQuestionById(Integer.parseInt(params));
+                return resultAs("question", questionRepository.getQuestionById(Integer.parseInt(params)));
             }
         });
 
-        get(new JsonTransformer("/questions/askedBy/:name", "questions") {
+        get(new JsonTransformer("/questions/askedBy/:name") {
             @Override
             public Object myHandle(final Request request, final Response response) {
                 final String params = request.params(":name");
@@ -151,12 +176,12 @@ public class NosElus {
                 if (list.isEmpty()) {
                     return null;
                 } else {
-                    return questionRepository.questionAskedBy(list.get(0).id);
+                    return resultAs("questions", questionRepository.questionAskedBy(list.get(0).id));
                 }
 
             }
         });
-        get(new JsonTransformer("/questions/byEurovoc/:id", "questions") {
+        get(new JsonTransformer("/questions/byEurovoc/:id") {
 
             @Override
             protected Object myHandle(Request request, Response response) {
@@ -165,5 +190,25 @@ public class NosElus {
             }
 
         });
+    }
+
+    //Helpers
+
+
+    private Map<String, Object> resultAs(final String key, final PartialResult<?> partialResult){
+        final Map<String, Object> result = new HashMap<>();
+        result.put(key, partialResult.getResults());
+        final Map<String, Object> meta = new HashMap<>();
+        meta.put("next", partialResult.getNextItem());
+        meta.put("limit", partialResult.getLimit());
+        meta.put("total", partialResult.getTotalNumberOfResult());
+        result.put("meta", meta);
+        return result;
+    }
+
+    private Map<String, Object> resultAs(final String key, final Object object){
+        final Map<String, Object> result = new HashMap<>();
+        result.put(key,object);
+        return result;
     }
 }

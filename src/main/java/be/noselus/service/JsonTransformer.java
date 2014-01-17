@@ -9,20 +9,16 @@ import spark.Response;
 import spark.ResponseTransformerRoute;
 
 import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Response transformer route that is in charge of converting object response into Json response.
  */
 public abstract class JsonTransformer extends ResponseTransformerRoute {
 
-    private final String rootKey;
     private final Gson gson;
 
-    protected JsonTransformer(String path, String rootKey) {
+    protected JsonTransformer(String path) {
         super(path, "application/json");
-        this.rootKey = rootKey;
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(LocalDate.class, new LocalDateAdapter());
         gson = gsonBuilder.create();
@@ -30,9 +26,7 @@ public abstract class JsonTransformer extends ResponseTransformerRoute {
 
     @Override
     public String render(Object model) {
-        Map<String, Object> objectWithRoot = new HashMap<>();
-        objectWithRoot.put(rootKey, model);
-        return gson.toJson(objectWithRoot);
+        return gson.toJson(model);
     }
 
     @Override

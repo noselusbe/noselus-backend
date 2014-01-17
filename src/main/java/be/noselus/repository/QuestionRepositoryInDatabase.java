@@ -1,6 +1,7 @@
 package be.noselus.repository;
 
 import be.noselus.db.DatabaseHelper;
+import be.noselus.dto.PartialResult;
 import be.noselus.model.Eurovoc;
 import be.noselus.model.Question;
 import com.google.common.collect.Lists;
@@ -31,53 +32,8 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
 
     @Override
     public List<Question> getQuestions() {
-        List<Question> results = Lists.newArrayList();
-        Map<Integer, Question> tempQuestionMapper = new TreeMap<>();
-        Map<Integer, Eurovoc> eurovocMappers = new TreeMap<>();
-
-        try (Connection db = dbHelper.getConnection(false, true);
-             PreparedStatement stat = db.prepareStatement("SELECT * FROM written_question ORDER BY date_asked DESC LIMIT 50;");
-             PreparedStatement eurovocs = db.prepareStatement("SELECT "
-                     + "written_question_eurovoc.id_written_question AS written_question_id, "
-                     + "eurovoc.label AS eurovoc_label, "
-                     + "eurovoc.id AS eurovoc_id "
-                     + "FROM written_question_eurovoc "
-                     + "JOIN eurovoc ON written_question_eurovoc.id_eurovoc = eurovoc.id"
-                     + "")){
-
-            stat.execute();
-
-            while (stat.getResultSet().next()) {
-                final Question question = mapper.map(stat.getResultSet());
-                results.add(question);
-                tempQuestionMapper.put(question.id, question);
-            }
-
-            eurovocs.execute();
-
-            while (eurovocs.getResultSet().next()) {
-                Integer writtenQuestionId = eurovocs.getResultSet().getInt("written_question_id");
-                String eurovocLabel = eurovocs.getResultSet().getString("eurovoc_label");
-                Integer eurovocId = eurovocs.getResultSet().getInt("eurovoc_id");
-
-                Eurovoc eurovoc;
-
-                if (eurovocMappers.get(eurovocId) == null) {
-                    eurovoc = new Eurovoc(eurovocId, eurovocLabel);
-                    eurovocMappers.put(eurovoc.id, eurovoc);
-                } else {
-                    eurovoc = eurovocMappers.get(eurovocId);
-                }
-
-                if (tempQuestionMapper.get(writtenQuestionId) != null) {
-                    Question q = tempQuestionMapper.get(writtenQuestionId);
-                    q.addEurovoc(eurovoc);
-                }
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Error loading questions from DB", e);
-        }
-        return results;
+        final PartialResult<Question> questions = getQuestions(50);
+        return questions.getResults();
     }
 
     @Override
@@ -241,6 +197,143 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public PartialResult<Question> getQuestions(final Integer limit) {
+        List<Question> results = Lists.newArrayList();
+        Map<Integer, Question> tempQuestionMapper = new TreeMap<>();
+        Map<Integer, Eurovoc> eurovocMappers = new TreeMap<>();
+        int total = 0;
+
+        try (Connection db = dbHelper.getConnection(false, true);
+             PreparedStatement questionCount = db.prepareStatement("SELECT count(*) as total FROM written_question;");
+             PreparedStatement questionsStatement = db.prepareStatement("SELECT * FROM written_question ORDER BY date_asked DESC LIMIT ?;");
+             PreparedStatement eurovocs = db.prepareStatement("SELECT "
+                     + "written_question_eurovoc.id_written_question AS written_question_id, "
+                     + "eurovoc.label AS eurovoc_label, "
+                     + "eurovoc.id AS eurovoc_id "
+                     + "FROM written_question_eurovoc "
+                     + "JOIN eurovoc ON written_question_eurovoc.id_eurovoc = eurovoc.id"
+                     + "")){
+
+            questionCount.execute();
+            questionCount.getResultSet().next();
+            total = questionCount.getResultSet().getInt("total");
+
+            questionsStatement.setInt(1,limit+1);
+            questionsStatement.execute();
+
+            while (questionsStatement.getResultSet().next()) {
+                final Question question = mapper.map(questionsStatement.getResultSet());
+                results.add(question);
+                tempQuestionMapper.put(question.id, question);
+            }
+
+            eurovocs.execute();
+
+            while (eurovocs.getResultSet().next()) {
+                Integer writtenQuestionId = eurovocs.getResultSet().getInt("written_question_id");
+                String eurovocLabel = eurovocs.getResultSet().getString("eurovoc_label");
+                Integer eurovocId = eurovocs.getResultSet().getInt("eurovoc_id");
+
+                Eurovoc eurovoc;
+
+                if (eurovocMappers.get(eurovocId) == null) {
+                    eurovoc = new Eurovoc(eurovocId, eurovocLabel);
+                    eurovocMappers.put(eurovoc.id, eurovoc);
+                } else {
+                    eurovoc = eurovocMappers.get(eurovocId);
+                }
+
+                if (tempQuestionMapper.get(writtenQuestionId) != null) {
+                    Question q = tempQuestionMapper.get(writtenQuestionId);
+                    q.addEurovoc(eurovoc);
+                }
+            }
+
+        } catch (SQLException e) {
+            LOGGER.error("Error loading questions from DB", e);
+        }
+
+        final int resultFound = results.size();
+        final Integer nextElement;
+        if(resultFound > limit){
+            nextElement = results.get(resultFound-1).id;
+            results.remove(resultFound-1);
+        } else {
+            nextElement = null;
+        }
+        return new PartialResult<>(results,nextElement,limit,total);
+    }
+
+    @Override
+    public PartialResult<Question> getQuestions(final Integer limit, final Integer firstItem) {
+        List<Question> results = Lists.newArrayList();
+        Map<Integer, Question> tempQuestionMapper = new TreeMap<>();
+        Map<Integer, Eurovoc> eurovocMappers = new TreeMap<>();
+        int total = 0;
+
+        try (Connection db = dbHelper.getConnection(false, true);
+             PreparedStatement questionCount = db.prepareStatement("SELECT count(*) as total FROM written_question;");
+             PreparedStatement questionsStatement = db.prepareStatement("SELECT * FROM written_question WHERE id < ? ORDER BY date_asked DESC, title ASC LIMIT ?;");
+             PreparedStatement eurovocs = db.prepareStatement("SELECT "
+                     + "written_question_eurovoc.id_written_question AS written_question_id, "
+                     + "eurovoc.label AS eurovoc_label, "
+                     + "eurovoc.id AS eurovoc_id "
+                     + "FROM written_question_eurovoc "
+                     + "JOIN eurovoc ON written_question_eurovoc.id_eurovoc = eurovoc.id"
+                     + "")){
+
+            questionCount.execute();
+            questionCount.getResultSet().next();
+            total = questionCount.getResultSet().getInt("total");
+
+            questionsStatement.setInt(1,firstItem);
+            questionsStatement.setInt(2,limit+1);
+            questionsStatement.execute();
+
+            while (questionsStatement.getResultSet().next()) {
+                final Question question = mapper.map(questionsStatement.getResultSet());
+                results.add(question);
+                tempQuestionMapper.put(question.id, question);
+            }
+
+            eurovocs.execute();
+
+            while (eurovocs.getResultSet().next()) {
+                Integer writtenQuestionId = eurovocs.getResultSet().getInt("written_question_id");
+                String eurovocLabel = eurovocs.getResultSet().getString("eurovoc_label");
+                Integer eurovocId = eurovocs.getResultSet().getInt("eurovoc_id");
+
+                Eurovoc eurovoc;
+
+                if (eurovocMappers.get(eurovocId) == null) {
+                    eurovoc = new Eurovoc(eurovocId, eurovocLabel);
+                    eurovocMappers.put(eurovoc.id, eurovoc);
+                } else {
+                    eurovoc = eurovocMappers.get(eurovocId);
+                }
+
+                if (tempQuestionMapper.get(writtenQuestionId) != null) {
+                    Question q = tempQuestionMapper.get(writtenQuestionId);
+                    q.addEurovoc(eurovoc);
+                }
+            }
+
+        } catch (SQLException e) {
+            LOGGER.error("Error loading questions from DB", e);
+        }
+
+        final int resultFound = results.size();
+        final Integer nextElement;
+        if(resultFound > limit){
+            nextElement = results.get(resultFound-1).id;
+            results.remove(resultFound-1);
+        } else {
+            nextElement = null;
+        }
+        return new PartialResult<>(results,nextElement,limit,total);
     }
 
 

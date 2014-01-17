@@ -1,5 +1,6 @@
 package be.noselus.repository;
 
+import be.noselus.dto.PartialResult;
 import be.noselus.model.Assembly;
 import be.noselus.model.Question;
 import com.google.common.collect.Lists;
@@ -79,6 +80,16 @@ public class QuestionRepositoryStub implements QuestionRepository {
     @Override
     public void insertOrUpdateQuestion(final Question question) {
         //mop
+    }
+
+    @Override
+    public PartialResult<Question> getQuestions(final Integer limit) {
+        return new PartialResult<>(getQuestions(),null,limit,1);
+    }
+
+    @Override
+    public PartialResult<Question> getQuestions(final Integer limit, final Integer firstItem) {
+        return new PartialResult<>(getQuestions(),null,limit,1);
     }
 
 }
