@@ -18,6 +18,7 @@ public class PictureManagerTest {
     public void setUp() {
         Injector injector = Guice.createInjector(new NosElusModule());
         pictureManager = injector.getInstance(PictureManager.class);
+        pictureManager.start();
     }
 
     @Test

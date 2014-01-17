@@ -1,11 +1,11 @@
 package be.noselus.pictures;
 
 import be.noselus.db.DatabaseHelper;
-import be.noselus.repository.PoliticianRepository;
-import com.google.inject.Inject;
+import be.noselus.service.Service;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.geometry.Positions;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -15,12 +15,18 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class PictureManager {
+public class PictureManager implements Service {
 
+    private final DatabaseHelper dbHelper;
     private Map<Integer, Integer> mapping = null;
 
     @Inject
-    public PictureManager(final PoliticianRepository politicianRepository, final DatabaseHelper dbHelper) {
+    public PictureManager(final DatabaseHelper dbHelper) {
+        this.dbHelper = dbHelper;
+    }
+
+    @Override
+    public void start() {
         try (Connection db = dbHelper.getConnection(false, true);
              PreparedStatement stat = db.prepareStatement("SELECT id, assembly_id FROM person;");) {
 
@@ -38,8 +44,11 @@ public class PictureManager {
         }
     }
 
-    public InputStream get(int id) {
+    @Override
+    public void stop() {
+    }
 
+    public InputStream get(int id) {
         String path = null;
         String ext = null;
         if (id >= 77 && id <= 150) {

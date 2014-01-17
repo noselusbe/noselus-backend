@@ -3,7 +3,6 @@ package be.noselus;
 import be.noselus.db.DatabaseUpdater;
 import be.noselus.dto.PartialResult;
 import be.noselus.model.PersonSmall;
-import be.noselus.model.Question;
 import be.noselus.pictures.PictureManager;
 import be.noselus.repository.PoliticianRepository;
 import be.noselus.repository.QuestionRepository;
@@ -53,6 +52,8 @@ public class NosElus {
 
     private void initialize() {
         dbUpdater.update();
+        pictureManager.start();
+
         final String port = System.getenv("PORT");
         if (port != null) {
             setPort(Integer.parseInt(port));
@@ -147,12 +148,12 @@ public class NosElus {
                 final String firstElement = request.queryParams("first_element");
                 final String limitAsked = request.queryParams("limit");
                 final int limit;
-                if (limitAsked == null){
+                if (limitAsked == null) {
                     limit = DEFAULT_RESULT_LIMIT;
                 } else {
                     limit = Integer.valueOf(limitAsked);
                 }
-                if (firstElement == null){
+                if (firstElement == null) {
                     return resultAs("questions", questionRepository.getQuestions(limit));
                 } else {
                     return resultAs("questions", questionRepository.getQuestions(limit, Integer.valueOf(firstElement)));
@@ -196,7 +197,7 @@ public class NosElus {
     //Helpers
 
 
-    private Map<String, Object> resultAs(final String key, final PartialResult<?> partialResult){
+    private Map<String, Object> resultAs(final String key, final PartialResult<?> partialResult) {
         final Map<String, Object> result = new HashMap<>();
         result.put(key, partialResult.getResults());
         final Map<String, Object> meta = new HashMap<>();
@@ -207,9 +208,9 @@ public class NosElus {
         return result;
     }
 
-    private Map<String, Object> resultAs(final String key, final Object object){
+    private Map<String, Object> resultAs(final String key, final Object object) {
         final Map<String, Object> result = new HashMap<>();
-        result.put(key,object);
+        result.put(key, object);
         return result;
     }
 }
