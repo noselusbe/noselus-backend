@@ -131,20 +131,6 @@ public class NosElus {
             public Object myHandle(final Request request, final Response response) {
                 final String q = request.queryParams("q");
                 final String askedBy = request.queryParams("asked_by");
-                if (q != null) {
-                    final String keywords = q.replace("\"", "");
-                    return resultAs("questions", questionRepository.searchByKeyword(keywords.split(" ")));
-                } else if (askedBy != null) {
-                    return resultAs("questions", questionRepository.questionAskedBy(Integer.valueOf(askedBy)));
-                }
-                return resultAs("questions", questionRepository.getQuestions());
-            }
-        });
-
-        get(new JsonTransformer("/questionsLimit") {
-
-            @Override
-            public Object myHandle(final Request request, final Response response) {
                 final String firstElement = request.queryParams("first_element");
                 final String limitAsked = request.queryParams("limit");
                 final int limit;
@@ -153,8 +139,16 @@ public class NosElus {
                 } else {
                     limit = Integer.valueOf(limitAsked);
                 }
+                if (q != null) {
+                    final String keywords = q.replace("\"", "");
+                    return resultAs("questions", questionRepository.searchByKeyword(keywords.split(" ")));
+                } else if (askedBy != null) {
+                    return resultAs("questions", questionRepository.questionAskedBy(Integer.valueOf(askedBy)));
+                }
                 if (firstElement == null) {
                     return resultAs("questions", questionRepository.getQuestions(limit));
+                } else if (limitAsked == null){
+                    return resultAs("questions", questionRepository.getQuestions());
                 } else {
                     return resultAs("questions", questionRepository.getQuestions(limit, Integer.valueOf(firstElement)));
                 }
