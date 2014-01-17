@@ -16,6 +16,7 @@ import org.jsoup.select.Elements;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,15 @@ public class QuestionParser {
     }
 
     public Question parse(int id) throws IOException {
+        final String resource = url + id;
+        try (InputStream in = new URL(resource).openStream();) {
+            return parse(in, url, id);
+        }
+    }
+
+    protected Question parse(InputStream in, String url, int id) throws IOException {
+        Document doc;
+        doc = Jsoup.parse(in, "iso-8859-1", url);
 
         DateTimeFormatter dateFormatter = getDateFormatter();
 
@@ -41,7 +51,6 @@ public class QuestionParser {
 
         model.assemblyRef = id + "";
         model.assembly = walloonParliament;
-        Document doc = Jsoup.parse(new URL(url + id).openStream(), "iso-8859-1", url + id);
         List<String> fields;
 
         // Extract Title

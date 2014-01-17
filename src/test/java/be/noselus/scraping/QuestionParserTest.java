@@ -16,6 +16,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 
@@ -27,7 +28,8 @@ public class QuestionParserTest {
 
     @Test
     public void openData() throws IOException {
-        Question qr = parser.parse(36256);
+        final InputStream in = getClass().getClassLoader().getResourceAsStream("scraping/PW_36256.html");
+        Question qr = parser.parse(in, "classpath:scraping/PW_36256.html", 36256);
 
         Assert.assertEquals("36256", qr.assemblyRef);
         Assert.assertEquals("l'\"Open Data - Open Government\"", qr.title);
