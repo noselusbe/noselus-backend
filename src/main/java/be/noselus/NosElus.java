@@ -94,6 +94,7 @@ public class NosElus {
                         out = IOUtils.toByteArray(is);
                         response.raw().setContentType("image/jpeg;charset=utf-8");
                         response.raw().getOutputStream().write(out, 0, out.length);
+                        response.header("Cache-Control", "no-transform,public,max-age=300,s-maxage=900");
                         return out;
                     }
                 } catch (NumberFormatException | IOException e) {
