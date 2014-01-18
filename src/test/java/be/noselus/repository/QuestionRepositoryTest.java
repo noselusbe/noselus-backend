@@ -2,6 +2,7 @@ package be.noselus.repository;
 
 import be.noselus.NosElusModule;
 import be.noselus.dto.PartialResult;
+import be.noselus.dto.SearchParameter;
 import be.noselus.model.Question;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -25,28 +26,28 @@ public class QuestionRepositoryTest {
 
     @Test
     public void containData() {
-        final List<Question> questions = repo.getQuestions();
-        assertTrue(questions.size() == 50);
+        final List<Question> questions = repo.getQuestions(new SearchParameter(10)).getResults();
+        assertTrue(questions.size() == 10);
     }
 
     @Test
     public void findByKeyWord() {
-        final List<Question> questions = repo.searchByKeyword("Flandre", "Wallonie");
+        final List<Question> questions = repo.searchByKeyword(new SearchParameter(),"Flandre", "Wallonie").getResults();
         assertTrue(!questions.isEmpty());
     }
 
     @Test
     public void findWithLimitReturnNoMoreThanLimit(){
-        final PartialResult<Question> questions = repo.getQuestions(1);
+        final PartialResult<Question> questions = repo.getQuestions(new SearchParameter(1));
         assertEquals(1, questions.getResults().size());
     }
 
     @Test
     public void findTheRightResult(){
-        final PartialResult<Question> questions = repo.getQuestions(10,1000);
+        final PartialResult<Question> questions = repo.getQuestions(new SearchParameter(10,536));
         assertEquals(10, questions.getResults().size());
         for (Question question : questions.getResults()) {
-            assertTrue(question.id < 1000);
+            assertTrue(question.id < 537);
         }
     }
 }

@@ -1,6 +1,7 @@
 package be.noselus.repository;
 
 import be.noselus.dto.PartialResult;
+import be.noselus.dto.SearchParameter;
 import be.noselus.model.Assembly;
 import be.noselus.model.Question;
 import com.google.common.collect.Lists;
@@ -11,7 +12,7 @@ import java.util.List;
 
 public class QuestionRepositoryStub implements QuestionRepository {
 
-    private Question question = new Question(1, 1,2,2,"2010-2011",2011, "594 (2010-2011) 1", LocalDate.parse("2011-08-29"), LocalDate.parse("2011-10-07"),
+    private Question question = new Question(1, 1, 2, 2, "2010-2011", 2011, "594 (2010-2011) 1", LocalDate.parse("2011-08-29"), LocalDate.parse("2011-10-07"),
             "Open Data - Open Government",
             "Les informations publiques, ou données ouvertes (open data), sont aujourd'hui en termes de potentiel, d'opportunités et d'enjeu au c?ur du développement de multiples innovations sociales et économiques. En effet, grâce à leur mise en ligne par l'administration et les collectivités territoriales, elles peuvent contribuer à la création de nouveaux services tout en favorisant la transparence de l'action publique.\n" +
                     "\n" +
@@ -46,36 +47,30 @@ public class QuestionRepositoryStub implements QuestionRepository {
 
 
     @Override
-    public List<Question> getQuestions() {
-
-        return Lists.newArrayList(question);
-    }
-
-    @Override
     public Question getQuestionById(final int id) {
         return question;
 
     }
 
     @Override
-    public List<Question> searchByKeyword(final String... keywords) {
-        return Lists.newArrayList(question);
+    public PartialResult<Question> searchByKeyword(final SearchParameter parameter, final String... keywords) {
+        return getQuestions(parameter);
     }
 
     @Override
     public List<Integer> questionIndexAskedBy(final int askedById) {
         return Arrays.asList(1);
     }
-    
+
     @Override
-    public List<Question> questionAskedBy(final int askedById) {
-    	return Lists.newArrayList(question);
+    public PartialResult<Question> questionAskedBy(final SearchParameter parameter, final int askedById) {
+        return getQuestions(parameter);
     }
 
-	@Override
-	public List<Question> questionAssociatedToEurovoc(int id) {
-		return Lists.newArrayList(question);
-	}
+    @Override
+    public List<Question> questionAssociatedToEurovoc(int id) {
+        return Lists.newArrayList(question);
+    }
 
     @Override
     public void insertOrUpdateQuestion(final Question question) {
@@ -83,13 +78,8 @@ public class QuestionRepositoryStub implements QuestionRepository {
     }
 
     @Override
-    public PartialResult<Question> getQuestions(final Integer limit) {
-        return new PartialResult<>(getQuestions(),null,limit,1);
-    }
-
-    @Override
-    public PartialResult<Question> getQuestions(final Integer limit, final Integer firstItem) {
-        return new PartialResult<>(getQuestions(),null,limit,1);
+    public PartialResult<Question> getQuestions(final SearchParameter parameter) {
+        return new PartialResult<>(Lists.newArrayList(question), null, parameter.getLimit(), 1);
     }
 
 }

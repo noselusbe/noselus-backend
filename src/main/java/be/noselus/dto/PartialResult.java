@@ -18,7 +18,6 @@ public class PartialResult<T> {
         this.nextItem = nextItem;
         this.limit = limit;
         this.totalNumberOfResult = totalNumberOfResult;
-
     }
 
     public List<T> getResults() {

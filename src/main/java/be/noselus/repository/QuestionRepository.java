@@ -1,6 +1,7 @@
 package be.noselus.repository;
 
 import be.noselus.dto.PartialResult;
+import be.noselus.dto.SearchParameter;
 import be.noselus.model.Question;
 
 import java.util.List;
@@ -11,28 +12,22 @@ import java.util.List;
 public interface QuestionRepository {
 
     /**
-     * Returns the 50 most recently asked questions.
-     */
-    List<Question> getQuestions();
-
-    /**
      * Returns the question with the given id.
      *
      * @param id the id of the question to look for.
      */
     Question getQuestionById(int id);
 
-    List<Question> searchByKeyword(String... keywords);
+    PartialResult<Question> searchByKeyword(SearchParameter parameter, String... split);
 
     List<Integer> questionIndexAskedBy(int askedById);
-    
-    List<Question> questionAskedBy(int askedById);
+
+    PartialResult<Question> questionAskedBy(SearchParameter parameter, int askedById);
     
     List<Question> questionAssociatedToEurovoc(int id);
 
     void insertOrUpdateQuestion(Question question);
 
-    PartialResult<Question> getQuestions(Integer limit);
+    PartialResult<Question> getQuestions(SearchParameter parameter);
 
-    PartialResult<Question> getQuestions(Integer limit, Integer firstItem);
 }

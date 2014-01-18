@@ -2,6 +2,7 @@ package be.noselus;
 
 import be.noselus.db.DatabaseUpdater;
 import be.noselus.dto.PartialResult;
+import be.noselus.dto.SearchParameter;
 import be.noselus.model.PersonSmall;
 import be.noselus.pictures.PictureManager;
 import be.noselus.repository.PoliticianRepository;
@@ -10,6 +11,8 @@ import be.noselus.service.JsonTransformer;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -29,6 +32,8 @@ import static spark.Spark.*;
  */
 public class NosElus {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(NosElus.class);
+
     public static final int NOT_FOUND = 404;
     public static final int DEFAULT_RESULT_LIMIT = 50;
     private final QuestionRepository questionRepository;
@@ -45,12 +50,14 @@ public class NosElus {
     }
 
     public static void main(String[] args) throws IOException {
+        LOGGER.debug("Starting up");
         Injector injector = Guice.createInjector(new NosElusModule());
         final NosElus nosElus = injector.getInstance(NosElus.class);
         nosElus.initialize();
     }
 
     private void initialize() {
+        LOGGER.info("Begin initialization");
         dbUpdater.update();
         pictureManager.start();
 
@@ -62,6 +69,7 @@ public class NosElus {
 
         questionRoutes();
         politicianRoutes();
+        LOGGER.info("End initialization");
     }
 
     private void politicianRoutes() {
@@ -131,27 +139,14 @@ public class NosElus {
             public Object myHandle(final Request request, final Response response) {
                 final String q = request.queryParams("q");
                 final String askedBy = request.queryParams("asked_by");
-                final String firstElement = request.queryParams("first_element");
-                final String limitAsked = request.queryParams("limit");
-                final int limit;
-                if (limitAsked == null) {
-                    limit = DEFAULT_RESULT_LIMIT;
-                } else {
-                    limit = Integer.valueOf(limitAsked);
-                }
+                final SearchParameter parameter = getSearchParameter(request);
                 if (q != null) {
                     final String keywords = q.replace("\"", "");
-                    return resultAs("questions", questionRepository.searchByKeyword(keywords.split(" ")));
+                    return resultAs("questions", questionRepository.searchByKeyword(parameter, keywords.split(" ")));
                 } else if (askedBy != null) {
-                    return resultAs("questions", questionRepository.questionAskedBy(Integer.valueOf(askedBy)));
+                    return resultAs("questions", questionRepository.questionAskedBy(parameter, Integer.valueOf(askedBy)));
                 }
-                if (firstElement == null) {
-                    return resultAs("questions", questionRepository.getQuestions(limit));
-                } else if (limitAsked == null){
-                    return resultAs("questions", questionRepository.getQuestions());
-                } else {
-                    return resultAs("questions", questionRepository.getQuestions(limit, Integer.valueOf(firstElement)));
-                }
+                return resultAs("questions", questionRepository.getQuestions(parameter));
             }
         });
 
@@ -172,7 +167,7 @@ public class NosElus {
                 if (list.isEmpty()) {
                     return null;
                 } else {
-                    return resultAs("questions", questionRepository.questionAskedBy(list.get(0).id));
+                    return resultAs("questions", questionRepository.questionAskedBy(getSearchParameter(request), list.get(0).id));
                 }
 
             }
@@ -190,6 +185,17 @@ public class NosElus {
 
     //Helpers
 
+    private static SearchParameter getSearchParameter(final Request request) {
+        final String firstElement = request.queryParams("first_element");
+        final String limitAsked = request.queryParams("limit");
+        final int limit;
+        if (limitAsked == null) {
+            limit = DEFAULT_RESULT_LIMIT;
+        } else {
+            limit = Integer.valueOf(limitAsked);
+        }
+        return new SearchParameter(limit, firstElement == null ? null : Integer.valueOf(firstElement));
+    }
 
     private Map<String, Object> resultAs(final String key, final PartialResult<?> partialResult) {
         final Map<String, Object> result = new HashMap<>();
