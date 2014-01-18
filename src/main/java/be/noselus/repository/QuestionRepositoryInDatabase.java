@@ -23,14 +23,12 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
     private static final String SELECT_QUESTION = "SELECT * FROM written_question WHERE 1=1 ";
     public static final String ORDER_BY = " ORDER BY date_asked DESC, id DESC";
 
-    private final AssemblyRegistry assemblyRegistry;
     private final QuestionMapper mapper;
 
     @Inject
     public QuestionRepositoryInDatabase(final AssemblyRegistry assemblyRegistry, final DatabaseHelper dbHelper) {
         super(dbHelper);
-        this.assemblyRegistry = assemblyRegistry;
-        this.mapper = new QuestionMapper(this.assemblyRegistry);
+        this.mapper = new QuestionMapper(assemblyRegistry);
     }
 
     @Override

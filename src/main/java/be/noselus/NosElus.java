@@ -1,6 +1,8 @@
 package be.noselus;
 
+import be.noselus.db.DatabaseHelper;
 import be.noselus.db.DatabaseUpdater;
+import be.noselus.db.DbConfig;
 import be.noselus.dto.PartialResult;
 import be.noselus.dto.SearchParameter;
 import be.noselus.model.PersonSmall;
@@ -40,13 +42,17 @@ public class NosElus {
     private final PoliticianRepository politicianRepository;
     private final PictureManager pictureManager;
     private final DatabaseUpdater dbUpdater;
+    private final DatabaseHelper dbHelper;
+    private final DbConfig dbConfig;
 
     @Inject
-    public NosElus(final QuestionRepository questionRepository, final PoliticianRepository politicianRepository, final PictureManager pictureManager, final DatabaseUpdater dbUpdater) {
+    public NosElus(final QuestionRepository questionRepository, final PoliticianRepository politicianRepository, final PictureManager pictureManager, final DatabaseUpdater dbUpdater, final DatabaseHelper dbHelper, final DbConfig dbConfig) {
         this.questionRepository = questionRepository;
         this.politicianRepository = politicianRepository;
         this.pictureManager = pictureManager;
         this.dbUpdater = dbUpdater;
+        this.dbHelper = dbHelper;
+        this.dbConfig = dbConfig;
     }
 
     public static void main(String[] args) throws IOException {
@@ -58,6 +64,8 @@ public class NosElus {
 
     private void initialize() {
         LOGGER.info("Begin initialization");
+        dbConfig.invoke();
+        dbHelper.start();
         dbUpdater.update();
         pictureManager.start();
 

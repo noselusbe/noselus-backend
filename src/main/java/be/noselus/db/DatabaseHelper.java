@@ -1,30 +1,30 @@
 package be.noselus.db;
 
+import be.noselus.service.Service;
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.net.URI;
 import java.sql.Connection;
 import java.sql.SQLException;
 
 @Singleton
-public class DatabaseHelper {
+public class DatabaseHelper implements Service {
 
-    private static final Logger logger = LoggerFactory.getLogger(DatabaseHelper.class);
+    private final DbConfig dbConfig;
     private BoneCP connectionPool;
 
-    public DatabaseHelper() {
-        setUp();
+    @Inject
+    public DatabaseHelper(final DbConfig dbConfig) {
+        this.dbConfig = dbConfig;
     }
 
-    public void setUp() {
-        DbConfig dbConfig = new DbConfig().invoke();
+    public void start() {
+        dbConfig.invoke();
         try {
             // load the database driver (make sure this is in your classpath!)
-            Class.forName("org.postgresql.Driver");
+            Class.forName(dbConfig.getDriver());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -33,7 +33,7 @@ public class DatabaseHelper {
             // setup the connection pool
             BoneCPConfig config = new BoneCPConfig();
             config.setJdbcUrl(dbConfig.getUrl()); // jdbc url specific to your database, eg jdbc:mysql://127.0.0.1/yourdb
-            config.setUsername(dbConfig.getUser());
+            config.setUsername(dbConfig.getUsername());
             config.setPassword(dbConfig.getPassword());
             config.setMinConnectionsPerPartition(5);
             config.setMaxConnectionsPerPartition(18);
@@ -53,50 +53,7 @@ public class DatabaseHelper {
         return connection; // fetch a connection
     }
 
-    public void shutdown() {
+    public void stop() {
         connectionPool.shutdown(); // shutdown connection pool.
-    }
-
-    private static class DbConfig {
-        private String url;
-        private String user;
-        private String password;
-
-        public String getUrl() {
-            return url;
-        }
-
-        public String getUser() {
-            return user;
-        }
-
-        public String getPassword() {
-            return password;
-        }
-
-        public DbConfig invoke() {
-            final String database_url = System.getenv("DATABASE_URL");
-
-            if (database_url == null) {
-                url = "jdbc:postgresql://localhost:5432/";
-            } else {
-                user = System.getenv("DATABASE_USER");
-                password = System.getenv("DATABASE_PASSWORD");
-                url = database_url;
-
-                if (user == null && password == null) {
-                    URI dbUri = null;
-                    try {
-                        dbUri = new URI(database_url);
-                        user = dbUri.getUserInfo().split(":")[0];
-                        password = dbUri.getUserInfo().split(":")[1];
-                        url = "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath();
-                    } catch (Exception e) {
-                        logger.error("error connecting to database", e);
-                    }
-                }
-            }
-            return this;
-        }
     }
 }

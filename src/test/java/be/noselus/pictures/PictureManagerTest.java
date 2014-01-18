@@ -1,8 +1,6 @@
 package be.noselus.pictures;
 
-import be.noselus.NosElusModule;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
+import be.noselus.AbstractDbDependantTest;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,14 +8,13 @@ import org.junit.Test;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class PictureManagerTest {
+public class PictureManagerTest extends AbstractDbDependantTest {
 
     private PictureManager pictureManager;
 
     @Before
     public void setUp() {
-        Injector injector = Guice.createInjector(new NosElusModule());
-        pictureManager = injector.getInstance(PictureManager.class);
+        pictureManager = new PictureManager(AbstractDbDependantTest.dbHelper);
         pictureManager.start();
     }
 

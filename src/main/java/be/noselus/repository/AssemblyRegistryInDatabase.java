@@ -43,7 +43,7 @@ public class AssemblyRegistryInDatabase extends AbstractRepositoryInDatabase imp
                 assemblies.put(id, result);
 
             } catch (SQLException e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException("Error retrieving assembly with id " + id, e);
             }
         }
         return assemblies.get(id);

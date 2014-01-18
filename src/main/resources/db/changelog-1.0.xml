@@ -10,7 +10,7 @@
         </createTable>
         <createTable tableName="eurovoc">
             <column name="id" autoIncrement="true" type="int"/>
-            <column name="label" type="text"/>
+            <column name="label" type="varchar"/>
         </createTable>
         <createTable tableName="person">
             <column name="id" autoIncrement="true" type="int"/>

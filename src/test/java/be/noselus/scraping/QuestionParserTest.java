@@ -1,6 +1,9 @@
 package be.noselus.scraping;
 
+import be.noselus.AbstractDbDependantTest;
 import be.noselus.db.DatabaseHelper;
+import be.noselus.db.DatabaseUpdater;
+import be.noselus.db.DbConfig;
 import be.noselus.model.Question;
 import be.noselus.repository.AssemblyRegistry;
 import be.noselus.repository.AssemblyRegistryInDatabase;
@@ -11,20 +14,24 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
+import org.junit.rules.ExternalResource;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 
-public class QuestionParserTest {
+public class QuestionParserTest extends AbstractDbDependantTest {
 
-    PoliticianRepository politicianRepository = new PoliticianRepositoryInMemory();
-    AssemblyRegistry assemblyRegistry = new AssemblyRegistryInDatabase(new DatabaseHelper());
-    QuestionParser parser = new QuestionParser(politicianRepository, assemblyRegistry);
+    private QuestionParser parser ;
+
+    @Before
+    public void setup(){
+        PoliticianRepository politicianRepository = new PoliticianRepositoryInMemory();
+        AssemblyRegistry assemblyRegistry = new AssemblyRegistryInDatabase(AbstractDbDependantTest.dbHelper);
+        parser = new QuestionParser(politicianRepository, assemblyRegistry);
+    }
 
     @Test
     public void openData() throws IOException {

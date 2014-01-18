@@ -1,9 +1,7 @@
 package be.noselus.repository;
 
-import be.noselus.NosElusModule;
+import be.noselus.AbstractDbDependantTest;
 import be.noselus.model.Person;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -14,26 +12,23 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 
-public class PoliticianRepositoryInDatabaseTest {
+public class PoliticianRepositoryInDatabaseTest extends AbstractDbDependantTest {
 
-    List<Person> store;
+    PoliticianRepository repo;
 
     @Before
     public void init() {
-        Injector injector = Guice.createInjector(new NosElusModule());
-        PoliticianRepository repo = injector.getInstance(PoliticianRepositoryInDatabase.class);
-        store = repo.getPoliticians();
+        repo = new PoliticianRepositoryInDatabase(AbstractDbDependantTest.dbHelper);
     }
 
     @Test
     public void size() {
-        Assert.assertTrue(store.size() > 0);
+        Assert.assertTrue(repo.getPoliticians().size() > 0);
     }
 
     @Test
-    @Ignore("TODO with ORDER")
     public void data() {
-        final Person person = store.get(1);
+        final Person person = repo.getPoliticianById(87);
         assertEquals("COLLIGNON Christophe", person.fullName);
         assertEquals("PS", person.party.trim());
         assertEquals("rue du Marché, 45", person.address);
