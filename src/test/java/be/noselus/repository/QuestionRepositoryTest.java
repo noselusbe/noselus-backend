@@ -48,6 +48,13 @@ public class QuestionRepositoryTest extends AbstractDbDependantTest {
     }
 
     @Test
+    public void findByKeyWordWithFirstElementSpecified() {
+        final List<Question> questions = repo.searchByKeyword(new SearchParameter(1, 1), "Flandre", "Wallonie").getResults();
+        assertEquals(1, questions.size());
+        assertEquals((Integer) 1, questions.get(0).id);
+    }
+
+    @Test
     public void findWithLimitReturnNoMoreThanLimit() {
         final PartialResult<Question> questions = repo.getQuestions(new SearchParameter(1));
         assertEquals(1, questions.getResults().size());

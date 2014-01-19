@@ -22,6 +22,7 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
     private static final Logger LOGGER = LoggerFactory.getLogger(QuestionRepositoryInDatabase.class);
     private static final String SELECT_QUESTION = "SELECT * FROM written_question WHERE 1=1 ";
     public static final String ORDER_BY = " ORDER BY date_asked DESC, id DESC";
+    public static final String NEXT_ELEMENT_WHERE = " AND date_asked <= ? AND id <= ?";
 
     private final QuestionMapper mapper;
 
@@ -67,13 +68,19 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
             }
         }
         where.append(")");
+        final Integer firstElement = (Integer) parameter.getFirstElement();
+        if (firstElement != null) {
+            where.append(NEXT_ELEMENT_WHERE);
+        }
         sql.append(where);
         sql.append(ORDER_BY);
         sql.append(" LIMIT ?");
         sql.append(";");
         try (Connection db = dbHelper.getConnection(false, true);
              PreparedStatement stat = db.prepareStatement(sql.toString())) {
-            stat.setInt(1, parameter.getLimit()+1);
+            int position = 1;
+            position = parameterForNext(firstElement, stat, position);
+            stat.setInt(position, parameter.getLimit() + 1);
             stat.execute();
 
             while (stat.getResultSet().next()) {
@@ -135,7 +142,7 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
     @Override
     public PartialResult<Question> questionAskedBy(final SearchParameter parameter, int askedById) {
         try (Connection db = dbHelper.getConnection(false, true);
-             PreparedStatement questionsStat = db.prepareStatement(SELECT_QUESTION + " AND asked_by = ? "+ ORDER_BY + " LIMIT ?;")) {
+             PreparedStatement questionsStat = db.prepareStatement(SELECT_QUESTION + " AND asked_by = ? " + ORDER_BY + " LIMIT ?;")) {
 
             questionsStat.setInt(1, askedById);
             questionsStat.setInt(2, parameter.getLimit());
@@ -152,7 +159,7 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
         } catch (SQLException e) {
             LOGGER.error("Error loading questions asked by " + askedById, e);
         }
-        final List<Question> objects  = Collections.emptyList();
+        final List<Question> objects = Collections.emptyList();
         return makePartialResult(objects, parameter.getLimit(), null);
     }
 
@@ -211,7 +218,7 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
         String whereClause = "";
         final Integer firstElement = (Integer) parameter.getFirstElement();
         if (firstElement != null) {
-            whereClause += " AND date_asked <= ? AND id <= ?";
+            whereClause += NEXT_ELEMENT_WHERE;
         }
         try (Connection db = dbHelper.getConnection(false, true);
              PreparedStatement questionCount = db.prepareStatement("SELECT count(*) AS total FROM written_question;");
@@ -230,14 +237,7 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
             total = questionCount.getResultSet().getInt("total");
 
             int parameterPosition = 1;
-            if (firstElement != null) {
-                final Question firstQuestion = getQuestionById(firstElement);
-                if (firstQuestion == null){
-                    throw new RuntimeException("No question with id " + firstElement);
-                }
-                questionsStatement.setDate(parameterPosition++, new java.sql.Date(firstQuestion.dateAsked.toDate().getTime()));
-                questionsStatement.setInt(parameterPosition++, firstQuestion.id);
-            }
+            parameterPosition = parameterForNext(firstElement, questionsStatement, parameterPosition);
             questionsStatement.setInt(parameterPosition, limit + 1);
             questionsStatement.execute();
 
@@ -277,6 +277,18 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
         return questionPartialResult;
     }
 
+    private int parameterForNext(final Integer firstElement, final PreparedStatement questionsStatement, int parameterPosition) throws SQLException {
+        if (firstElement != null) {
+            final Question firstQuestion = getQuestionById(firstElement);
+            if (firstQuestion == null) {
+                throw new RuntimeException("No question with id " + firstElement);
+            }
+            questionsStatement.setDate(parameterPosition++, new java.sql.Date(firstQuestion.dateAsked.toDate().getTime()));
+            questionsStatement.setInt(parameterPosition++, firstQuestion.id);
+        }
+        return parameterPosition;
+    }
+
     private PartialResult<Question> makePartialResult(final List<Question> results, final Integer limit, final Integer total) {
         final int resultFound = results.size();
         final Integer nextElement;
@@ -288,7 +300,6 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
         }
         return new PartialResult<>(results, nextElement, limit, total);
     }
-
 
     private void insertQuestion(final Connection db, final Question question) throws SQLException {
         LOGGER.debug("Inserting question " + question.assembly.getLabel() + " " + question.assemblyRef);
