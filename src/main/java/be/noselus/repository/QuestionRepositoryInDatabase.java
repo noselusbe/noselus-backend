@@ -196,7 +196,6 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
                 insertQuestion(db, question);
             }
             db.commit();
-            db.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

@@ -43,7 +43,7 @@ public class QuestionRepositoryStub implements QuestionRepository {
                     "\n" +
                     "Appliqué au secteur public, le principe de l'Open Data consiste donc à permettre l'usage, commercial ou non, par d'autres acteurs (organismes publics, entreprises, associations, pouvoirs locaux ou citoyens) des données collectées par un organisme public donné.\n" +
                     "C'est en 2006 que le gouvernement adoptait définitivement le décret transposant la directive précitée.\n",
-            new Assembly(1, "Parlement Wallon", Assembly.Level.REGION));
+            new Assembly(1, "Parlement Wallon", Assembly.Level.REGION), "ref");
 
 
     @Override

@@ -24,13 +24,13 @@ public class Question {
     public String excerpt;
     public Assembly assembly;
     public String assemblyRef;
-    public List<Eurovoc> eurovocs = new ArrayList<Eurovoc>();
+    public List<Eurovoc> eurovocs = new ArrayList<>();
 
     public Question() {
 
     }
 
-    public Question(Integer id, int askedBy, int askedTo, int answeredBy, String session, Integer year, String number, LocalDate dateAsked, LocalDate dateAnswered, String title, String questionText, String answerText, Assembly assembly) {
+    public Question(Integer id, int askedBy, int askedTo, int answeredBy, String session, Integer year, String number, LocalDate dateAsked, LocalDate dateAnswered, String title, String questionText, String answerText, Assembly assembly, String assemblyRef) {
         this.askedBy = askedBy;
         this.askedTo = askedTo;
         this.answeredBy = answeredBy;
@@ -49,6 +49,7 @@ public class Question {
         this.questionText = questionText;
         this.answerText = answerText;
         this.assembly = assembly;
+        this.assemblyRef = assemblyRef;
     }
     
     public void addEurovoc(List<Eurovoc> list) {

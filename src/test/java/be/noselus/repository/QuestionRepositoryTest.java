@@ -3,10 +3,12 @@ package be.noselus.repository;
 import be.noselus.AbstractDbDependantTest;
 import be.noselus.dto.PartialResult;
 import be.noselus.dto.SearchParameter;
+import be.noselus.model.Assembly;
 import be.noselus.model.Question;
 import com.ninja_squad.dbsetup.DbSetup;
 import com.ninja_squad.dbsetup.destination.DriverManagerDestination;
 import com.ninja_squad.dbsetup.operation.Operation;
+import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -58,5 +60,26 @@ public class QuestionRepositoryTest extends AbstractDbDependantTest {
         for (Question question : questions.getResults()) {
             assertTrue(question.id < 537);
         }
+    }
+
+    @Test
+    public void insertNewQuestion() {
+        Question question = new Question();
+        question.year = 2014;
+        question.title = "new question";
+        question.dateAsked = new LocalDate();
+        question.assembly = new Assembly(1, "Parlement Wallon", Assembly.Level.REGION);
+        question.questionText = "Question text";
+        question.assemblyRef = "test";
+        repo.insertOrUpdateQuestion(question);
+        PartialResult<Question> questionInserted = repo.searchByKeyword(new SearchParameter(50, null), "new question");
+        assertEquals(1, questionInserted.getResults().size());
+        final Question actual = questionInserted.getResults().get(0);
+        assertEquals("New question", actual.title);
+        final Integer id = actual.id;
+        actual.title = "updated title";
+        repo.insertOrUpdateQuestion(actual);
+        final Question updatedQuestion = repo.getQuestionById(id);
+        assertEquals("Updated title", updatedQuestion.title);
     }
 }

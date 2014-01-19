@@ -18,7 +18,7 @@ public class QuestionMapper {
         this.assemblyRegistry = assemblyRegistry;
     }
 
-    public Question map( ResultSet r) throws SQLException {
+    public Question map(ResultSet r) throws SQLException {
         final int id = r.getInt("id");
         final int asked_by = r.getInt("asked_by");
         final int asked_to = r.getInt("asked_to");
@@ -29,7 +29,7 @@ public class QuestionMapper {
         final LocalDate date_asked = LocalDate.fromDateFields(r.getDate("date_asked"));
         final Date date_answer = r.getDate("date_answer");
         final LocalDate date_answered;
-        if (date_answer != null){
+        if (date_answer != null) {
             date_answered = LocalDate.fromDateFields(date_answer);
         } else {
             date_answered = null;
@@ -39,11 +39,11 @@ public class QuestionMapper {
         final String answer_text = r.getString("answer_text");
         final int assembly_id = r.getInt("assembly_id");
         final Assembly assembly = assemblyRegistry.findId(assembly_id);
-        return new Question(id, asked_by, asked_to, answered_by, session, year, number, date_asked, date_answered, title, question_text, answer_text, assembly);
+        final String assemblyRef = r.getString("assembly_ref");
+        return new Question(id, asked_by, asked_to, answered_by, session, year, number, date_asked, date_answered, title, question_text, answer_text, assembly, assemblyRef);
     }
 
-    private String capitalizeFirstLetter(String original){
-        final String result = Character.toUpperCase(original.charAt(0)) + original.substring(1);
-        return result;
+    private String capitalizeFirstLetter(String original) {
+        return Character.toUpperCase(original.charAt(0)) + original.substring(1);
     }
 }
