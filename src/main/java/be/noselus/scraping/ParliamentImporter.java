@@ -1,6 +1,7 @@
 package be.noselus.scraping;
 
 import be.noselus.NosElusModule;
+import be.noselus.db.DatabaseHelper;
 import be.noselus.repository.QuestionRepository;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -27,6 +28,8 @@ public class ParliamentImporter {
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException, InterruptedException {
         Injector injector = Guice.createInjector(new NosElusModule());
+        final DatabaseHelper dbHelper = injector.getInstance(DatabaseHelper.class);
+        dbHelper.start();
         ParliamentImporter instance = injector.getInstance(ParliamentImporter.class);
         instance.updateRepository();
     }

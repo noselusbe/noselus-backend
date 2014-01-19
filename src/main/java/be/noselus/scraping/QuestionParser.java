@@ -37,7 +37,7 @@ public class QuestionParser {
     public Question parse(int id) throws IOException {
         final String resource = url + id;
         try (InputStream in = new URL(resource).openStream();) {
-            return parse(in, url, id);
+            return parse(in, resource, id);
         }
     }
 
