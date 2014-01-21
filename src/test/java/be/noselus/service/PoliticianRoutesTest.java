@@ -8,6 +8,7 @@ import be.noselus.repository.PoliticianRepository;
 import com.jayway.restassured.RestAssured;
 import org.junit.Before;
 import org.junit.Test;
+import spark.Spark;
 
 import java.util.Collections;
 
@@ -16,7 +17,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
-public class PoliticianRoutesTest {
+public class PoliticianRoutesTest extends AbstractRoutesTest {
 
     private PictureManager pictureManager = mock(PictureManager.class);
     private PoliticianRepository politicianRepository = mock(PoliticianRepository.class);
@@ -25,7 +26,6 @@ public class PoliticianRoutesTest {
     public void setup() {
         PoliticianRoutes routes = new PoliticianRoutes(pictureManager, politicianRepository, new RoutesHelper());
         routes.setup();
-        RestAssured.port = 4567;
         given(politicianRepository.getPoliticianById(1)).willReturn(new Person(1, "name", "party", "address",
                 "postalcode", "town", "phone", "fax", "email", "site", PersonFunction.DEPUTY, 1,
                 Collections.<Integer>emptyList(), new Assembly(1, "label", Assembly.Level.DEPUTY_CHAMBER), 0, 0));

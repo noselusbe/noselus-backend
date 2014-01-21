@@ -3,7 +3,6 @@ package be.noselus.service;
 import be.noselus.model.Question;
 import be.noselus.repository.PoliticianRepository;
 import be.noselus.repository.QuestionRepository;
-import com.jayway.restassured.RestAssured;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -13,7 +12,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
 
-public class QuestionRoutesTest {
+public class QuestionRoutesTest extends AbstractRoutesTest {
 
     private QuestionRepository questionRepository = mock(QuestionRepository.class);
     private PoliticianRepository politicianRepository = mock(PoliticianRepository.class);
@@ -22,7 +21,6 @@ public class QuestionRoutesTest {
     public void setup() {
         QuestionRoutes routes = new QuestionRoutes(questionRepository, politicianRepository, new RoutesHelper());
         routes.setup();
-        RestAssured.port = 4567;
         final Question question = new Question();
         question.id = 1;
         question.title = "question title";
