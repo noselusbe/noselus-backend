@@ -23,6 +23,7 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
     private static final String SELECT_QUESTION = "SELECT * FROM written_question WHERE 1=1 ";
     public static final String ORDER_BY = " ORDER BY date_asked DESC, id DESC";
     public static final String NEXT_ELEMENT_WHERE = " AND date_asked <= ? AND id <= ?";
+    public static final String LIMIT = " LIMIT ?;";
 
     private final QuestionMapper mapper;
 
@@ -54,46 +55,18 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
     }
 
     @Override
-    public PartialResult<Question> searchByKeyword(final SearchParameter parameter, final String... keywords) {
-        List<Question> results = Lists.newArrayList();
-        final StringBuilder sql = new StringBuilder(SELECT_QUESTION);
-        final StringBuilder where = new StringBuilder("AND (lower(title) LIKE ");
-        for (int i = 0; i < keywords.length; i++) {
-            String keyword = keywords[i];
-            where.append("lower('%");
-            where.append(keyword);
-            where.append("%')");
-            if (i < keywords.length - 1) {
-                where.append(" OR lower(title) LIKE  ");
+    public void insertOrUpdateQuestion(final Question question) {
+        try (Connection db = dbHelper.getConnection(false, true)) {
+
+            if (questionIsPresent(db, question)) {
+                updateQuestion(db, question);
+            } else {
+                insertQuestion(db, question);
             }
-        }
-        where.append(")");
-        final Integer firstElement = (Integer) parameter.getFirstElement();
-        if (firstElement != null) {
-            where.append(NEXT_ELEMENT_WHERE);
-        }
-        sql.append(where);
-        sql.append(ORDER_BY);
-        sql.append(" LIMIT ?");
-        sql.append(";");
-        try (Connection db = dbHelper.getConnection(false, true);
-             PreparedStatement stat = db.prepareStatement(sql.toString())) {
-            int position = 1;
-            position = parameterForNext(firstElement, stat, position);
-            stat.setInt(position, parameter.getLimit() + 1);
-            stat.execute();
-
-            while (stat.getResultSet().next()) {
-                final Question question = mapper.map(stat.getResultSet());
-                this.addEurovocsToQuestion(question, db);
-                results.add(question);
-            }
-
-
+            db.commit();
         } catch (SQLException e) {
-            LOGGER.error("Error loading question with keywords " + Arrays.toString(keywords), e);
+            throw new RuntimeException(e);
         }
-        return makePartialResult(results, parameter.getLimit(), null);
     }
 
     @Override
@@ -115,34 +88,52 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
         return Collections.emptyList();
     }
 
-
-    private void addEurovocsToQuestion(Question q, Connection db) {
-        try (PreparedStatement stat = db.prepareStatement("SELECT label, id FROM eurovoc JOIN written_question_eurovoc "
-                + "ON written_question_eurovoc.id_eurovoc = eurovoc.id "
-                + "WHERE written_question_eurovoc.id_written_question = ? ")) {
-
-            stat.setInt(1, q.id);
-
+    @Override
+    public PartialResult<Question> searchByKeyword(final SearchParameter parameter, final String... keywords) {
+        List<Question> results = Lists.newArrayList();
+        final StringBuilder sql = new StringBuilder(SELECT_QUESTION);
+        final StringBuilder where = new StringBuilder("AND (lower(title) LIKE ");
+        for (int i = 0; i < keywords.length; i++) {
+            String keyword = keywords[i];
+            where.append("lower('%");
+            where.append(keyword);
+            where.append("%')");
+            if (i < keywords.length - 1) {
+                where.append(" OR lower(title) LIKE  ");
+            }
+        }
+        where.append(")");
+        final Integer firstElement = (Integer) parameter.getFirstElement();
+        if (firstElement != null) {
+            where.append(NEXT_ELEMENT_WHERE);
+        }
+        sql.append(where);
+        sql.append(ORDER_BY);
+        sql.append(LIMIT);
+        try (Connection db = dbHelper.getConnection(false, true);
+             PreparedStatement stat = db.prepareStatement(sql.toString())) {
+            int position = 1;
+            position = parameterForNext(firstElement, stat, position);
+            stat.setInt(position, parameter.getLimit() + 1);
             stat.execute();
 
             while (stat.getResultSet().next()) {
-                String label = stat.getResultSet().getString("label");
-                Integer eurovocId = stat.getResultSet().getInt("id");
-
-                Eurovoc eurovoc = new Eurovoc(eurovocId, label);
-
-                q.addEurovoc(eurovoc);
+                final Question question = mapper.map(stat.getResultSet());
+                this.addEurovocsToQuestion(question, db);
+                results.add(question);
             }
-        } catch (SQLException e) {
-            LOGGER.error("ERROR while loading eurovocs from question " + q.id.toString(), e);
-        }
-    }
 
+
+        } catch (SQLException e) {
+            LOGGER.error("Error loading question with keywords " + Arrays.toString(keywords), e);
+        }
+        return makePartialResult(results, parameter.getLimit(), null);
+    }
 
     @Override
     public PartialResult<Question> questionAskedBy(final SearchParameter parameter, int askedById) {
         try (Connection db = dbHelper.getConnection(false, true);
-             PreparedStatement questionsStat = db.prepareStatement(SELECT_QUESTION + " AND asked_by = ? " + ORDER_BY + " LIMIT ?;")) {
+             PreparedStatement questionsStat = db.prepareStatement(SELECT_QUESTION + " AND asked_by = ? " + ORDER_BY + LIMIT)) {
 
             questionsStat.setInt(1, askedById);
             questionsStat.setInt(2, parameter.getLimit());
@@ -194,21 +185,6 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
     }
 
     @Override
-    public void insertOrUpdateQuestion(final Question question) {
-        try (Connection db = dbHelper.getConnection(false, true)) {
-
-            if (questionIsPresent(db, question)) {
-                updateQuestion(db, question);
-            } else {
-                insertQuestion(db, question);
-            }
-            db.commit();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
     public PartialResult<Question> getQuestions(final SearchParameter parameter) {
         Integer limit = parameter.getLimit();
         List<Question> results = Lists.newArrayList();
@@ -223,7 +199,7 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
         try (Connection db = dbHelper.getConnection(false, true);
              PreparedStatement questionCount = db.prepareStatement("SELECT count(*) AS total FROM written_question;");
 
-             PreparedStatement questionsStatement = db.prepareStatement(SELECT_QUESTION + whereClause + ORDER_BY + " LIMIT ?;");
+             PreparedStatement questionsStatement = db.prepareStatement(SELECT_QUESTION + whereClause + ORDER_BY + LIMIT);
              PreparedStatement eurovocs = db.prepareStatement("SELECT "
                      + "written_question_eurovoc.id_written_question AS written_question_id, "
                      + "eurovoc.label AS eurovoc_label, "
@@ -275,6 +251,28 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
 
         final PartialResult<Question> questionPartialResult = makePartialResult(results, limit, total);
         return questionPartialResult;
+    }
+
+    private void addEurovocsToQuestion(Question q, Connection db) {
+        try (PreparedStatement stat = db.prepareStatement("SELECT label, id FROM eurovoc JOIN written_question_eurovoc "
+                + "ON written_question_eurovoc.id_eurovoc = eurovoc.id "
+                + "WHERE written_question_eurovoc.id_written_question = ? ")) {
+
+            stat.setInt(1, q.id);
+
+            stat.execute();
+
+            while (stat.getResultSet().next()) {
+                String label = stat.getResultSet().getString("label");
+                Integer eurovocId = stat.getResultSet().getInt("id");
+
+                Eurovoc eurovoc = new Eurovoc(eurovocId, label);
+
+                q.addEurovoc(eurovoc);
+            }
+        } catch (SQLException e) {
+            LOGGER.error("ERROR while loading eurovocs from question " + q.id.toString(), e);
+        }
     }
 
     private int parameterForNext(final Integer firstElement, final PreparedStatement questionsStatement, int parameterPosition) throws SQLException {
