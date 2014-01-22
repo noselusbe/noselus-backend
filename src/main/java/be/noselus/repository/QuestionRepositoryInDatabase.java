@@ -70,25 +70,6 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
     }
 
     @Override
-    public List<Integer> questionIndexAskedBy(final int askedById) {
-        try (Connection db = dbHelper.getConnection(false, true);
-             PreparedStatement questionsStat = db.prepareStatement("SELECT id FROM written_question WHERE asked_by = ? " + ORDER_BY + ";")) {
-
-            questionsStat.setInt(1, askedById);
-
-            questionsStat.execute();
-            List<Integer> questionsAskedBy = Lists.newArrayList();
-            while (questionsStat.getResultSet().next()) {
-                questionsAskedBy.add(questionsStat.getResultSet().getInt("id"));
-            }
-            return questionsAskedBy;
-        } catch (SQLException e) {
-            LOGGER.error("Error loading questions asked by " + askedById, e);
-        }
-        return Collections.emptyList();
-    }
-
-    @Override
     public PartialResult<Question> searchByKeyword(final SearchParameter parameter, final String... keywords) {
         List<Question> results = Lists.newArrayList();
         final StringBuilder sql = new StringBuilder(SELECT_QUESTION);

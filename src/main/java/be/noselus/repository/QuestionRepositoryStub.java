@@ -7,7 +7,6 @@ import be.noselus.model.Question;
 import com.google.common.collect.Lists;
 import org.joda.time.LocalDate;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class QuestionRepositoryStub implements QuestionRepository {
@@ -55,11 +54,6 @@ public class QuestionRepositoryStub implements QuestionRepository {
     @Override
     public PartialResult<Question> searchByKeyword(final SearchParameter parameter, final String... keywords) {
         return getQuestions(parameter);
-    }
-
-    @Override
-    public List<Integer> questionIndexAskedBy(final int askedById) {
-        return Arrays.asList(1);
     }
 
     @Override

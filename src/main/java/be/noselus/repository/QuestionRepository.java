@@ -20,8 +20,6 @@ public interface QuestionRepository {
 
     PartialResult<Question> searchByKeyword(SearchParameter parameter, String... split);
 
-    List<Integer> questionIndexAskedBy(int askedById);
-
     PartialResult<Question> questionAskedBy(SearchParameter parameter, int askedById);
     
     List<Question> questionAssociatedToEurovoc(int id);
