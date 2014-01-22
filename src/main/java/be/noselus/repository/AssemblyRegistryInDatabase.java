@@ -2,8 +2,6 @@ package be.noselus.repository;
 
 import be.noselus.db.DatabaseHelper;
 import be.noselus.model.Assembly;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -27,7 +25,7 @@ public class AssemblyRegistryInDatabase extends AbstractRepositoryInDatabase imp
     public Assembly findId(final int id) {
         if (!assemblies.containsKey(id)) {
             try (Connection db = dbHelper.getConnection(false, true);
-                 PreparedStatement stat = db.prepareStatement("SELECT * FROM assembly WHERE id = ?;");) {
+                 PreparedStatement stat = db.prepareStatement("SELECT * FROM assembly WHERE id = ?;")) {
 
                 stat.setInt(1, id);
                 stat.execute();
