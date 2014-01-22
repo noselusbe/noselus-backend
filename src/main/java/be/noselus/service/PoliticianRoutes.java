@@ -19,6 +19,7 @@ import static spark.Spark.get;
 @Singleton
 public class PoliticianRoutes implements Routes {
 
+    public static final String IMAGE_JPEG_CHARSET_UTF_8 = "image/jpeg;charset=utf-8";
     private final PictureManager pictureManager;
     private final PoliticianRepository politicianRepository;
     private final RoutesHelper helper;
@@ -64,7 +65,7 @@ public class PoliticianRoutes implements Routes {
                         return null;
                     } else {
                         out = IOUtils.toByteArray(is);
-                        response.raw().setContentType("image/jpeg;charset=utf-8");
+                        response.raw().setContentType(IMAGE_JPEG_CHARSET_UTF_8);
                         response.raw().getOutputStream().write(out, 0, out.length);
                         response.header("Cache-Control", "no-transform,public,max-age=300,s-maxage=900");
                         return out;
@@ -84,7 +85,7 @@ public class PoliticianRoutes implements Routes {
                     int width = Integer.valueOf(request.splat()[0]);
                     int height = Integer.valueOf(request.splat()[1]);
 
-                    response.raw().setContentType("image/jpeg;charset=utf-8");
+                    response.raw().setContentType(IMAGE_JPEG_CHARSET_UTF_8);
                     pictureManager.get(Integer.valueOf(id), width, height, response.raw().getOutputStream());
                     return null;
                 } catch (NumberFormatException | IOException e) {

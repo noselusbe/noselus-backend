@@ -16,6 +16,8 @@ import static spark.Spark.get;
 @Singleton
 public class QuestionRoutes implements Routes {
 
+    public static final String QUESTIONS = "questions";
+    public static final String QUESTION = "question";
     private final QuestionRepository questionRepository;
     private final PoliticianRepository politicianRepository;
     private final RoutesHelper helper;
@@ -37,11 +39,11 @@ public class QuestionRoutes implements Routes {
                 final SearchParameter parameter = helper.getSearchParameter(request);
                 if (q != null) {
                     final String keywords = q.replace("\"", "");
-                    return helper.resultAs("questions", questionRepository.searchByKeyword(parameter, keywords.split(" ")));
+                    return helper.resultAs(QUESTIONS, questionRepository.searchByKeyword(parameter, keywords.split(" ")));
                 } else if (askedBy != null) {
-                    return helper.resultAs("questions", questionRepository.questionAskedBy(parameter, Integer.valueOf(askedBy)));
+                    return helper.resultAs(QUESTIONS, questionRepository.questionAskedBy(parameter, Integer.valueOf(askedBy)));
                 }
-                return helper.resultAs("questions", questionRepository.getQuestions(parameter));
+                return helper.resultAs(QUESTIONS, questionRepository.getQuestions(parameter));
             }
         });
 
@@ -50,7 +52,7 @@ public class QuestionRoutes implements Routes {
             @Override
             public Object myHandle(final Request request, final Response response) {
                 final String params = request.params(":id");
-                return helper.resultAs("question", questionRepository.getQuestionById(Integer.parseInt(params)));
+                return helper.resultAs(QUESTION, questionRepository.getQuestionById(Integer.parseInt(params)));
             }
         });
 
@@ -63,7 +65,7 @@ public class QuestionRoutes implements Routes {
                 if (list.isEmpty()) {
                     return null;
                 } else {
-                    return helper.resultAs("questions", questionRepository.questionAskedBy(helper.getSearchParameter(request), list.get(0).id));
+                    return helper.resultAs(QUESTIONS, questionRepository.questionAskedBy(helper.getSearchParameter(request), list.get(0).id));
                 }
 
             }
