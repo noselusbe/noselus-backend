@@ -6,6 +6,7 @@ import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.geometry.Positions;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -15,6 +16,7 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.TreeMap;
 
+@Singleton
 public class PictureManager implements Service {
 
     private final DatabaseHelper dbHelper;
@@ -28,7 +30,7 @@ public class PictureManager implements Service {
     @Override
     public void start() {
         try (Connection db = dbHelper.getConnection(false, true);
-             PreparedStatement stat = db.prepareStatement("SELECT id, assembly_id FROM person;");) {
+             PreparedStatement stat = db.prepareStatement("SELECT id, assembly_id FROM person;")) {
 
             stat.execute();
 
@@ -49,18 +51,9 @@ public class PictureManager implements Service {
     }
 
     public InputStream get(int id) {
-        String path = null;
-        String ext = null;
-        if (id >= 77 && id <= 150) {
-            path = "/pictures/parlement/";
-            ext = ".jpg";
-        } else if (id >= 151 && id <= 158) {
-            path = "/pictures/minister/";
-            ext = ".jpg";
-        } else if (id >= 849 && id <= 998) {
-            path = "/pictures/chamber/";
-            ext = ".gif";
-        }
+        final ImageInfo imageInfo = new ImageInfo(id).invoke();
+        final String path = imageInfo.getPath();
+        final String ext = imageInfo.getExt();
 
         if (path != null && ext != null) {
             return PictureManager.class.getResourceAsStream(path + mapping.get(id) + ext);
@@ -70,18 +63,9 @@ public class PictureManager implements Service {
     }
 
     public void get(int id, int width, int height, OutputStream os) throws IOException {
-        String path = null;
-        String ext = null;
-        if (id >= 77 && id <= 150) {
-            path = "/pictures/parlement/";
-            ext = ".jpg";
-        } else if (id >= 151 && id <= 158) {
-            path = "/pictures/minister/";
-            ext = ".jpg";
-        } else if (id >= 849 && id <= 998) {
-            path = "/pictures/chamber/";
-            ext = ".gif";
-        }
+        final ImageInfo imageInfo = new ImageInfo(id).invoke();
+        final String path = imageInfo.getPath();
+        final String ext = imageInfo.getExt();
 
         if (path != null && ext != null) {
             Thumbnails.of(PictureManager.class.getResourceAsStream(path + mapping.get(id) + ext))
@@ -92,4 +76,35 @@ public class PictureManager implements Service {
         }
     }
 
+    private class ImageInfo {
+        private final int id;
+        private String path;
+        private String ext;
+
+        public ImageInfo(final int id) {
+            this.id = id;
+        }
+
+        public String getPath() {
+            return path;
+        }
+
+        public String getExt() {
+            return ext;
+        }
+
+        public ImageInfo invoke() {
+            if (id >= 77 && id <= 150) {
+                path = "/pictures/parlement/";
+                ext = ".jpg";
+            } else if (id >= 151 && id <= 158) {
+                path = "/pictures/minister/";
+                ext = ".jpg";
+            } else if (id >= 849 && id <= 998) {
+                path = "/pictures/chamber/";
+                ext = ".gif";
+            }
+            return this;
+        }
+    }
 }
