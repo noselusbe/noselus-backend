@@ -230,8 +230,7 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
             LOGGER.error("Error loading questions from DB", e);
         }
 
-        final PartialResult<Question> questionPartialResult = makePartialResult(results, limit, total);
-        return questionPartialResult;
+        return makePartialResult(results, limit, total);
     }
 
     private void addEurovocsToQuestion(Question q, Connection db) {

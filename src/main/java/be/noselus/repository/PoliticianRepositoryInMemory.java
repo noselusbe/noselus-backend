@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class PoliticianRepositoryInMemory implements PoliticianRepository {
 
-    private static final Logger logger = LoggerFactory.getLogger(PoliticianRepositoryInMemory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PoliticianRepositoryInMemory.class);
     private List<Person> politicians;
 
     @Override
@@ -78,7 +78,7 @@ public class PoliticianRepositoryInMemory implements PoliticianRepository {
             });
 
         } catch (IOException|URISyntaxException e) {
-           logger.error("Error reading file", e);
+           LOGGER.error("Error reading file", e);
         }
     }
 
@@ -86,7 +86,7 @@ public class PoliticianRepositoryInMemory implements PoliticianRepository {
     public List<Person> getFullPoliticianByName(final String name) {
         Predicate<Person> hasName = new Predicate<Person>() {
             public boolean apply(Person p) {
-                final int endIndex = name.lastIndexOf(" ");
+                final int endIndex = name.lastIndexOf(' ');
                 final String lastName;
                 if (endIndex == -1){
                     lastName = name;

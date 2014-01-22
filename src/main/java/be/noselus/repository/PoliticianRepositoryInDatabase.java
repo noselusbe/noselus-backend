@@ -25,7 +25,7 @@ import java.util.List;
 @Singleton
 public class PoliticianRepositoryInDatabase extends AbstractRepositoryInDatabase implements PoliticianRepository {
 
-    private static final Logger logger = LoggerFactory.getLogger(PoliticianRepositoryInDatabase.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PoliticianRepositoryInDatabase.class);
     private List<Person> politicians;
 
     @Inject
@@ -88,7 +88,7 @@ public class PoliticianRepositoryInDatabase extends AbstractRepositoryInDatabase
             db.close();
 
         } catch (SQLException e) {
-            logger.error("Error loading person from DB", e);
+            LOGGER.error("Error loading person from DB", e);
         }
 
         politicians = Lists.newArrayList(politicians);
@@ -99,7 +99,7 @@ public class PoliticianRepositoryInDatabase extends AbstractRepositoryInDatabase
         Predicate<Person> hasName = new Predicate<Person>() {
             @Override
             public boolean apply(Person p) {
-                final int endIndex = name.lastIndexOf(" ");
+                final int endIndex = name.lastIndexOf(' ');
                 final String lastName;
                 if (endIndex == -1) {
                     lastName = name;

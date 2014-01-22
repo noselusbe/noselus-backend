@@ -41,7 +41,7 @@ public abstract class JsonTransformer extends ResponseTransformerRoute {
     /**
      * Adapter to handle the serialization/deserialization of JodaTime LocalDate to Json.
      */
-    public final class LocalDateAdapter implements JsonDeserializer<LocalDate>, JsonSerializer<LocalDate> {
+    public static final class LocalDateAdapter implements JsonDeserializer<LocalDate>, JsonSerializer<LocalDate> {
         final org.joda.time.format.DateTimeFormatter DATE_TIME_FORMATTER = ISODateTimeFormat.date();
 
         @Override

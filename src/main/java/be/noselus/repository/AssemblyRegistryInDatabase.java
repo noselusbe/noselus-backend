@@ -16,8 +16,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @Singleton
 public class AssemblyRegistryInDatabase extends AbstractRepositoryInDatabase implements AssemblyRegistry {
 
-    private static final Logger logger = LoggerFactory.getLogger(AssemblyRegistryInDatabase.class);
-
     private Map<Integer, Assembly> assemblies = new ConcurrentHashMap<>();
 
     @Inject

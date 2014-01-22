@@ -1,6 +1,5 @@
 package be.noselus.tools;
 
-import be.noselus.repository.QuestionRepositoryInDatabase;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.slf4j.Logger;
@@ -20,7 +19,8 @@ public final class Geocode {
 
     private static final Logger logger = LoggerFactory.getLogger(Geocode.class);
 
-    private Geocode() {}
+    private Geocode() {
+    }
 
     @SuppressWarnings("unchecked")
     public static String lookup(double latitude, double longitude) throws IOException {
@@ -65,7 +65,7 @@ public final class Geocode {
 
             return result;
         } catch (Exception e) {
-            logger.debug("error looking up this address: " + address,e);
+            logger.debug("error looking up this address: " + address, e);
             return null;
         }
     }

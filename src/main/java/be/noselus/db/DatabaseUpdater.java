@@ -32,11 +32,11 @@ public class DatabaseUpdater {
      * Update the database by executing all the required change sets.
      */
     public void update() {
-        try {
+        try (Connection connection = dbHelper.getConnection(true, false);) {
             Thread currentThread = Thread.currentThread();
             ClassLoader classLoader = currentThread.getContextClassLoader();
             ResourceAccessor accessor = new ClassLoaderResourceAccessor(classLoader);
-            Connection connection = dbHelper.getConnection(true, false);
+
             JdbcConnection jdbcConnection = new JdbcConnection(connection);
 
             Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(jdbcConnection);
