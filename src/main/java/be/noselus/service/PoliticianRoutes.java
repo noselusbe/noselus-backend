@@ -31,6 +31,7 @@ public class PoliticianRoutes implements Routes {
         this.helper = helper;
     }
 
+    @Override
     public void setup() {
         get(new JsonTransformer("/politicians") {
             @Override
@@ -52,7 +53,7 @@ public class PoliticianRoutes implements Routes {
             }
         });
 
-        get(new Route("/politicians/picture/:id") {
+        get(new Route("/politicians/:id/picture") {
             @Override
             public Object handle(final Request request, final Response response) {
                 try {
@@ -77,7 +78,7 @@ public class PoliticianRoutes implements Routes {
             }
         });
 
-        get(new Route("/politicians/picture/:id/*/*") {
+        get(new Route("/politicians/:id/picture/*/*") {
             @Override
             public Object handle(final Request request, final Response response) {
                 try {
