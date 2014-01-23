@@ -1,4 +1,4 @@
-package be.noselus.service;
+package be.noselus.util;
 
 /**
  * Services need to be started during initialization of the application.

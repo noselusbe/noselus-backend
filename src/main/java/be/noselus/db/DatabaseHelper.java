@@ -1,6 +1,6 @@
 package be.noselus.db;
 
-import be.noselus.service.Service;
+import be.noselus.util.Service;
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
 

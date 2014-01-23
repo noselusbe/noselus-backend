@@ -1,7 +1,7 @@
 package be.noselus.pictures;
 
 import be.noselus.db.DatabaseHelper;
-import be.noselus.service.Service;
+import be.noselus.util.Service;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.geometry.Positions;
 
