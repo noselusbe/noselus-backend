@@ -1,10 +1,7 @@
 package be.noselus.scraping;
 
-import be.noselus.NosElusModule;
-import be.noselus.db.DatabaseHelper;
+import be.noselus.AbstractDbDependantTest;
 import be.noselus.db.SqlRequester;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -25,7 +22,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class PersonParserTest {
+//TODO Those are not test,move somewhere more appropriate.
+public class PersonParserTest extends AbstractDbDependantTest{
 
     String urlParlement = "http://www.parlement-wallon.be/content/default.php?p=01-01"; // .jpg
     String urlChamber = "http://www.dekamer.be/site/wwwroot/images/cv/"; // .gif
@@ -34,8 +32,7 @@ public class PersonParserTest {
 
     @Before
     public void init() throws ClassNotFoundException, SQLException {
-        Injector injector = Guice.createInjector(new NosElusModule());
-        db = injector.getInstance(DatabaseHelper.class).getConnection(true, false);
+        db = dbHelper.getConnection(true, false);
     }
 
     @After
@@ -45,7 +42,7 @@ public class PersonParserTest {
 
     @Test
     @Ignore
-    public void parseListParlement() throws MalformedURLException, IOException {
+    public void parseListParliament() throws IOException {
 
         Document doc = Jsoup.parse(new URL(urlParlement).openStream(), "iso-8859-1", urlParlement);
 
