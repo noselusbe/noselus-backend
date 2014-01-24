@@ -1,9 +1,6 @@
 package be.noselus.scraping;
 
 import be.noselus.AbstractDbDependantTest;
-import be.noselus.db.DatabaseHelper;
-import be.noselus.db.DatabaseUpdater;
-import be.noselus.db.DbConfig;
 import be.noselus.model.Question;
 import be.noselus.repository.AssemblyRegistry;
 import be.noselus.repository.AssemblyRegistryInDatabase;
@@ -14,8 +11,9 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.junit.*;
-import org.junit.rules.ExternalResource;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,10 +22,10 @@ import java.util.List;
 
 public class QuestionParserTest extends AbstractDbDependantTest {
 
-    private QuestionParser parser ;
+    private QuestionParser parser;
 
     @Before
-    public void setup(){
+    public void setup() {
         PoliticianRepository politicianRepository = new PoliticianRepositoryInMemory();
         AssemblyRegistry assemblyRegistry = new AssemblyRegistryInDatabase(AbstractDbDependantTest.dbHelper);
         parser = new QuestionParser(politicianRepository, assemblyRegistry);
@@ -53,9 +51,9 @@ public class QuestionParserTest extends AbstractDbDependantTest {
     }
 
     @Test
-    @Ignore("Data dependent test")
     public void eolien() throws IOException {
-        Question qr = parser.parse(50370);
+        final InputStream in = getClass().getClassLoader().getResourceAsStream("scraping/PW_50370.html");
+        Question qr = parser.parse(in, "classpath:scraping/PW_50370.html", 50370);
 
         Assert.assertEquals("50370", qr.assemblyRef);
         Assert.assertEquals("le coût élevé de l'éolien", qr.title);
@@ -65,10 +63,10 @@ public class QuestionParserTest extends AbstractDbDependantTest {
         Assert.assertEquals("2013-10-04", qr.dateAsked.toString());
         Assert.assertEquals(63, qr.askedBy);
         Assert.assertEquals(75, qr.askedTo);
-        Assert.assertEquals(null, qr.dateAnswered);
-        Assert.assertEquals(0, qr.answeredBy);
+        Assert.assertEquals("2013-10-25", qr.dateAnswered.toString());
+        Assert.assertEquals(75, qr.answeredBy);
         Assert.assertEquals(2044, qr.questionText.length());
-        Assert.assertEquals(null, qr.answerText);
+        Assert.assertEquals(296, qr.answerText.length());
     }
 
     @Test
