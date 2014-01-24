@@ -5,10 +5,8 @@ import be.noselus.model.Person;
 import be.noselus.model.PersonFunction;
 import be.noselus.pictures.PictureManager;
 import be.noselus.repository.PoliticianRepository;
-import com.jayway.restassured.RestAssured;
 import org.junit.Before;
 import org.junit.Test;
-import spark.Spark;
 
 import java.util.Collections;
 
