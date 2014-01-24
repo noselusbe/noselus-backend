@@ -39,7 +39,7 @@ public class GeocodeTest {
     }
 
     @Test
-    @Ignore
+    @Ignore("Not a test")
     public void runner() throws IOException, SQLException, ClassNotFoundException {
         Connection db = dbHelper.getConnection(true, false);
 
