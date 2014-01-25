@@ -1,4 +1,4 @@
-Build status: [![Build Status](http://jenkins.hurion.eu/buildStatus/icon?job=nos elus - backend)](http://jenkins.hurion.eu/job/nos%20elus%20-%20backend/)
+Build status: [![Build Status](http://jenkins.hurion.eu/buildStatus/icon?job=nos elus - backend)](http://jenkins.hurion.eu/job/nos%20elus%20-%20backend/) [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/noselusbe/noselus-backend/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
 Bulding
 =======
@@ -33,6 +33,11 @@ The application will then be accessible at ```http://localhost:4567/``` for exam
 
 The documentation of the api will come soon.
 
+Running on Linux
+================
+We are using a library to resize the images, in order for it to do its job, you must have an X server running.
+Installing Xvfb and making sure that iti is started is enough. [This can help](https://gist.github.com/jterrace/2911875)
 
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/noselusbe/noselus-backend/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+You also should run the program headless by adding the following option ```-Djava.awt.headless=true```
+
 
