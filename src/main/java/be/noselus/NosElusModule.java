@@ -1,5 +1,8 @@
 package be.noselus;
 
+import be.noselus.db.DatabaseHelper;
+import be.noselus.db.DatabaseUpdater;
+import be.noselus.db.DbConfig;
 import be.noselus.repository.*;
 import be.noselus.service.PoliticianRoutes;
 import be.noselus.service.QuestionRoutes;
@@ -16,5 +19,8 @@ public class NosElusModule extends AbstractModule {
         Multibinder<Routes> routesMultibinder = Multibinder.newSetBinder(binder(), Routes.class);
         routesMultibinder.addBinding().to(QuestionRoutes.class);
         routesMultibinder.addBinding().to(PoliticianRoutes.class);
+        requireBinding(DatabaseHelper.class);
+        requireBinding(DbConfig.class);
+        requireBinding(DatabaseUpdater.class);
     }
 }
