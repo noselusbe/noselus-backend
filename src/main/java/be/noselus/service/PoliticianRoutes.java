@@ -4,6 +4,8 @@ import be.noselus.model.Person;
 import be.noselus.pictures.PictureManager;
 import be.noselus.repository.PoliticianRepository;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -18,6 +20,8 @@ import static spark.Spark.get;
 
 @Singleton
 public class PoliticianRoutes implements Routes {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PoliticianRoutes.class);
 
     public static final String IMAGE_JPEG_CHARSET_UTF_8 = "image/jpeg;charset=utf-8";
     private final PictureManager pictureManager;
@@ -56,8 +60,8 @@ public class PoliticianRoutes implements Routes {
         get(new Route("/politicians/:id/picture") {
             @Override
             public Object handle(final Request request, final Response response) {
+                final String id = request.params(":id");
                 try {
-                    final String id = request.params(":id");
                     byte[] out;
                     InputStream is = pictureManager.get(Integer.valueOf(id));
 
@@ -71,9 +75,8 @@ public class PoliticianRoutes implements Routes {
                         response.header("Cache-Control", "no-transform,public,max-age=300,s-maxage=900");
                         return out;
                     }
-                } catch (NumberFormatException | IOException e) {
-                    response.status(NOT_FOUND);
-                    return null;
+                } catch (IOException e) {
+                    return pictureNotFound(response, id, e);
                 }
             }
         });
@@ -81,20 +84,27 @@ public class PoliticianRoutes implements Routes {
         get(new Route("/politicians/:id/picture/*/*") {
             @Override
             public Object handle(final Request request, final Response response) {
+                final String id = request.params(":id");
                 try {
-                    final String id = request.params(":id");
                     int width = Integer.valueOf(request.splat()[0]);
                     int height = Integer.valueOf(request.splat()[1]);
 
                     response.raw().setContentType(IMAGE_JPEG_CHARSET_UTF_8);
                     pictureManager.get(Integer.valueOf(id), width, height, response.raw().getOutputStream());
                     return null;
-                } catch (NumberFormatException | IOException e) {
-                    response.status(NOT_FOUND);
-                    return null;
+                } catch (IOException e) {
+                    return pictureNotFound(response, id, e);
                 }
             }
         });
+    }
+
+    private Object pictureNotFound(final Response response, final String id, final IOException e) {
+        if (LOGGER.isDebugEnabled()){
+            LOGGER.debug("Error retrieving image of politician with id " + id, e);
+        }
+        response.status(NOT_FOUND);
+        return null;
     }
 
 }
