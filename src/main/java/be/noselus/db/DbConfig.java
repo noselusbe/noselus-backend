@@ -59,21 +59,21 @@ public class DbConfig {
     }
 
     public DbConfig invoke() {
-        if (driver == null){
+        if (driver == null) {
             driver = "org.postgresql.Driver";
-            final String database_url = System.getenv("DATABASE_URL");
+            final String databaseUrl = System.getenv("DATABASE_URL");
 
-            if (database_url == null) {
+            if (databaseUrl == null) {
                 url = "jdbc:postgresql://localhost:5432/";
             } else {
                 username = System.getenv("DATABASE_USER");
                 password = System.getenv("DATABASE_PASSWORD");
-                url = database_url;
+                url = databaseUrl;
 
                 if (username == null && password == null) {
                     URI dbUri = null;
                     try {
-                        dbUri = new URI(database_url);
+                        dbUri = new URI(databaseUrl);
                         username = dbUri.getUserInfo().split(":")[0];
                         password = dbUri.getUserInfo().split(":")[1];
                         url = "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath();

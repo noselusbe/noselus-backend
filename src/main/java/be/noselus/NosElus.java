@@ -2,7 +2,6 @@ package be.noselus;
 
 import be.noselus.db.DatabaseHelper;
 import be.noselus.db.DatabaseUpdater;
-import be.noselus.db.DbConfig;
 import be.noselus.pictures.PictureManager;
 import be.noselus.service.Routes;
 import com.google.inject.Guice;
@@ -29,15 +28,13 @@ public class NosElus {
     private final PictureManager pictureManager;
     private final DatabaseUpdater dbUpdater;
     private final DatabaseHelper dbHelper;
-    private final DbConfig dbConfig;
 
     @Inject
-    public NosElus(final Set<Routes> routes, final PictureManager pictureManager, final DatabaseUpdater dbUpdater, final DatabaseHelper dbHelper, final DbConfig dbConfig) {
+    public NosElus(final Set<Routes> routes, final PictureManager pictureManager, final DatabaseUpdater dbUpdater, final DatabaseHelper dbHelper) {
         this.routes = routes;
         this.pictureManager = pictureManager;
         this.dbUpdater = dbUpdater;
         this.dbHelper = dbHelper;
-        this.dbConfig = dbConfig;
     }
 
     public static void main(String[] args) throws IOException {
@@ -49,7 +46,6 @@ public class NosElus {
 
     private void initialize() {
         LOGGER.info("Begin initialization");
-        dbConfig.invoke();
         dbHelper.start();
         dbUpdater.update();
         pictureManager.start();

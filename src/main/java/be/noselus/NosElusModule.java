@@ -8,7 +8,10 @@ import be.noselus.service.PoliticianRoutes;
 import be.noselus.service.QuestionRoutes;
 import be.noselus.service.Routes;
 import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
 import com.google.inject.multibindings.Multibinder;
+
+import javax.inject.Singleton;
 
 public class NosElusModule extends AbstractModule {
     @Override
@@ -22,5 +25,11 @@ public class NosElusModule extends AbstractModule {
         requireBinding(DatabaseHelper.class);
         requireBinding(DbConfig.class);
         requireBinding(DatabaseUpdater.class);
+    }
+
+    @Provides
+    @Singleton
+    private DbConfig getDbConfig(){
+        return new DbConfig().invoke();
     }
 }
