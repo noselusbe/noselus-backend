@@ -3,37 +3,36 @@ package be.noselus.model;
 public class Assembly {
 
     public enum Level {
-		DEPUTY_CHAMBER,
-		SENATE,
-		REGION,
-		LOCAL,
-		PROVINCE,
-		EUROPE,
-		FEDERAL
-	}
+        DEPUTY_CHAMBER,
+        SENATE,
+        REGION,
+        LOCAL,
+        PROVINCE,
+        EUROPE,
+        FEDERAL
+    }
 
     private final int id;
     private final String label;
-	private final Level level;
-	
-	public Assembly(int id,String label, Level level) {
+    private final Level level;
+
+    public Assembly(int id, String label, Level level) {
         this.id = id;
         this.label = label;
-		this.level = level;
-	}
+        this.level = level;
+    }
 
     public int getId() {
         return id;
     }
 
-	public String getLabel() {
-		return label;
-	}
+    public String getLabel() {
+        return label;
+    }
 
-	public Level getLevel() {
-		return level;
-	}
-	
-	
+    public Level getLevel() {
+        return level;
+    }
+
 
 }

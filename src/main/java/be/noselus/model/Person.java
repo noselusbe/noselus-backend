@@ -15,10 +15,10 @@ public class Person {
     public String email;
     public String site;
     public PersonFunction function;
-	public int assemblyId;
-	public AssemblyEnum assembly;
-	public double latitude;
-	public double longitude;
+    public int assemblyId;
+    public AssemblyEnum assembly;
+    public double latitude;
+    public double longitude;
     public List<Integer> asked_questions;
     public Assembly belongToAssembly;
 
@@ -44,10 +44,10 @@ public class Person {
         this.longitude = longitude;
         this.asked_questions = askedQuestionIds;
     }
-    
+
     @Override
     public String toString() {
-    	return fullName;
+        return fullName;
     }
-    
+
 }

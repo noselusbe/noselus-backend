@@ -1,9 +1,9 @@
 package be.noselus.model;
 
+import org.joda.time.LocalDate;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.joda.time.LocalDate;
 
 public class Question {
 
@@ -51,12 +51,12 @@ public class Question {
         this.assembly = assembly;
         this.assemblyRef = assemblyRef;
     }
-    
+
     public void addEurovoc(List<Eurovoc> list) {
-    	this.eurovocs = list;
+        this.eurovocs = list;
     }
-    
-    public void addEurovoc(Eurovoc eurovoc){
-    	this.eurovocs.add(eurovoc);
+
+    public void addEurovoc(Eurovoc eurovoc) {
+        this.eurovocs.add(eurovoc);
     }
 }

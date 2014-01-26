@@ -6,21 +6,21 @@ public class PersonSmall {
     public Integer id;
 
     public PersonSmall(final String fullName) {
-    	this.fullName = fullName;
-    	this.id = 0;
-	}
-    
+        this.fullName = fullName;
+        this.id = 0;
+    }
+
     public PersonSmall(final String fullName, final Integer id) {
         this.fullName = fullName;
         this.id = id;
     }
-    
+
     @Override
     public String toString() {
-    	return fullName;
+        return fullName;
     }
 
-    public static PersonSmall fromPerson(final Person person){
+    public static PersonSmall fromPerson(final Person person) {
         return new PersonSmall(person.fullName, person.id);
     }
 }

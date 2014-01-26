@@ -4,7 +4,6 @@ import be.noselus.model.Assembly;
 import be.noselus.model.Person;
 import be.noselus.model.PersonFunction;
 import be.noselus.model.PersonSmall;
-
 import com.google.common.base.Charsets;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
@@ -12,7 +11,6 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import com.google.common.io.LineProcessor;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,13 +57,13 @@ public class PoliticianRepositoryInMemory implements PoliticianRepository {
                     final String[] fields = line.split(";");
 
                     final String site = fields[8].trim();
-                    
+
                     Assembly walParlement = new Assembly(1, "Parlement Wallon", Assembly.Level.REGION);
 
-                    Person person = new Person(politicanIdGenerator.getAndIncrement(), fields[0], 
-                    		fields[1], fields[2], fields[3], fields[4], fields[5], fields[6], 
-                    		fields[7], site, PersonFunction.DEPUTY, 0, Arrays.asList(1),
-                    		walParlement, 0, 0);
+                    Person person = new Person(politicanIdGenerator.getAndIncrement(), fields[0],
+                            fields[1], fields[2], fields[3], fields[4], fields[5], fields[6],
+                            fields[7], site, PersonFunction.DEPUTY, 0, Arrays.asList(1),
+                            walParlement, 0, 0);
 
                     result.add(person);
                     return true;
@@ -77,18 +75,19 @@ public class PoliticianRepositoryInMemory implements PoliticianRepository {
                 }
             });
 
-        } catch (IOException|URISyntaxException e) {
-           LOGGER.error("Error reading file", e);
+        } catch (IOException | URISyntaxException e) {
+            LOGGER.error("Error reading file", e);
         }
     }
 
     @Override
     public List<Person> getFullPoliticianByName(final String name) {
         Predicate<Person> hasName = new Predicate<Person>() {
+            @Override
             public boolean apply(Person p) {
                 final int endIndex = name.lastIndexOf(' ');
                 final String lastName;
-                if (endIndex == -1){
+                if (endIndex == -1) {
                     lastName = name;
                 } else {
                     lastName = name.substring(0, endIndex);
@@ -117,6 +116,7 @@ public class PoliticianRepositoryInMemory implements PoliticianRepository {
     @Override
     public Person getPoliticianById(final int id) {
         Predicate<Person> withId = new Predicate<Person>() {
+            @Override
             public boolean apply(Person p) {
                 return p != null && (p.id == id);
             }
