@@ -11,6 +11,7 @@ import liquibase.resource.ResourceAccessor;
 import liquibase.structure.DatabaseObject;
 
 import javax.inject.Inject;
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -21,18 +22,18 @@ import java.sql.SQLException;
  */
 public class DatabaseUpdater {
 
-    private final DatabaseHelper dbHelper;
+    private final DataSource dataSource;
 
     @Inject
-    public DatabaseUpdater(final DatabaseHelper dbHelper) {
-        this.dbHelper = dbHelper;
+    public DatabaseUpdater(final DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     /**
      * Update the database by executing all the required change sets.
      */
     public void update() {
-        try (Connection connection = dbHelper.getConnection(true, false);) {
+        try (Connection connection = dataSource.getConnection();) {
             Thread currentThread = Thread.currentThread();
             ClassLoader classLoader = currentThread.getContextClassLoader();
             ResourceAccessor accessor = new ClassLoaderResourceAccessor(classLoader);

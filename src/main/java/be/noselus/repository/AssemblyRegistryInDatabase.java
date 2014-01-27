@@ -1,10 +1,10 @@
 package be.noselus.repository;
 
-import be.noselus.db.DatabaseHelper;
 import be.noselus.model.Assembly;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -17,14 +17,14 @@ public class AssemblyRegistryInDatabase extends AbstractRepositoryInDatabase imp
     private Map<Integer, Assembly> assemblies = new ConcurrentHashMap<>();
 
     @Inject
-    public AssemblyRegistryInDatabase(final DatabaseHelper dbHelper) {
-        super(dbHelper);
+    public AssemblyRegistryInDatabase(final DataSource dataSource) {
+        super(dataSource);
     }
 
     @Override
     public Assembly findId(final int id) {
         if (!assemblies.containsKey(id)) {
-            try (Connection db = dbHelper.getConnection(false, true);
+            try (Connection db = dataSource.getConnection();
                  PreparedStatement stat = db.prepareStatement("SELECT * FROM assembly WHERE id = ?;")) {
 
                 stat.setInt(1, id);

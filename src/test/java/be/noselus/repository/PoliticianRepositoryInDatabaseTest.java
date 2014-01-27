@@ -4,10 +4,7 @@ import be.noselus.AbstractDbDependantTest;
 import be.noselus.model.Person;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -18,7 +15,7 @@ public class PoliticianRepositoryInDatabaseTest extends AbstractDbDependantTest 
 
     @Before
     public void init() {
-        repo = new PoliticianRepositoryInDatabase(AbstractDbDependantTest.dbHelper);
+        repo = new PoliticianRepositoryInDatabase(AbstractDbDependantTest.dataSource);
     }
 
     @Test

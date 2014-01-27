@@ -1,15 +1,15 @@
 package be.noselus.repository;
 
-import be.noselus.db.DatabaseHelper;
+import javax.sql.DataSource;
 
 /**
  * Class containing common tools for all repositories that will get their info from the database.
  */
 public abstract class AbstractRepositoryInDatabase {
 
-    protected final DatabaseHelper dbHelper;
+    protected final DataSource dataSource;
 
-    public AbstractRepositoryInDatabase(final DatabaseHelper dbHelper) {
-        this.dbHelper = dbHelper;
+    public AbstractRepositoryInDatabase(final DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 }

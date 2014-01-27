@@ -1,6 +1,5 @@
 package be.noselus.repository;
 
-import be.noselus.db.DatabaseHelper;
 import be.noselus.model.Assembly;
 import be.noselus.model.Person;
 import be.noselus.model.PersonFunction;
@@ -14,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -29,8 +29,8 @@ public class PoliticianRepositoryInDatabase extends AbstractRepositoryInDatabase
     private List<Person> politicians;
 
     @Inject
-    public PoliticianRepositoryInDatabase(final DatabaseHelper dbHelper) {
-        super(dbHelper);
+    public PoliticianRepositoryInDatabase(final DataSource dataSource) {
+        super(dataSource);
     }
 
     @Override
@@ -42,7 +42,7 @@ public class PoliticianRepositoryInDatabase extends AbstractRepositoryInDatabase
     }
 
     private void initPoliticians() {
-        try (Connection db = dbHelper.getConnection(false, true);
+        try (Connection db = dataSource.getConnection();
              PreparedStatement stat = db.prepareStatement("SELECT person.*, assembly.label AS assembly_label,"
                      + " assembly.level AS assembly_level, assembly.id AS belong_to_assembly_id FROM person"
                      + " JOIN assembly"

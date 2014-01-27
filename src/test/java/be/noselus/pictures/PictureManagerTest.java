@@ -14,7 +14,7 @@ public class PictureManagerTest extends AbstractDbDependantTest {
 
     @Before
     public void setUp() {
-        pictureManager = new PictureManager(AbstractDbDependantTest.dbHelper);
+        pictureManager = new PictureManager(AbstractDbDependantTest.dataSource);
         pictureManager.start();
     }
 

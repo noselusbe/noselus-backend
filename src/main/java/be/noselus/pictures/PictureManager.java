@@ -1,12 +1,12 @@
 package be.noselus.pictures;
 
-import be.noselus.db.DatabaseHelper;
 import be.noselus.util.Service;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.geometry.Positions;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -19,17 +19,17 @@ import java.util.TreeMap;
 @Singleton
 public class PictureManager implements Service {
 
-    private final DatabaseHelper dbHelper;
+    private final DataSource dataSource;
     private Map<Integer, Integer> mapping = null;
 
     @Inject
-    public PictureManager(final DatabaseHelper dbHelper) {
-        this.dbHelper = dbHelper;
+    public PictureManager(final DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     @Override
     public void start() {
-        try (Connection db = dbHelper.getConnection(false, true);
+        try (Connection db = dataSource.getConnection();
              PreparedStatement stat = db.prepareStatement("SELECT id, assembly_id FROM person;")) {
 
             stat.execute();

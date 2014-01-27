@@ -25,7 +25,7 @@ public class QuestionRepositoryTest extends AbstractDbDependantTest {
 
     @Before
     public void setUp() {
-        AssemblyRegistry assemblies = new AssemblyRegistryInDatabase(AbstractDbDependantTest.dbHelper);
+        AssemblyRegistry assemblies = new AssemblyRegistryInDatabase(AbstractDbDependantTest.dataSource);
         Operation operation =
                 sequenceOf(
                         deleteAllFrom("WRITTEN_QUESTION"),
@@ -38,7 +38,7 @@ public class QuestionRepositoryTest extends AbstractDbDependantTest {
 
         DbSetup dbSetup = new DbSetup(new DriverManagerDestination("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", null, null), operation);
         dbSetup.launch();
-        repo = new QuestionRepositoryInDatabase(assemblies, AbstractDbDependantTest.dbHelper);
+        repo = new QuestionRepositoryInDatabase(assemblies, AbstractDbDependantTest.dataSource);
     }
 
     @Test

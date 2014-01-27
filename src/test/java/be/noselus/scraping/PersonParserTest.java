@@ -32,7 +32,7 @@ public class PersonParserTest extends AbstractDbDependantTest{
 
     @Before
     public void init() throws ClassNotFoundException, SQLException {
-        db = dbHelper.getConnection(true, false);
+        db = dataSource.getConnection();
     }
 
     @After

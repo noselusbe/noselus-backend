@@ -27,7 +27,7 @@ public class QuestionParserTest extends AbstractDbDependantTest {
     @Before
     public void setup() {
         PoliticianRepository politicianRepository = new PoliticianRepositoryInMemory();
-        AssemblyRegistry assemblyRegistry = new AssemblyRegistryInDatabase(AbstractDbDependantTest.dbHelper);
+        AssemblyRegistry assemblyRegistry = new AssemblyRegistryInDatabase(AbstractDbDependantTest.dataSource);
         parser = new QuestionParser(politicianRepository, assemblyRegistry);
     }
 

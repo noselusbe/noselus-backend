@@ -1,6 +1,5 @@
 package be.noselus.repository;
 
-import be.noselus.db.DatabaseHelper;
 import be.noselus.dto.PartialResult;
 import be.noselus.dto.SearchParameter;
 import be.noselus.model.Eurovoc;
@@ -11,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Singleton;
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -28,15 +28,15 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
     private final QuestionMapper mapper;
 
     @Inject
-    public QuestionRepositoryInDatabase(final AssemblyRegistry assemblyRegistry, final DatabaseHelper dbHelper) {
-        super(dbHelper);
+    public QuestionRepositoryInDatabase(final AssemblyRegistry assemblyRegistry, final DataSource dataSource) {
+        super(dataSource);
         this.mapper = new QuestionMapper(assemblyRegistry);
     }
 
     @Override
     public Question getQuestionById(final int id) {
         Question result = null;
-        try (Connection db = dbHelper.getConnection(false, true);
+        try (Connection db = dataSource.getConnection();
              PreparedStatement stat = db.prepareStatement("SELECT * FROM written_question WHERE id = ?;")) {
 
             stat.setInt(1, id);
@@ -56,7 +56,7 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
 
     @Override
     public void insertOrUpdateQuestion(final Question question) {
-        try (Connection db = dbHelper.getConnection(false, true)) {
+        try (Connection db = dataSource.getConnection()) {
 
             if (questionIsPresent(db, question)) {
                 updateQuestion(db, question);
@@ -91,7 +91,7 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
         sql.append(where);
         sql.append(ORDER_BY);
         sql.append(LIMIT);
-        try (Connection db = dbHelper.getConnection(false, true);
+        try (Connection db = dataSource.getConnection();
              PreparedStatement stat = db.prepareStatement(sql.toString())) {
             int position = 1;
             position = parameterForNext(firstElement, stat, position);
@@ -113,7 +113,7 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
 
     @Override
     public PartialResult<Question> questionAskedBy(final SearchParameter parameter, int askedById) {
-        try (Connection db = dbHelper.getConnection(false, true);
+        try (Connection db = dataSource.getConnection();
              PreparedStatement questionsStat = db.prepareStatement(SELECT_QUESTION + " AND asked_by = ? " + ORDER_BY + LIMIT)) {
 
             questionsStat.setInt(1, askedById);
@@ -137,7 +137,7 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
 
     @Override
     public List<Question> questionAssociatedToEurovoc(int eurovocId) {
-        try (Connection db = dbHelper.getConnection(false, true);
+        try (Connection db = dataSource.getConnection();
              PreparedStatement questionsStat = db.prepareStatement(""
                      + "SELECT * FROM written_question "
                      + "JOIN written_question_eurovoc "
@@ -177,7 +177,7 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
         if (firstElement != null) {
             whereClause += NEXT_ELEMENT_WHERE;
         }
-        try (Connection db = dbHelper.getConnection(false, true);
+        try (Connection db = dataSource.getConnection();
              PreparedStatement questionCount = db.prepareStatement("SELECT count(*) AS total FROM written_question;");
 
              PreparedStatement questionsStatement = db.prepareStatement(SELECT_QUESTION + whereClause + ORDER_BY + LIMIT);

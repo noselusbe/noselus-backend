@@ -1,11 +1,7 @@
 package be.noselus.tools;
 
-import be.noselus.NosElusModule;
-import be.noselus.db.DatabaseHelper;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
+import be.noselus.AbstractDbDependantTest;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -15,15 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Map;
 
-public class GeocodeTest {
-
-    private DatabaseHelper dbHelper;
-
-    @Before
-    public void init() {
-        Injector injector = Guice.createInjector(new NosElusModule());
-        dbHelper = injector.getInstance(DatabaseHelper.class);
-    }
+public class GeocodeTest extends AbstractDbDependantTest {
 
     @Test
     public void geocode() throws IOException {
@@ -41,7 +29,7 @@ public class GeocodeTest {
     @Test
     @Ignore("Not a test")
     public void runner() throws IOException, SQLException, ClassNotFoundException {
-        Connection db = dbHelper.getConnection(true, false);
+        Connection db = dataSource.getConnection();
 
         PreparedStatement update = db.prepareStatement("UPDATE person SET long = ?, lat = ? WHERE id = ?;");
 

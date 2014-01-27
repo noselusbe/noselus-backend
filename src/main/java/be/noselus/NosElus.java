@@ -1,6 +1,5 @@
 package be.noselus;
 
-import be.noselus.db.DatabaseHelper;
 import be.noselus.db.DatabaseUpdater;
 import be.noselus.pictures.PictureManager;
 import be.noselus.service.Routes;
@@ -27,14 +26,12 @@ public class NosElus {
     private final Set<Routes> routes;
     private final PictureManager pictureManager;
     private final DatabaseUpdater dbUpdater;
-    private final DatabaseHelper dbHelper;
 
     @Inject
-    public NosElus(final Set<Routes> routes, final PictureManager pictureManager, final DatabaseUpdater dbUpdater, final DatabaseHelper dbHelper) {
+    public NosElus(final Set<Routes> routes, final PictureManager pictureManager, final DatabaseUpdater dbUpdater) {
         this.routes = routes;
         this.pictureManager = pictureManager;
         this.dbUpdater = dbUpdater;
-        this.dbHelper = dbHelper;
     }
 
     public static void main(String[] args) throws IOException {
@@ -46,7 +43,6 @@ public class NosElus {
 
     private void initialize() {
         LOGGER.info("Begin initialization");
-        dbHelper.start();
         dbUpdater.update();
         pictureManager.start();
 
