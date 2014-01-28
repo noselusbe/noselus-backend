@@ -41,7 +41,7 @@ public class NosElus {
         nosElus.initialize();
     }
 
-    private void initialize() {
+    public void initialize() {
         LOGGER.info("Begin initialization");
         dbUpdater.update();
         pictureManager.start();

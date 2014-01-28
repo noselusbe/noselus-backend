@@ -1,49 +1,66 @@
 package be.noselus.service;
 
-import be.noselus.model.Assembly;
-import be.noselus.model.Person;
-import be.noselus.model.PersonFunction;
-import be.noselus.pictures.PictureManager;
-import be.noselus.repository.PoliticianRepository;
-import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Collections;
 
 import static com.jayway.restassured.RestAssured.expect;
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 
 public class PoliticianRoutesTest extends AbstractRoutesTest {
 
-    private PictureManager pictureManager = mock(PictureManager.class);
-    private PoliticianRepository politicianRepository = mock(PoliticianRepository.class);
-
-    @Before
-    public void setup() {
-        PoliticianRoutes routes = new PoliticianRoutes(pictureManager, politicianRepository, new RoutesHelper());
-        routes.setup();
-        given(politicianRepository.getPoliticianById(1)).willReturn(new Person(1, "name", "party", "address",
-                "postalcode", "town", "phone", "fax", "email", "site", PersonFunction.DEPUTY, 1,
-                Collections.<Integer>emptyList(), new Assembly(1, "label", Assembly.Level.DEPUTY_CHAMBER), 0, 0));
+    @Test
+    public void returnsAllPoliticians(){
+        expect().statusCode(200)
+                .body("politicians.size()", equalTo(245))
+                .when()
+                .get("/politicians");
     }
 
     @Test
-    public void gettingAPoliticianById() {
+    public void returnsAPoliticianById() {
         expect().
                 statusCode(200).
                 root("politician").
-                body("id", equalTo(1),
-                        "fullName", equalTo("name")).
+                body("id", equalTo(151),
+                        "fullName", equalTo("DEMOTTE Rudy")).
                 when().
-                get("/politicians/1");
+                get("/politicians/151");
     }
+
     @Test
-    public void gettingAPoliticianThatDoesNotExist() {
+    public void returns040WhenAPoliticianDoesNotExist() {
         expect().
                 statusCode(404).
                 when().
                 get("/politicians/10");
+    }
+
+    @Test
+    public void returnsPoliticianPicture(){
+        expect().statusCode(200)
+                .contentType("image/jpeg;charset=utf-8")
+                .when()
+                .get("/politicians/151/picture");
+    }
+
+    @Test
+    public void returnsPoliticianPictureResized(){
+        expect().statusCode(200)
+                .contentType("image/jpeg;charset=utf-8")
+                .when()
+                .get("/politicians/151/picture/150/140");
+    }
+
+    @Test
+    public void returns404WhenPictureNotPresent(){
+        expect().statusCode(404)
+                .when()
+                .get("/politicians/100000/picture");
+    }
+
+    @Test
+    public void returns404WhenPictureNotPresentWithCustomSize(){
+        expect().statusCode(404)
+                .when()
+                .get("/politicians/100000/picture/100/100");
     }
 }

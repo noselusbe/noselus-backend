@@ -36,12 +36,13 @@ public class PoliticianRepositoryInDatabase extends AbstractRepositoryInDatabase
     @Override
     public synchronized List<Person> getPoliticians() {
         if (politicians == null) {
-            initPoliticians();
+            politicians = initPoliticians();
         }
         return politicians;
     }
 
-    private void initPoliticians() {
+    private List<Person> initPoliticians() {
+        final List<Person> result = new ArrayList<>();
         try (Connection db = dataSource.getConnection();
              PreparedStatement stat = db.prepareStatement("SELECT person.*, assembly.label AS assembly_label,"
                      + " assembly.level AS assembly_level, assembly.id AS belong_to_assembly_id FROM person"
@@ -52,7 +53,6 @@ public class PoliticianRepositoryInDatabase extends AbstractRepositoryInDatabase
 
             stat.execute();
 
-            politicians = new ArrayList<>();
             while (stat.getResultSet().next()) {
 
                 int id = stat.getResultSet().getInt("id");
@@ -81,7 +81,7 @@ public class PoliticianRepositoryInDatabase extends AbstractRepositoryInDatabase
                 Person person = new Person(id, full_name, party, address, postal_code,
                         town, phone, fax, email, site, function, assemblyId,
                         questions, assembly, latitude, longitude);
-                politicians.add(person);
+                result.add(person);
             }
 
             stat.close();
@@ -91,7 +91,7 @@ public class PoliticianRepositoryInDatabase extends AbstractRepositoryInDatabase
             LOGGER.error("Error loading person from DB", e);
         }
 
-        politicians = Lists.newArrayList(politicians);
+        return result;
     }
 
     @Override
@@ -137,6 +137,9 @@ public class PoliticianRepositoryInDatabase extends AbstractRepositoryInDatabase
         };
 
         Collection<Person> foundPerson = Collections2.filter(getPoliticians(), withId);
+        if (foundPerson.isEmpty()) {
+            return null;
+        }
         return foundPerson.iterator().next();
     }
 

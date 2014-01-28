@@ -1,6 +1,7 @@
 package be.noselus.repository;
 
 import be.noselus.AbstractDbDependantTest;
+import be.noselus.NosElusTestModule;
 import be.noselus.dto.PartialResult;
 import be.noselus.dto.SearchParameter;
 import be.noselus.model.Assembly;
@@ -36,7 +37,7 @@ public class QuestionRepositoryTest extends AbstractDbDependantTest {
                                 .values(536L, "Question 536", new Date(), 1, "Question text")
                                 .build());
 
-        DbSetup dbSetup = new DbSetup(new DriverManagerDestination("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", null, null), operation);
+        DbSetup dbSetup = new DbSetup(new DriverManagerDestination(NosElusTestModule.TEST_DB, null, null), operation);
         dbSetup.launch();
         repo = new QuestionRepositoryInDatabase(assemblies, AbstractDbDependantTest.dataSource);
     }
