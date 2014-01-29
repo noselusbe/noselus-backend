@@ -19,8 +19,6 @@ public interface QuestionRepository {
      */
     Question getQuestionById(int id);
 
-    PartialResult<Question> questionAskedBy(SearchParameter parameter, int askedById);
-
     PartialResult<Question> getQuestions(SearchParameter parameter, Optional<Integer> askedById, String... keywords);
 
     List<Question> questionAssociatedToEurovoc(int id);

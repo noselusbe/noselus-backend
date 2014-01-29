@@ -84,4 +84,14 @@ public class QuestionRoutesTest extends AbstractRoutesTest {
                 .when()
                 .get("/questions?q=title&asked_by=896");
     }
+
+    @Test
+    public void returnsQuestionAskedBy() {
+        expect().spec(responseSpec)
+                .body("questions.size()", greaterThan(0),
+                        "questions.askedBy", not(hasItem(not(78)))
+                )
+                .when()
+                .get("/questions/askedBy/BASTIN");
+    }
 }

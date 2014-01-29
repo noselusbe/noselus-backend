@@ -75,7 +75,7 @@ public class QuestionRoutes implements Routes {
                 if (list.isEmpty()) {
                     return null;
                 } else {
-                    return helper.resultAs(QUESTIONS, questionRepository.questionAskedBy(helper.getSearchParameter(request), list.get(0).id));
+                    return helper.resultAs(QUESTIONS, questionRepository.getQuestions(helper.getSearchParameter(request), Optional.of(list.get(0).id)));
                 }
 
             }

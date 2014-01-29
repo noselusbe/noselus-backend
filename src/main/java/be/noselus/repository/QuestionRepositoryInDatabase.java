@@ -71,30 +71,6 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
     }
 
     @Override
-    public PartialResult<Question> questionAskedBy(final SearchParameter parameter, int askedById) {
-        try (Connection db = dataSource.getConnection();
-             PreparedStatement questionsStat = db.prepareStatement(SELECT_QUESTION + " AND asked_by = ? " + ORDER_BY + LIMIT)) {
-
-            questionsStat.setInt(1, askedById);
-            questionsStat.setInt(2, parameter.getLimit());
-
-            questionsStat.execute();
-            List<Question> questionsAskedBy = Lists.newArrayList();
-
-            while (questionsStat.getResultSet().next()) {
-                Question q = mapper.map(questionsStat.getResultSet());
-                this.addEurovocsToQuestion(q, db);
-                questionsAskedBy.add(q);
-            }
-            return makePartialResult(questionsAskedBy, parameter.getLimit(), null);
-        } catch (SQLException e) {
-            LOGGER.error("Error loading questions asked by " + askedById, e);
-        }
-        final List<Question> objects = Collections.emptyList();
-        return makePartialResult(objects, parameter.getLimit(), null);
-    }
-
-    @Override
     public PartialResult<Question> getQuestions(final SearchParameter parameter, final Optional<Integer> askedById, final String... keywords) {
         List<Question> results = Lists.newArrayList();
         final StringBuilder sql = new StringBuilder(SELECT_QUESTION);
