@@ -3,6 +3,7 @@ package be.noselus.repository;
 import be.noselus.dto.PartialResult;
 import be.noselus.dto.SearchParameter;
 import be.noselus.model.Question;
+import com.google.common.base.Optional;
 
 import java.util.List;
 
@@ -18,14 +19,12 @@ public interface QuestionRepository {
      */
     Question getQuestionById(int id);
 
-    PartialResult<Question> searchByKeyword(SearchParameter parameter, String... split);
-
     PartialResult<Question> questionAskedBy(SearchParameter parameter, int askedById);
-    
+
+    PartialResult<Question> getQuestions(SearchParameter parameter, Optional<Integer> askedById, String... keywords);
+
     List<Question> questionAssociatedToEurovoc(int id);
 
     void insertOrUpdateQuestion(Question question);
-
-    PartialResult<Question> getQuestions(SearchParameter parameter);
 
 }

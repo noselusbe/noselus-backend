@@ -4,6 +4,7 @@ import be.noselus.dto.SearchParameter;
 import be.noselus.model.PersonSmall;
 import be.noselus.repository.PoliticianRepository;
 import be.noselus.repository.QuestionRepository;
+import com.google.common.base.Optional;
 import spark.Request;
 import spark.Response;
 
@@ -29,6 +30,7 @@ public class QuestionRoutes implements Routes {
         this.helper = helper;
     }
 
+    @Override
     public void setup() {
         get(new JsonTransformer("/questions") {
 
@@ -37,13 +39,21 @@ public class QuestionRoutes implements Routes {
                 final String q = request.queryParams("q");
                 final String askedBy = request.queryParams("asked_by");
                 final SearchParameter parameter = helper.getSearchParameter(request);
-                if (q != null) {
-                    final String keywords = q.replace("\"", "");
-                    return helper.resultAs(QUESTIONS, questionRepository.searchByKeyword(parameter, keywords.split(" ")));
-                } else if (askedBy != null) {
-                    return helper.resultAs(QUESTIONS, questionRepository.questionAskedBy(parameter, Integer.valueOf(askedBy)));
+                Optional<Integer> askedById;
+                if (askedBy == null) {
+                    askedById = Optional.absent();
+                } else {
+                    askedById = Optional.of(Integer.valueOf(askedBy));
                 }
-                return helper.resultAs(QUESTIONS, questionRepository.getQuestions(parameter));
+                final String[] keywordsArray;
+                if (q == null) {
+                    keywordsArray = new String[0];
+                } else {
+                    final String keywords = q.replace("\"", "");
+                    keywordsArray = keywords.split(" ");
+                }
+
+                return helper.resultAs(QUESTIONS, questionRepository.getQuestions(parameter, askedById, keywordsArray));
             }
         });
 

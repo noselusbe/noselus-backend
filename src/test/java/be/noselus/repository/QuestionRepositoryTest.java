@@ -6,6 +6,7 @@ import be.noselus.dto.PartialResult;
 import be.noselus.dto.SearchParameter;
 import be.noselus.model.Assembly;
 import be.noselus.model.Question;
+import com.google.common.base.Optional;
 import com.ninja_squad.dbsetup.DbSetup;
 import com.ninja_squad.dbsetup.destination.DriverManagerDestination;
 import com.ninja_squad.dbsetup.operation.Operation;
@@ -44,26 +45,26 @@ public class QuestionRepositoryTest extends AbstractDbDependantTest {
 
     @Test
     public void findByKeyWord() {
-        final List<Question> questions = repo.searchByKeyword(new SearchParameter(), "Flandre", "Wallonie").getResults();
+        final List<Question> questions = repo.getQuestions(new SearchParameter(), Optional.<Integer>absent(), "Flandre", "Wallonie").getResults();
         assertTrue(!questions.isEmpty());
     }
 
     @Test
     public void findByKeyWordWithFirstElementSpecified() {
-        final List<Question> questions = repo.searchByKeyword(new SearchParameter(1, 1), "Flandre", "Wallonie").getResults();
+        final List<Question> questions = repo.getQuestions(new SearchParameter(1, 1), Optional.<Integer>absent(), "Flandre", "Wallonie").getResults();
         assertEquals(1, questions.size());
         assertEquals((Integer) 1, questions.get(0).id);
     }
 
     @Test
     public void findWithLimitReturnNoMoreThanLimit() {
-        final PartialResult<Question> questions = repo.getQuestions(new SearchParameter(1));
+        final PartialResult<Question> questions = repo.getQuestions(new SearchParameter(1), Optional.<Integer>absent());
         assertEquals(1, questions.getResults().size());
     }
 
     @Test
     public void findTheRightResult() {
-        final PartialResult<Question> questions = repo.getQuestions(new SearchParameter(10, 536));
+        final PartialResult<Question> questions = repo.getQuestions(new SearchParameter(10, 536), Optional.<Integer>absent());
         assertEquals(3, questions.getResults().size());
         for (Question question : questions.getResults()) {
             assertTrue(question.id < 537);
@@ -80,7 +81,7 @@ public class QuestionRepositoryTest extends AbstractDbDependantTest {
         question.questionText = "Question text";
         question.assemblyRef = "test";
         repo.insertOrUpdateQuestion(question);
-        PartialResult<Question> questionInserted = repo.searchByKeyword(new SearchParameter(50, null), "new question");
+        PartialResult<Question> questionInserted = repo.getQuestions(new SearchParameter(50, null), Optional.<Integer>absent(), "new question");
         assertEquals(1, questionInserted.getResults().size());
         final Question actual = questionInserted.getResults().get(0);
         assertEquals("New question", actual.title);
