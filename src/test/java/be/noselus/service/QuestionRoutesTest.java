@@ -108,6 +108,6 @@ public class QuestionRoutesTest extends AbstractRoutesTest {
                       "questions.eurovocs.id", hasItem(hasItem(311))
                 )
                 .when()
-                .get("/questions/byEurovoc/311").then().log().all(true);
+                .get("/questions/byEurovoc/311");
     }
 }
