@@ -140,8 +140,6 @@
             <column name="lat" type="NUMERIC"/>
             <column name="belong_to_assembly" type="NUMERIC"/>
         </loadData>
-    </changeSet>
-    <changeSet id="eurovoca" author="nhurion">
         <loadData tableName="eurovoc" file="db/eurovoc.csv">
             <column name="id" type="NUMERIC"/>
             <column name="label" type="STRING"/>
