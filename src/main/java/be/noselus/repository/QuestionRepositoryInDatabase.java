@@ -15,7 +15,8 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
 @Singleton
 public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase implements QuestionRepository {
@@ -76,10 +77,7 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
         final StringBuilder sql = new StringBuilder(SELECT_QUESTION);
         final StringBuilder where = new StringBuilder();
         addKeywordsClause(where, keywords);
-        final Integer firstElement = (Integer) parameter.getFirstElement();
-        if (firstElement != null) {
-            where.append(NEXT_ELEMENT_WHERE);
-        }
+        final Integer firstElement = addClauseForNext(parameter, where);
         addAskedByClause(askedById, where);
         sql.append(where);
         sql.append(ORDER_BY);
@@ -101,6 +99,46 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
             LOGGER.error("Error loading question with keywords " + Arrays.toString(keywords), e);
         }
         return makePartialResult(results, parameter.getLimit(), null);
+    }
+
+    @Override
+    public PartialResult<Question> questionAssociatedToEurovoc(SearchParameter parameter, int eurovocId) {
+        List<Question> questionAssociatedToEurovoc = Lists.newArrayList();
+        final StringBuilder sql = new StringBuilder("SELECT * FROM written_question "
+                + "JOIN written_question_eurovoc "
+                + "ON written_question_eurovoc.id_written_question = written_question.id "
+                + "WHERE written_question_eurovoc.id_eurovoc = ? ");
+        final Integer firstElement = addClauseForNext(parameter, sql);
+        sql.append(ORDER_BY);
+        sql.append(LIMIT);
+
+        try (Connection db = dataSource.getConnection();
+             PreparedStatement questionsStat = db.prepareStatement(
+                     sql.toString())) {
+            int position = 1;
+            questionsStat.setInt(position++, eurovocId);
+            position = addParameterForNext(firstElement, questionsStat, position);
+            questionsStat.setInt(position, parameter.getLimit() + 1);
+            questionsStat.execute();
+
+            while (questionsStat.getResultSet().next()) {
+                Question q = mapper.map(questionsStat.getResultSet());
+                this.addEurovocsToQuestion(q, db);
+                questionAssociatedToEurovoc.add(q);
+            }
+            questionsStat.close();
+        } catch (SQLException e) {
+            LOGGER.error("Error loading questions asked by " + eurovocId, e);
+        }
+        return makePartialResult(questionAssociatedToEurovoc, parameter.getLimit(), null);
+    }
+
+    private Integer addClauseForNext(final SearchParameter parameter, final StringBuilder where) {
+        final Integer firstElement = (Integer) parameter.getFirstElement();
+        if (firstElement != null) {
+            where.append(NEXT_ELEMENT_WHERE);
+        }
+        return firstElement;
     }
 
     private int addAskedByParameter(final Optional<Integer> askedById, final PreparedStatement stat, int position) throws SQLException {
@@ -132,36 +170,6 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
         if (keywords.length > 0) {
             where.append(")");
         }
-    }
-
-    @Override
-    public List<Question> questionAssociatedToEurovoc(int eurovocId) {
-        try (Connection db = dataSource.getConnection();
-             PreparedStatement questionsStat = db.prepareStatement(""
-                     + "SELECT * FROM written_question "
-                     + "JOIN written_question_eurovoc "
-                     + "ON written_question_eurovoc.id_written_question = written_question.id "
-                     + "WHERE written_question_eurovoc.id_eurovoc = ? ")) {
-
-            questionsStat.setInt(1, eurovocId);
-            questionsStat.execute();
-
-            List<Question> questionAssociatedToEurovoc = Lists.newArrayList();
-
-            while (questionsStat.getResultSet().next()) {
-                Question q = mapper.map(questionsStat.getResultSet());
-                this.addEurovocsToQuestion(q, db);
-                questionAssociatedToEurovoc.add(q);
-            }
-
-            questionsStat.close();
-
-            return questionAssociatedToEurovoc;
-
-        } catch (SQLException e) {
-            LOGGER.error("Error loading questions asked by " + eurovocId, e);
-        }
-        return Collections.emptyList();
     }
 
     private void addEurovocsToQuestion(Question q, Connection db) {

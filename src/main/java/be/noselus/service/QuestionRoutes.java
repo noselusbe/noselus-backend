@@ -86,7 +86,8 @@ public class QuestionRoutes implements Routes {
             @Override
             protected Object myHandle(Request request, Response response) {
                 final String id = request.params(":id");
-                return questionRepository.questionAssociatedToEurovoc(Integer.valueOf(id));
+                final SearchParameter parameter = helper.getSearchParameter(request);
+                return helper.resultAs(QUESTIONS, questionRepository.questionAssociatedToEurovoc(parameter, Integer.valueOf(id)));
             }
 
         });

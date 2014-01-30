@@ -5,8 +5,6 @@ import be.noselus.dto.SearchParameter;
 import be.noselus.model.Question;
 import com.google.common.base.Optional;
 
-import java.util.List;
-
 /**
  * Repository allowing access to all the questions available.
  */
@@ -21,7 +19,7 @@ public interface QuestionRepository {
 
     PartialResult<Question> getQuestions(SearchParameter parameter, Optional<Integer> askedById, String... keywords);
 
-    List<Question> questionAssociatedToEurovoc(int id);
+    PartialResult<Question> questionAssociatedToEurovoc(SearchParameter parameter, int id);
 
     void insertOrUpdateQuestion(Question question);
 

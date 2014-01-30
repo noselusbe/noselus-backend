@@ -23,12 +23,17 @@ public class QuestionRoutesTest extends AbstractRoutesTest {
     public void setup() {
         Operation operation =
                 sequenceOf(
+                        deleteAllFrom("WRITTEN_QUESTION_EUROVOC"),
                         deleteAllFrom("WRITTEN_QUESTION"),
                         insertInto("WRITTEN_QUESTION")
                                 .columns("ID", "TITLE", "DATE_ASKED", "ASSEMBLY_ID", "QUESTION_TEXT", "ASKED_BY", "ASKED_TO")
                                 .values(1L, "question title", new Date(), 1, "Question text", 896, 151)
                                 .values(2L, "question title", new Date(), 1, "Question text", 89, 151)
                                 .values(3L, "the meaning of life", new Date(), 1, "Question text", 78, 155)
+                                .build(),
+                        insertInto("WRITTEN_QUESTION_EUROVOC")
+                                .columns("ID_WRITTEN_QUESTION", "ID_EUROVOC")
+                                .values(3L, 311)
                                 .build());
 
         DbSetup dbSetup = new DbSetup(new DriverManagerDestination(NosElusTestModule.TEST_DB, null, null), operation);
@@ -93,5 +98,16 @@ public class QuestionRoutesTest extends AbstractRoutesTest {
                 )
                 .when()
                 .get("/questions/askedBy/BASTIN");
+    }
+
+    @Test
+    public void returnsQuestionByEurovoc() {
+        expect().spec(responseSpec)
+                .body("questions.size()", greaterThan(0)
+                        ,
+                      "questions.eurovocs.id", hasItem(hasItem(311))
+                )
+                .when()
+                .get("/questions/byEurovoc/311").then().log().all(true);
     }
 }
