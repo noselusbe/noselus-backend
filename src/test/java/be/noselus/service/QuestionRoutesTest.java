@@ -58,7 +58,8 @@ public class QuestionRoutesTest extends AbstractRoutesTest {
     @Test
     public void returnsAllQuestions() {
         expect().spec(responseSpec)
-                .body("questions.size()", equalTo(3))
+                .body("questions.size()", equalTo(3),
+                        "meta.total", equalTo(3))
                 .when()
                 .get("/questions");
     }
@@ -67,6 +68,7 @@ public class QuestionRoutesTest extends AbstractRoutesTest {
     public void returnsQuestionsWithKeywords() {
         expect().spec(responseSpec)
                 .body("questions.size()", greaterThan(0),
+                        "meta.total", greaterThan(0),
                         "questions.title", not(hasItem(not(containsString("title")))))
                 .when()
                 .get("/questions?q=title");
@@ -84,6 +86,7 @@ public class QuestionRoutesTest extends AbstractRoutesTest {
     public void returnsRightQuestionWhenAskedByAndKeywordCombined() {
         expect().spec(responseSpec)
                 .body("questions.size()", greaterThan(0),
+                        "meta.total", greaterThan(0),
                         "questions.askedBy", not(hasItem(not(896))),
                         "questions.title", not(hasItem(not(containsString("title")))))
                 .when()
@@ -94,18 +97,19 @@ public class QuestionRoutesTest extends AbstractRoutesTest {
     public void returnsQuestionAskedBy() {
         expect().spec(responseSpec)
                 .body("questions.size()", greaterThan(0),
+                        "meta.total", greaterThan(0),
                         "questions.askedBy", not(hasItem(not(78)))
                 )
                 .when()
-                .get("/questions/askedBy/BASTIN");
+                .get("/questions/askedBy/BASTIN").then().log().all(true);
     }
 
     @Test
     public void returnsQuestionByEurovoc() {
         expect().spec(responseSpec)
-                .body("questions.size()", greaterThan(0)
-                        ,
-                      "questions.eurovocs.id", hasItem(hasItem(311))
+                .body("questions.size()", greaterThan(0),
+                        "meta.total", greaterThan(0),
+                        "questions.eurovocs.id", hasItem(hasItem(311))
                 )
                 .when()
                 .get("/questions/byEurovoc/311");

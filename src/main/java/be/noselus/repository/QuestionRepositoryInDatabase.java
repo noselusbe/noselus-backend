@@ -74,6 +74,7 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
     @Override
     public PartialResult<Question> getQuestions(final SearchParameter parameter, final Optional<Integer> askedById, final String... keywords) {
         List<Question> results = Lists.newArrayList();
+        int totalResults = 0;
         final StringBuilder sql = new StringBuilder(SELECT_QUESTION);
         final StringBuilder where = new StringBuilder();
         addKeywordsClause(where, keywords);
@@ -83,10 +84,11 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
         sql.append(ORDER_BY);
         sql.append(LIMIT);
         try (Connection db = dataSource.getConnection();
-             PreparedStatement stat = db.prepareStatement(sql.toString())) {
+             PreparedStatement stat = db.prepareStatement(sql.toString());
+             PreparedStatement countStat = db.prepareStatement("SELECT COUNT(*) FROM WRITTEN_QUESTION WHERE 1=1 " + where)) {
             int position = 1;
-            position = addParameterForNext(firstElement, stat, position);
-            position = addAskedByParameter(askedById, stat, position);
+            position = addParameterForNext(firstElement, position, stat, countStat);
+            position = addAskedByParameter(askedById, position, stat, countStat);
             stat.setInt(position, parameter.getLimit() + 1);
             stat.execute();
 
@@ -95,10 +97,15 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
                 this.addEurovocsToQuestion(question, db);
                 results.add(question);
             }
+
+            countStat.execute();
+            countStat.getResultSet().next();
+            totalResults = countStat.getResultSet().getInt(1);
+
         } catch (SQLException e) {
             LOGGER.error("Error loading question with keywords " + Arrays.toString(keywords), e);
         }
-        return makePartialResult(results, parameter.getLimit(), null);
+        return makePartialResult(results, parameter.getLimit(), totalResults);
     }
 
     @Override
@@ -108,16 +115,25 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
                 + "JOIN written_question_eurovoc "
                 + "ON written_question_eurovoc.id_written_question = written_question.id "
                 + "WHERE written_question_eurovoc.id_eurovoc = ? ");
+        final String count = "SELECT count(*) FROM written_question "
+                + "JOIN written_question_eurovoc "
+                + "ON written_question_eurovoc.id_written_question = written_question.id "
+                + "WHERE written_question_eurovoc.id_eurovoc = ? ";
+
         final Integer firstElement = addClauseForNext(parameter, sql);
         sql.append(ORDER_BY);
         sql.append(LIMIT);
 
+        int total = 0;
         try (Connection db = dataSource.getConnection();
              PreparedStatement questionsStat = db.prepareStatement(
-                     sql.toString())) {
+                     sql.toString());
+             PreparedStatement countStatement = db.prepareCall(count)) {
             int position = 1;
-            questionsStat.setInt(position++, eurovocId);
-            position = addParameterForNext(firstElement, questionsStat, position);
+            questionsStat.setInt(position, eurovocId);
+            countStatement.setInt(position, eurovocId);
+            position++;
+            position = addParameterForNext(firstElement, position, questionsStat);
             questionsStat.setInt(position, parameter.getLimit() + 1);
             questionsStat.execute();
 
@@ -126,11 +142,13 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
                 this.addEurovocsToQuestion(q, db);
                 questionAssociatedToEurovoc.add(q);
             }
-            questionsStat.close();
+            countStatement.execute();
+            countStatement.getResultSet().next();
+            total = countStatement.getResultSet().getInt(1);
         } catch (SQLException e) {
             LOGGER.error("Error loading questions asked by " + eurovocId, e);
         }
-        return makePartialResult(questionAssociatedToEurovoc, parameter.getLimit(), null);
+        return makePartialResult(questionAssociatedToEurovoc, parameter.getLimit(), total);
     }
 
     private Integer addClauseForNext(final SearchParameter parameter, final StringBuilder where) {
@@ -141,9 +159,12 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
         return firstElement;
     }
 
-    private int addAskedByParameter(final Optional<Integer> askedById, final PreparedStatement stat, int position) throws SQLException {
+    private int addAskedByParameter(final Optional<Integer> askedById, int position, final PreparedStatement... stats) throws SQLException {
         if (askedById.isPresent()) {
-            stat.setInt(position++, askedById.get());
+            for (PreparedStatement stat : stats) {
+                stat.setInt(position, askedById.get());
+            }
+            position++;
         }
         return position;
     }
@@ -194,14 +215,20 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
         }
     }
 
-    private int addParameterForNext(final Integer firstElement, final PreparedStatement questionsStatement, int parameterPosition) throws SQLException {
+    private int addParameterForNext(final Integer firstElement, int parameterPosition, final PreparedStatement... statements) throws SQLException {
         if (firstElement != null) {
             final Question firstQuestion = getQuestionById(firstElement);
             if (firstQuestion == null) {
                 throw new RuntimeException("No question with id " + firstElement);
             }
-            questionsStatement.setDate(parameterPosition++, new java.sql.Date(firstQuestion.dateAsked.toDate().getTime()));
-            questionsStatement.setInt(parameterPosition++, firstQuestion.id);
+            for (PreparedStatement statement : statements) {
+                statement.setDate(parameterPosition, new java.sql.Date(firstQuestion.dateAsked.toDate().getTime()));
+            }
+            parameterPosition++;
+            for (PreparedStatement statement : statements) {
+                statement.setInt(parameterPosition, firstQuestion.id);
+            }
+            parameterPosition++;
         }
         return parameterPosition;
     }
@@ -242,7 +269,7 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
             stat.setInt(idx++, question.askedBy);
             stat.setInt(idx++, question.askedTo);
             stat.setString(idx++, question.assemblyRef);
-            stat.setInt(idx++, question.assembly.getId());
+            stat.setInt(idx, question.assembly.getId());
 
             stat.execute();
         }
@@ -271,7 +298,7 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
             stat.setInt(idx++, question.askedBy);
             stat.setInt(idx++, question.askedTo);
             stat.setString(idx++, question.assemblyRef);
-            stat.setInt(idx++, question.assembly.getId());
+            stat.setInt(idx, question.assembly.getId());
 
             stat.execute();
         }
@@ -283,7 +310,7 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
         try (PreparedStatement stat = db.prepareStatement(sql)) {
             int idx = 1;
             stat.setString(idx++, question.assemblyRef);
-            stat.setInt(idx++, question.assembly.getId());
+            stat.setInt(idx, question.assembly.getId());
             stat.execute();
 
             return stat.getResultSet().next();
