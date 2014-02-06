@@ -46,7 +46,7 @@ public class QuestionParserTest extends AbstractDbDependantTest {
         Assert.assertEquals(78, qr.askedTo);
         Assert.assertEquals("2011-10-07", qr.dateAnswered.toString());
         Assert.assertEquals(78, qr.answeredBy);
-        Assert.assertEquals(2596, qr.questionText.length());
+        Assert.assertEquals(2590, qr.questionText.length());
         Assert.assertEquals(5663, qr.answerText.length());
     }
 
@@ -65,7 +65,7 @@ public class QuestionParserTest extends AbstractDbDependantTest {
         Assert.assertEquals(75, qr.askedTo);
         Assert.assertEquals("2013-10-25", qr.dateAnswered.toString());
         Assert.assertEquals(75, qr.answeredBy);
-        Assert.assertEquals(2044, qr.questionText.length());
+        Assert.assertEquals(2038, qr.questionText.length());
         Assert.assertEquals(296, qr.answerText.length());
     }
 
@@ -83,7 +83,7 @@ public class QuestionParserTest extends AbstractDbDependantTest {
         Assert.assertEquals(76, qr.askedTo);
         Assert.assertEquals(null, qr.dateAnswered);
         Assert.assertEquals(0, qr.answeredBy);
-        Assert.assertEquals(2244, qr.questionText.length());
+        Assert.assertEquals(2238, qr.questionText.length());
         Assert.assertEquals(null, qr.answerText);
     }
 
