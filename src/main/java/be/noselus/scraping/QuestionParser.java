@@ -36,7 +36,7 @@ public class QuestionParser {
 
     public Question parse(int id) throws IOException {
         final String resource = url + id;
-        try (InputStream in = new URL(resource).openStream();) {
+        try (InputStream in = new URL(resource).openStream()) {
             return parse(in, resource, id);
         }
     }
@@ -105,7 +105,7 @@ public class QuestionParser {
 
         // Extract Texts
         fields = extract(doc, "div#print_container div + div");
-        model.questionText = fields.get(0);
+        model.questionText = fields.get(0).replaceAll("^(<br />)*", "").replaceAll("(<br />)*$", "");
         if (fields.size() > 2) {
             model.answerText = fields.get(2);
         }
