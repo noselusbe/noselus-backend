@@ -13,7 +13,7 @@ import java.sql.SQLException;
 
 public class ParliamentImporter {
 
-    private static final Logger logger = LoggerFactory.getLogger(ParliamentImporter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ParliamentImporter.class);
 
     public static final int WAIT_INTERVAL = 150;
     public static final int FROM_ID = 50061;
@@ -39,16 +39,16 @@ public class ParliamentImporter {
         importQuestions(FROM_ID, TO_ID);
     }
 
-    private void importQuestions(int fromId, int toId) {
-
+    public void importQuestions(int fromId, int toId) {
+        LOGGER.debug("Importing questions from " + fromId + " to " + toId);
         String url = "http://parlement.wallonie.be/content/print_container.php?print=quest_rep_voir.php&type=all&id_doc=";
 
         for (int id = fromId; id < toId; id++) {
             try {
-                logger.debug("importing question " + id);
+                LOGGER.debug("importing question " + id);
                 questionRepository.insertOrUpdateQuestion(parser.parse(id));
             } catch (IOException | IllegalArgumentException | IndexOutOfBoundsException e) {
-                logger.error(url + id, e);
+                LOGGER.error(url + id, e);
             }
             try {
                 Thread.sleep(WAIT_INTERVAL);

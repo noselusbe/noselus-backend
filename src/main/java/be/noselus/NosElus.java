@@ -1,10 +1,14 @@
 package be.noselus;
 
 import be.noselus.db.DatabaseUpdater;
+import be.noselus.job.WalloonParliamentJob;
 import be.noselus.pictures.PictureManager;
 import be.noselus.service.Routes;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import org.nnsoft.guice.guartz.QuartzModule;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,9 +40,21 @@ public class NosElus {
 
     public static void main(String[] args) throws IOException {
         LOGGER.debug("Starting up");
-        Injector injector = Guice.createInjector(new NosElusModule());
+        Injector injector = Guice.createInjector(new NosElusModule(), new QuartzModule() {
+            @Override
+            protected void schedule() {
+                scheduleJob(WalloonParliamentJob.class);
+                configureScheduler().withManualStart();
+            }
+        });
         final NosElus nosElus = injector.getInstance(NosElus.class);
         nosElus.initialize();
+        final Scheduler scheduler = injector.getInstance(Scheduler.class);
+        try {
+            scheduler.start();
+        } catch (SchedulerException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void initialize() {
