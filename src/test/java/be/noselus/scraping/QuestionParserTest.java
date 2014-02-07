@@ -5,7 +5,7 @@ import be.noselus.model.Question;
 import be.noselus.repository.AssemblyRegistry;
 import be.noselus.repository.AssemblyRegistryInDatabase;
 import be.noselus.repository.PoliticianRepository;
-import be.noselus.repository.PoliticianRepositoryInMemory;
+import be.noselus.repository.PoliticianRepositoryInDatabase;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
@@ -26,15 +26,14 @@ public class QuestionParserTest extends AbstractDbDependantTest {
 
     @Before
     public void setup() {
-        PoliticianRepository politicianRepository = new PoliticianRepositoryInMemory();
+        PoliticianRepository politicianRepository = new PoliticianRepositoryInDatabase(AbstractDbDependantTest.dataSource);
         AssemblyRegistry assemblyRegistry = new AssemblyRegistryInDatabase(AbstractDbDependantTest.dataSource);
         parser = new QuestionParser(politicianRepository, assemblyRegistry);
     }
 
     @Test
     public void openData() throws IOException {
-        final InputStream in = getClass().getClassLoader().getResourceAsStream("scraping/PW_36256.html");
-        Question qr = parser.parse(in, "classpath:scraping/PW_36256.html", 36256);
+        Question qr = getQuestion(36256);
 
         Assert.assertEquals("36256", qr.assemblyRef);
         Assert.assertEquals("l'\"Open Data - Open Government\"", qr.title);
@@ -42,18 +41,17 @@ public class QuestionParserTest extends AbstractDbDependantTest {
         Assert.assertEquals(2011, qr.year.intValue());
         Assert.assertEquals("594 (2010-2011) 1", qr.number);
         Assert.assertEquals("2011-08-29", qr.dateAsked.toString());
-        Assert.assertEquals(21, qr.askedBy);
-        Assert.assertEquals(78, qr.askedTo);
+        Assert.assertEquals(98, qr.askedBy);
+        Assert.assertEquals(155, qr.askedTo);
         Assert.assertEquals("2011-10-07", qr.dateAnswered.toString());
-        Assert.assertEquals(78, qr.answeredBy);
+        Assert.assertEquals(155, qr.answeredBy);
         Assert.assertEquals(2590, qr.questionText.length());
         Assert.assertEquals(5663, qr.answerText.length());
     }
 
     @Test
     public void eolien() throws IOException {
-        final InputStream in = getClass().getClassLoader().getResourceAsStream("scraping/PW_50370.html");
-        Question qr = parser.parse(in, "classpath:scraping/PW_50370.html", 50370);
+        Question qr = getQuestion(50370);
 
         Assert.assertEquals("50370", qr.assemblyRef);
         Assert.assertEquals("le coût élevé de l'éolien", qr.title);
@@ -61,17 +59,17 @@ public class QuestionParserTest extends AbstractDbDependantTest {
         Assert.assertEquals(2013, qr.year.intValue());
         Assert.assertEquals("51 (2013-2014) 1", qr.number);
         Assert.assertEquals("2013-10-04", qr.dateAsked.toString());
-        Assert.assertEquals(63, qr.askedBy);
-        Assert.assertEquals(75, qr.askedTo);
+        Assert.assertEquals(140, qr.askedBy);
+        Assert.assertEquals(152, qr.askedTo);
         Assert.assertEquals("2013-10-25", qr.dateAnswered.toString());
-        Assert.assertEquals(75, qr.answeredBy);
+        Assert.assertEquals(152, qr.answeredBy);
         Assert.assertEquals(2038, qr.questionText.length());
         Assert.assertEquals(296, qr.answerText.length());
     }
 
     @Test
     public void andreAntoine() throws IOException {
-        Question qr = parser.parse(50054);
+        Question qr = getQuestion(50054);
 
         Assert.assertEquals("50054", qr.assemblyRef);
         Assert.assertEquals("la baisse de l'emploi dans les P.M.E.", qr.title);
@@ -79,8 +77,8 @@ public class QuestionParserTest extends AbstractDbDependantTest {
         Assert.assertEquals(2013, qr.year.intValue());
         Assert.assertEquals("467 (2012-2013) 1", qr.number);
         Assert.assertEquals("2013-09-13", qr.dateAsked.toString());
-        Assert.assertEquals(31, qr.askedBy);
-        Assert.assertEquals(76, qr.askedTo);
+        Assert.assertEquals(108, qr.askedBy);
+        Assert.assertEquals(153, qr.askedTo);
         Assert.assertEquals(null, qr.dateAnswered);
         Assert.assertEquals(0, qr.answeredBy);
         Assert.assertEquals(2238, qr.questionText.length());
@@ -118,4 +116,11 @@ public class QuestionParserTest extends AbstractDbDependantTest {
         Assert.assertEquals("02/10/2013", "Réponse du 02/10/2013 ".replaceFirst("Réponse(.)* du ", "").trim());
         Assert.assertEquals("02/10/2013", "Réponse provisoire du 02/10/2013 ".replaceFirst("Réponse(.)* du ", "").trim());
     }
+
+    private Question getQuestion(final int id) throws IOException {
+        final InputStream in = getClass().getClassLoader().getResourceAsStream("scraping/PW_" + id + ".html");
+        return parser.parse(in, "classpath:scraping/PW_" + id + ".html", id);
+    }
+
+
 }

@@ -101,7 +101,7 @@ public class QuestionRoutesTest extends AbstractRoutesTest {
                         "questions.askedBy", not(hasItem(not(78)))
                 )
                 .when()
-                .get("/questions/askedBy/BASTIN").then().log().all(true);
+                .get("/questions/askedBy/BASTIN");
     }
 
     @Test
