@@ -145,4 +145,7 @@
             <column name="label" type="STRING"/>
         </loadData>
     </changeSet>
+    <changeSet id="increase_title_size" author="nhurion">
+        <modifyDataType tableName="WRITTEN_QUESTION" columnName="title" newDataType="varchar(650)"/>
+    </changeSet>
 </databaseChangeLog>
