@@ -26,7 +26,7 @@ public class WalloonParliamentJob implements Job {
 
     @Override
     public void execute(final JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        final int fromId = 50000;
+        final int fromId = 23416; //First question of current legislature.
         final int toId = 53125;
         LOGGER.debug("Launching importation for walloon parliament questions");
         importer.importQuestions(fromId, toId);
