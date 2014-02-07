@@ -3,6 +3,7 @@ package be.noselus.service;
 import be.noselus.NosElus;
 import be.noselus.NosElusModule;
 import be.noselus.NosElusTestModule;
+import be.noselus.job.NosElusQuartzModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.util.Modules;
@@ -22,7 +23,9 @@ public abstract class AbstractRoutesTest {
         protected void before() throws Throwable {
             if (server == null){
                 Spark.setPort(4566);
-                AbstractRoutesTest.injector = Guice.createInjector(Modules.override(new NosElusModule()).with(new NosElusTestModule()));
+                AbstractRoutesTest.injector = Guice.createInjector(
+                        Modules.override(new NosElusModule(), new NosElusQuartzModule())
+                        .with(new NosElusTestModule()));
                 server = injector.getInstance(NosElus.class);
                 RestAssured.port = 4566;
                 server.initialize();

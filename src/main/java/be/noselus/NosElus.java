@@ -1,12 +1,11 @@
 package be.noselus;
 
 import be.noselus.db.DatabaseUpdater;
-import be.noselus.job.WalloonParliamentJob;
+import be.noselus.job.NosElusQuartzModule;
 import be.noselus.pictures.PictureManager;
 import be.noselus.service.Routes;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import org.nnsoft.guice.guartz.QuartzModule;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
@@ -30,26 +29,25 @@ public class NosElus {
     private final Set<Routes> routes;
     private final PictureManager pictureManager;
     private final DatabaseUpdater dbUpdater;
+    private final Scheduler scheduler;
 
     @Inject
-    public NosElus(final Set<Routes> routes, final PictureManager pictureManager, final DatabaseUpdater dbUpdater) {
+    public NosElus(final Set<Routes> routes, final PictureManager pictureManager, final DatabaseUpdater dbUpdater, final Scheduler scheduler) {
         this.routes = routes;
         this.pictureManager = pictureManager;
         this.dbUpdater = dbUpdater;
+        this.scheduler = scheduler;
     }
 
     public static void main(String[] args) throws IOException {
         LOGGER.debug("Starting up");
-        Injector injector = Guice.createInjector(new NosElusModule(), new QuartzModule() {
-            @Override
-            protected void schedule() {
-                scheduleJob(WalloonParliamentJob.class);
-                configureScheduler().withManualStart();
-            }
-        });
+        Injector injector = Guice.createInjector(new NosElusModule(), new NosElusQuartzModule());
         final NosElus nosElus = injector.getInstance(NosElus.class);
         nosElus.initialize();
-        final Scheduler scheduler = injector.getInstance(Scheduler.class);
+        nosElus.startScheduler();
+    }
+
+    private void startScheduler() {
         try {
             scheduler.start();
         } catch (SchedulerException e) {
@@ -74,6 +72,4 @@ public class NosElus {
 
         LOGGER.info("End initialization");
     }
-
-
 }
