@@ -12,7 +12,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-@Scheduled(jobName = "updateWalloonParliamentQuestions", cronExpression = "* * 0/1 * * ?")
+@Scheduled(jobName = "updateWalloonParliamentQuestions", cronExpression = "0 0/30 * 1/1 * ?")
 public class WalloonParliamentJob implements Job {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WalloonParliamentJob.class);
