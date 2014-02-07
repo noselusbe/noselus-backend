@@ -15,7 +15,7 @@ public class ParliamentImporter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ParliamentImporter.class);
 
-    public static final int WAIT_INTERVAL = 150;
+    public static final int WAIT_INTERVAL = 450;
     public static final int FROM_ID = 50061;
     public static final int TO_ID = 51035;
 
