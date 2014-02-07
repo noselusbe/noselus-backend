@@ -12,12 +12,14 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-@Scheduled(jobName = "updateWalloonParliamentQuestions", cronExpression = "* * 10 1/1 * ?")
+@Scheduled(jobName = "updateWalloonParliamentQuestions", cronExpression = "* * 0/1 * * ?")
 public class WalloonParliamentJob implements Job {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WalloonParliamentJob.class);
+    public static final int NBR_TO_EXTRACT = 1500;
 
     private final ParliamentImporter importer;
+    private int fromId = 23416;// first question of current legislature
 
     @Inject
     public WalloonParliamentJob(final ParliamentImporter importer) {
@@ -26,9 +28,9 @@ public class WalloonParliamentJob implements Job {
 
     @Override
     public void execute(final JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        final int fromId = 23416; //First question of current legislature.
-        final int toId = 53125;
+        final int toId = fromId + NBR_TO_EXTRACT;
         LOGGER.debug("Launching importation for walloon parliament questions");
         importer.importQuestions(fromId, toId);
+        fromId += NBR_TO_EXTRACT;
     }
 }
