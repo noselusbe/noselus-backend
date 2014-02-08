@@ -18,8 +18,7 @@ import java.util.Date;
 import java.util.List;
 
 import static com.ninja_squad.dbsetup.Operations.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class QuestionRepositoryTest extends AbstractDbDependantTest {
 
@@ -85,10 +84,13 @@ public class QuestionRepositoryTest extends AbstractDbDependantTest {
         assertEquals(1, questionInserted.getResults().size());
         final Question actual = questionInserted.getResults().get(0);
         assertEquals("New question", actual.title);
+        assertNotNull(actual.createdAt);
+        assertNull(actual.updatedAt);
         final Integer id = actual.id;
         actual.title = "updated title";
         repo.insertOrUpdateQuestion(actual);
         final Question updatedQuestion = repo.getQuestionById(id);
         assertEquals("Updated title", updatedQuestion.title);
+        assertNotNull(updatedQuestion.updatedAt);
     }
 }

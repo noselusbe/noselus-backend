@@ -4,10 +4,12 @@ import be.noselus.model.Assembly;
 import be.noselus.model.Question;
 import com.google.inject.Inject;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
 public class QuestionMapper {
 
@@ -40,7 +42,21 @@ public class QuestionMapper {
         final int assembly_id = r.getInt("assembly_id");
         final Assembly assembly = assemblyRegistry.findId(assembly_id);
         final String assemblyRef = r.getString("assembly_ref");
-        return new Question(id, asked_by, asked_to, answered_by, session, year, number, date_asked, date_answered, title, question_text, answer_text, assembly, assemblyRef);
+        final Timestamp createdAtDb = r.getTimestamp("created_at");
+        final LocalDateTime createdAt;
+        if (createdAtDb == null){
+            createdAt = null;
+        } else {
+            createdAt = LocalDateTime.fromDateFields(createdAtDb);
+        }
+        final Timestamp updatedAtDb = r.getTimestamp("updated_at");
+        final LocalDateTime updatedAt;
+        if (updatedAtDb == null){
+            updatedAt = null;
+        } else {
+            updatedAt = LocalDateTime.fromDateFields(updatedAtDb);
+        }
+        return new Question(id, asked_by, asked_to, answered_by, session, year, number, date_asked, date_answered, title, question_text, answer_text, assembly, assemblyRef, createdAt,updatedAt);
     }
 
     private String capitalizeFirstLetter(String original) {

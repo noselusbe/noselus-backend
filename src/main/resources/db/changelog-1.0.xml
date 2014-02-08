@@ -148,4 +148,10 @@
     <changeSet id="increase_title_size" author="nhurion">
         <modifyDataType tableName="WRITTEN_QUESTION" columnName="title" newDataType="varchar(650)"/>
     </changeSet>
+    <changeSet id="5_created_updated_dates" author="nhurion">
+        <addColumn tableName="WRITTEN_QUESTION">
+            <column name="created_at" type="timestamp"/>
+            <column name="updated_at" type="timestamp"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

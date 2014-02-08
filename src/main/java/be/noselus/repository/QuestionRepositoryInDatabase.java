@@ -7,14 +7,13 @@ import be.noselus.model.Question;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
+import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Singleton;
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Arrays;
 import java.util.List;
 
@@ -248,8 +247,8 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
         LOGGER.debug("Inserting question " + question.assembly.getLabel() + " " + question.assemblyRef);
 
         String sql =
-                "INSERT INTO written_question (session, year, number, date_asked, date_answer, title, question_text, answer_text, asked_by, asked_to, assembly_ref, assembly_id) "
-                        + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "INSERT INTO written_question (session, year, number, date_asked, date_answer, title, question_text, answer_text, asked_by, asked_to, assembly_ref, assembly_id, created_at) "
+                        + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement stat = db.prepareStatement(sql)) {
             int idx = 1;
@@ -268,8 +267,8 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
             stat.setInt(idx++, question.askedBy);
             stat.setInt(idx++, question.askedTo);
             stat.setString(idx++, question.assemblyRef);
-            stat.setInt(idx, question.assembly.getId());
-
+            stat.setInt(idx++, question.assembly.getId());
+            stat.setTimestamp(idx, new Timestamp(new LocalDateTime().toDate().getTime()));
             stat.execute();
         }
     }
@@ -278,7 +277,7 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
         LOGGER.debug("Updating question " + question.assembly.getLabel() + " " + question.assemblyRef);
 
         String sql =
-                "UPDATE written_question SET session = ?,  year = ? , number = ?, date_asked = ?, date_answer = ?, title = ?, question_text = ?, answer_text = ?, asked_by = ?, asked_to = ? "
+                "UPDATE written_question SET session = ?,  year = ? , number = ?, date_asked = ?, date_answer = ?, title = ?, question_text = ?, answer_text = ?, asked_by = ?, asked_to = ?, updated_at = ? "
                         + "WHERE assembly_ref = ? AND assembly_id = ?";
         try (PreparedStatement stat = db.prepareStatement(sql)) {
             int idx = 1;
@@ -296,6 +295,9 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
             stat.setString(idx++, question.answerText);
             stat.setInt(idx++, question.askedBy);
             stat.setInt(idx++, question.askedTo);
+            stat.setTimestamp(idx++, new Timestamp(new LocalDateTime().toDate().getTime()));
+
+            //WHERE clause
             stat.setString(idx++, question.assemblyRef);
             stat.setInt(idx, question.assembly.getId());
 
