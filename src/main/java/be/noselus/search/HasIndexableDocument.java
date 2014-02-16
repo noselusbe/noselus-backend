@@ -11,8 +11,6 @@ public interface HasIndexableDocument {
 		WRITTEN_QUESTION
 	}
 		
-	public static final String WRITTEN_QUESTION = "WRITTEN_QUESTION";
-
 	public Map<SolrHelper.Fields, Object> getIndexableFields();
 	public URI getURI();
 	public type getType();

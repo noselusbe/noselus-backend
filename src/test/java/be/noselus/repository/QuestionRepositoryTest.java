@@ -63,11 +63,9 @@ public class QuestionRepositoryTest extends AbstractDbDependantTest {
 
     @Test
     public void findTheRightResult() {
-        final PartialResult<Question> questions = repo.getQuestions(new SearchParameter(10, 536), Optional.<Integer>absent());
-        assertEquals(3, questions.getResults().size());
-        for (Question question : questions.getResults()) {
-            assertTrue(question.id < 537);
-        }
+        final PartialResult<Question> questions = repo.getQuestions(new SearchParameter(10, 2), Optional.<Integer>absent());
+        assertEquals(1, questions.getResults().size());
+        assertEquals((Integer)1, questions.getResults().get(0).id);
     }
 
     @Test

@@ -1,0 +1,19 @@
+<assembly>
+    <id>solr-config</id>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <!-- Generates a zip package containing the needed files -->
+    <formats>
+        <format>zip</format>
+    </formats>
+
+
+    <fileSets>
+        <fileSet>
+            <directory>src/main/solr</directory>
+            <outputDirectory></outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+</assembly>

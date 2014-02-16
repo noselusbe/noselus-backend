@@ -9,4 +9,4 @@ yo
 *.jar
 *.war
 *.ear
-src/test/resources/solr/home/noselusbe/data/
+src/main/solr/home/noselusbe/data/

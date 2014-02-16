@@ -1,27 +1,20 @@
 package be.noselus.model;
 
+import be.noselus.search.HasIndexableDocument;
+import be.noselus.search.SolrHelper;
+import be.noselus.search.SolrHelper.Fields;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
 import java.net.URI;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.joda.time.LocalDate;
-
-import be.noselus.search.HasIndexableDocument;
-import be.noselus.search.SolrHelper.Fields;
-import be.noselus.search.HasIndexableDocument;
-import be.noselus.search.SolrHelper;
-
 public class Question implements HasIndexableDocument {
 
     private static final int EXCERPT_SIZE = 150;
-
 
     public Integer id;
     public int askedBy;
@@ -99,7 +92,10 @@ public class Question implements HasIndexableDocument {
 		if (this.assembly != null) {
 			doc.put(SolrHelper.StringFields.ASSEMBLY, this.assembly.getLabel());
 		}
-		
+        if (this.askedBy > 0){
+            doc.put(SolrHelper.IntegerFields.ASKED_BY_ID, this.askedBy);
+        }
+
 		return doc;
 	}
 
@@ -134,17 +130,11 @@ public class Question implements HasIndexableDocument {
 			}
 		}
 		
-		
 		uriString = uriString + 
 				":written_question:" + this.id;
-		
-		
+
 		URI u = URI.create(uriString);
-		
 		return u;
-		
-		
-		
 	}
 
 	@Override

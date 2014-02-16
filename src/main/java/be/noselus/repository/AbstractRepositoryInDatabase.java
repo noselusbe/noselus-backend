@@ -1,5 +1,6 @@
 package be.noselus.repository;
 
+import javax.inject.Inject;
 import javax.sql.DataSource;
 
 /**
@@ -9,6 +10,7 @@ public abstract class AbstractRepositoryInDatabase {
 
     protected final DataSource dataSource;
 
+    @Inject
     public AbstractRepositoryInDatabase(final DataSource dataSource) {
         this.dataSource = dataSource;
     }

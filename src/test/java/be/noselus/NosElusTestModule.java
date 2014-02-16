@@ -1,5 +1,7 @@
 package be.noselus;
 
+import be.noselus.repository.QuestionRepository;
+import be.noselus.repository.QuestionRepositoryInDatabase;
 import com.google.inject.AbstractModule;
 import org.h2.jdbcx.JdbcDataSource;
 
@@ -14,5 +16,6 @@ public class NosElusTestModule extends AbstractModule {
         JdbcDataSource ds = new JdbcDataSource();
         ds.setURL(TEST_DB);
         bind(DataSource.class).toInstance(ds);
+        bind(QuestionRepository.class).to(QuestionRepositoryInDatabase.class);
     }
 }

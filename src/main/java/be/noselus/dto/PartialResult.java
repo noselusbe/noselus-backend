@@ -11,9 +11,9 @@ public class PartialResult<T> {
     private List<T> results;
     private Object nextItem;
     private Integer limit;
-    private Integer totalNumberOfResult;
+    private Long totalNumberOfResult;
 
-    public PartialResult(final List<T> results, final Object nextItem, final Integer limit, final Integer totalNumberOfResult) {
+    public PartialResult(final List<T> results, final Object nextItem, final Integer limit, final Long totalNumberOfResult) {
         this.results = results;
         this.nextItem = nextItem;
         this.limit = limit;
@@ -36,7 +36,7 @@ public class PartialResult<T> {
         return limit;
     }
 
-    public Integer getTotalNumberOfResult() {
+    public Long getTotalNumberOfResult() {
         return totalNumberOfResult;
     }
 }

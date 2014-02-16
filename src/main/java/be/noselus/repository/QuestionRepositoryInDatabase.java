@@ -13,7 +13,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Singleton;
 import javax.sql.DataSource;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,7 +27,8 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
     private static final String SELECT_QUESTION = "SELECT * FROM written_question WHERE 1=1 ";
     public static final String ORDER_BY = " ORDER BY date_asked DESC, id DESC";
     public static final String NEXT_ELEMENT_WHERE = " AND date_asked <= ? AND id <= ?";
-    public static final String LIMIT = " LIMIT ?;";
+    public static final String LIMIT = " LIMIT ?";
+    public static final String OFFSET = " OFFSET ?;";
 
     private final QuestionMapper mapper;
 
@@ -76,18 +80,20 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
         final StringBuilder sql = new StringBuilder(SELECT_QUESTION);
         final StringBuilder where = new StringBuilder();
         addKeywordsClause(where, keywords);
-        final Integer firstElement = addClauseForNext(parameter, where);
+//        final Integer firstElement = addClauseForNext(parameter, where);
         addAskedByClause(askedById, where);
         sql.append(where);
         sql.append(ORDER_BY);
         sql.append(LIMIT);
+        sql.append(OFFSET);
         try (Connection db = dataSource.getConnection();
              PreparedStatement stat = db.prepareStatement(sql.toString());
              PreparedStatement countStat = db.prepareStatement("SELECT COUNT(*) FROM WRITTEN_QUESTION WHERE 1=1 " + where)) {
             int position = 1;
-            position = addParameterForNext(firstElement, position, stat, countStat);
+//            position = addParameterForNext(firstElement, position, stat, countStat);
             position = addAskedByParameter(askedById, position, stat, countStat);
-            stat.setInt(position, parameter.getLimit() + 1);
+            stat.setInt(position++, parameter.getLimit() + 1);
+            stat.setInt(position, parameter.getFirstElement() == null ? 0 : (Integer) parameter.getFirstElement());
             stat.execute();
 
             while (stat.getResultSet().next()) {
@@ -103,7 +109,7 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
         } catch (SQLException e) {
             LOGGER.error("Error loading question with keywords " + Arrays.toString(keywords), e);
         }
-        return makePartialResult(results, parameter.getLimit(), totalResults);
+        return makePartialResult(results, parameter, totalResults);
     }
 
     @Override
@@ -146,7 +152,7 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
         } catch (SQLException e) {
             LOGGER.error("Error loading questions asked by " + eurovocId, e);
         }
-        return makePartialResult(questionAssociatedToEurovoc, parameter.getLimit(), total);
+        return makePartialResult(questionAssociatedToEurovoc, parameter, total);
     }
 
     private Integer addClauseForNext(final SearchParameter parameter, final StringBuilder where) {
@@ -231,11 +237,13 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
         return parameterPosition;
     }
 
-    private PartialResult<Question> makePartialResult(final List<Question> results, final Integer limit, final Integer total) {
+    protected PartialResult<Question> makePartialResult(final List<Question> results, final SearchParameter parameter, final long total) {
         final int resultFound = results.size();
         final Integer nextElement;
+        final int limit = parameter.getLimit();
         if (resultFound > limit) {
-            nextElement = results.get(resultFound - 1).id;
+            final Integer firstElement = (Integer) parameter.getFirstElement();
+            nextElement = firstElement == null ? 0 + limit : firstElement + limit;
             results.remove(resultFound - 1);
         } else {
             nextElement = null;

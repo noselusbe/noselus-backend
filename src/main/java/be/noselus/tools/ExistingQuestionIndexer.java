@@ -1,53 +1,63 @@
 package be.noselus.tools;
 
 
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
-
-import org.apache.solr.client.solrj.SolrServerException;
-
+import be.noselus.NosElusModule;
+import be.noselus.dto.PartialResult;
+import be.noselus.dto.SearchParameter;
+import be.noselus.model.Question;
+import be.noselus.repository.QuestionRepositoryInDatabase;
+import be.noselus.search.SolrHelper;
+import com.google.common.base.Optional;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import be.noselus.NosElusModule;
-import be.noselus.model.Question;
-import be.noselus.repository.QuestionRepository;
-import be.noselus.search.SolrHelper;
-
+import javax.inject.Inject;
+import java.io.IOException;
+import java.util.Iterator;
 
 
 public class ExistingQuestionIndexer {
 
-	public static void main(String[] args) throws SolrServerException, IOException {
-		Injector injector = Guice.createInjector(new NosElusModule());
-		QuestionRepository  qr = injector.getInstance(QuestionRepository.class);
-		
-		boolean continueIndexing = true;
-		final int limit = 50;
-		int offset = 0;
-		
-		do {
-			List<Question> questions = qr.getQuestions(limit, offset);
-			
-			Iterator<Question> i = questions.iterator();
-			while (i.hasNext()) {
-				Question q = i.next();
-				System.out.print("Indexing " + q.id.toString() + " - " + q.title + " \n");
-				SolrHelper.add(q, false);
-			}
-			
-			if (questions.size() == 50) {
-				offset = offset + questions.size();
-			} else {
-				continueIndexing = false;
-			}
-			
-			
-			
-		} while (continueIndexing) ;
-		
-		SolrHelper.getSolrServer().commit();
-	}
-	
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExistingQuestionIndexer.class);
+
+    private final QuestionRepositoryInDatabase qr;
+    private final SolrHelper solrHelper;
+
+    @Inject
+    public ExistingQuestionIndexer(final QuestionRepositoryInDatabase qr, final SolrHelper solrHelper) {
+        this.qr = qr;
+        this.solrHelper = solrHelper;
+    }
+
+    public static void main(String[] args) throws SolrServerException, IOException {
+        Injector injector = Guice.createInjector(new NosElusModule());
+        ExistingQuestionIndexer indexer = injector.getInstance(ExistingQuestionIndexer.class);
+        indexer.indexQuestionsFromDatabase(100);
+    }
+
+    public void indexQuestionsFromDatabase(final int limit) {
+
+        boolean continueIndexing = true;
+        Integer firstElement = null;
+
+        while (continueIndexing) {
+            LOGGER.debug("First element: {}", firstElement);
+            SearchParameter searchParameter = new SearchParameter(limit, firstElement);
+            PartialResult<Question> questions = qr.getQuestions(searchParameter, Optional.<Integer>absent());
+            LOGGER.debug("Next item : {} more: {}", questions.getNextItem(), questions.moreResultsAvailable());
+            Iterator<Question> i = questions.getResults().iterator();
+            while (i.hasNext()) {
+                Question q = i.next();
+                LOGGER.debug("Indexing {} - {}", q.id.toString(), q.title);
+                solrHelper.add(q, false);
+            }
+            continueIndexing = questions.moreResultsAvailable();
+            firstElement = (Integer) questions.getNextItem();
+            solrHelper.commit();
+        }
+    }
+
 }
