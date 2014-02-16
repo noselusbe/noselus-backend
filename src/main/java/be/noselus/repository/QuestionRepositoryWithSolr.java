@@ -9,14 +9,12 @@ import com.google.common.base.Optional;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class QuestionRepositoryWithSolr extends QuestionRepositoryInDatabase {
@@ -57,23 +55,22 @@ public class QuestionRepositoryWithSolr extends QuestionRepositoryInDatabase {
         parameters.set("start", offset);
         parameters.set("sort", "date_asked desc, id desc");
 
+        LOGGER.debug("Solr query parameters: {}", parameters);
+
         QueryResponse resp = solrHelper.query(parameters);
 
-        SolrDocumentList list = resp.getResults();
-        List<Question> result = new ArrayList<>();
-
-        Iterator<SolrDocument> i = list.iterator();
-
-        //TODO get all the questions in one select instead of 1 query per question
-        while (i.hasNext()) {
-            String uriString = (String) i.next().getFieldValue("id");
-            //until now, we just query into question table, with id field
+        List<Integer> questionIds = new ArrayList<>();
+        for (SolrDocument solrDocument : resp.getResults()) {
+            String uriString = (String) solrDocument.getFieldValue("id");
             String[] uriDecomposed = uriString.split(":");
             Integer id = Integer.valueOf(uriDecomposed[uriDecomposed.length - 1]);
-            result.add(getQuestionById(id));
+            questionIds.add(id);
         }
+        LOGGER.debug("Solr found questions with ids: {}, for the keywords: {}", Joiner.on(",").join(questionIds), Joiner.on(",").join(keywords));
+
+        final List<Question> questionsFound = getQuestionsByIds(questionIds);
         final long numFound = resp.getResults().getNumFound();
         final Integer nextItem = offset + limit > numFound ? null : offset + limit;
-        return new PartialResult<>(result, nextItem, limit, numFound);
+        return new PartialResult<>(questionsFound, nextItem, limit, numFound);
     }
 }

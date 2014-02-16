@@ -13,10 +13,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Singleton;
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -53,7 +51,7 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
             this.addEurovocsToQuestion(result, db);
 
         } catch (SQLException e) {
-            LOGGER.error("Error loading question with id " + id, e);
+            LOGGER.error("Error loading question with id {}", id, e);
         }
 
         return result;
@@ -153,6 +151,25 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
             LOGGER.error("Error loading questions asked by " + eurovocId, e);
         }
         return makePartialResult(questionAssociatedToEurovoc, parameter, total);
+    }
+
+    public List<Question> getQuestionsByIds(final List<Integer> ids) {
+        List<Question> result = new ArrayList<>(ids.size());
+        try (Connection db = dataSource.getConnection();
+             PreparedStatement stat = db.prepareStatement("SELECT * FROM written_question WHERE id = ANY ( ? );")) {
+            final Array anInt = db.createArrayOf("int", ids.toArray());
+            stat.setArray(1, anInt);
+            stat.execute();
+            while (stat.getResultSet().next()) {
+                final Question question = mapper.map(stat.getResultSet());
+                addEurovocsToQuestion(question, db);
+                result.add(question);
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Error loading question with ids {}", ids, e);
+            throw new RuntimeException(e);
+        }
+        return result;
     }
 
     private Integer addClauseForNext(final SearchParameter parameter, final StringBuilder where) {
