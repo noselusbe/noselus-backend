@@ -7,6 +7,7 @@ In order to build this application you need:
 * [Java 7](http://java.com/en/download/index.jsp). If you're using a mac [Java 7 on mac](http://www.monkehworks.com/set-java-7-as-default-jvm-on-mac-osx-mountain-lion)
 * [Maven 3.1.1](http://maven.apache.org/download.cgi). If you don't know maven, we highly recomand reading [Maven in 5 minutes](http://maven.apache.org/guides/getting-started/maven-in-five-minutes.html)
 * [PosgreSQL 9.2](http://www.postgresql.org/download/). If you're on a mac we recommend [Posgresql.app](http://postgresapp.com/)
+* Solr 4.5
 
 Once all installed, create a database.
 
@@ -32,6 +33,10 @@ You can then run the application with ```java -jar be.noselus-{VERSION}.jar```
 The application will then be accessible at ```http://localhost:4567/``` for example, the list of most recent questions is accessible at ```http://localhost:4567/questions```
 
 The documentation of the api will come soon.
+
+You must also run an instance of SOLR, used for indexing and search. A Solr `home` directory and installations instructions are available in `src/main/test/resources/solr/home/noselus.be_solr_how_to_start.md`
+
+Configure the variable SOLR_URL (for instance: `http://localhost:8983/solr/noselusbe`) into environment.
 
 Running on Linux
 ================

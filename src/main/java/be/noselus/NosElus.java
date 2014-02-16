@@ -1,7 +1,7 @@
 package be.noselus;
 
-import be.noselus.db.DatabaseUpdater;
-import be.noselus.job.NosElusQuartzModule;
+import be.noselus.model.Person;
+import be.noselus.model.PersonSmall;
 import be.noselus.pictures.PictureManager;
 import be.noselus.service.Routes;
 import com.google.inject.Guice;
@@ -12,6 +12,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import org.apache.commons.io.IOUtils;
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
+
+import spark.Request;
+import spark.Response;
+import spark.Route;
+
 import java.io.IOException;
 import java.util.Set;
 
@@ -70,6 +81,49 @@ public class NosElus {
             route.setup();
         }
 
+        get(new JsonTransformer("/questions", "questions") {
+
+            @Override
+            public Object myHandle(final Request request, final Response response) {
+                final String q = request.queryParams("q");
+                final String askedBy = request.queryParams("asked_by");
+                if (q != null) {
+                    final String keywords = q.replace("\"", "").replace(" ", "+");
+
+                    SolrQuery parameters = new SolrQuery();
+                    parameters.set("q", "text:" + keywords);
+
+                    try {
+                        QueryResponse resp = SolrHelper.getSolrServer().query(parameters);
+
+                        SolrDocumentList list = resp.getResults();
+
+                        List<Question> result = new ArrayList<Question>();
+
+                        Iterator<SolrDocument> i = list.iterator();
+
+                        while (i.hasNext()) {
+                            String uriString = (String) i.next().getFieldValue("id");
+                            //until now, we just query into question table, with id field
+                            String[] uriDecomposed = uriString.split(":");
+                            Integer id = Integer.valueOf(uriDecomposed[uriDecomposed.length - 1]);
+                            result.add(questionRepository.getQuestionById(id));
+                        }
+
+                        return result;
+
+
+                    } catch (SolrServerException e) {
+                        e.printStackTrace();
+                    }
+
+                } else if (askedBy != null) {
+                    return questionRepository.questionAskedBy(Integer.valueOf(askedBy));
+                }
+                return questionRepository.getQuestions(50, 0);
+            }
+        });
+        
         LOGGER.info("End initialization");
     }
 }

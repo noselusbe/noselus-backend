@@ -3,12 +3,25 @@ package be.noselus.model;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
+import java.net.URI;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class Question {
+import org.joda.time.LocalDate;
+
+import be.noselus.search.HasIndexableDocument;
+import be.noselus.search.SolrHelper.Fields;
+import be.noselus.search.HasIndexableDocument;
+import be.noselus.search.SolrHelper;
+
+public class Question implements HasIndexableDocument {
 
     private static final int EXCERPT_SIZE = 150;
+
 
     public Integer id;
     public int askedBy;
@@ -64,4 +77,79 @@ public class Question {
     public void addEurovoc(Eurovoc eurovoc) {
         this.eurovocs.add(eurovoc);
     }
+
+	@Override
+	public Map<Fields, Object> getIndexableFields() {
+		Map<SolrHelper.Fields, Object> doc = new HashMap<SolrHelper.Fields, Object>();
+		if (this.title != null ) {
+			doc.put(SolrHelper.StringFields.TITLE_FR, this.title);
+		}
+		if (this.questionText != null) {
+			doc.put(SolrHelper.StringFields.QUESTION_FR, this.questionText);
+		}
+		if (this.answerText != null) {
+			doc.put(SolrHelper.StringFields.ANSWER_FR, this.answerText);
+		}
+		if (this.dateAsked != null) {
+			doc.put(SolrHelper.DateFields.DATE_ASKED, this.dateAsked);
+		}
+		if (this.dateAnswered != null) {
+			doc.put(SolrHelper.DateFields.DATE_ANSWERED, this.dateAnswered);
+		}
+		if (this.assembly != null) {
+			doc.put(SolrHelper.StringFields.ASSEMBLY, this.assembly.getLabel());
+		}
+		
+		return doc;
+	}
+
+	@Override
+	public URI getURI() {
+		
+		if (this.id == null) {
+			throw new NullPointerException("Id must not be null");
+		}
+		
+		if (this.assembly == null) {
+			throw new NullPointerException("Assembly is null. Please avoid this!");
+		}
+		
+		String uriString = "urn:x-noselusbe:";
+		
+		//until now, we just have documents from parliement, waloon region and 
+		// parliement. Improve this when rewriting assembly class.
+		switch (this.assembly.getLevel()) {
+		case DEPUTY_CHAMBER:
+		case FEDERAL:
+			uriString = uriString + "federal.belgium.chamber:parliement";
+			break;
+		case REGION:
+			uriString = uriString + "region.wallonia:parliement";
+			break;
+		default:
+			try {
+				throw new Exception(String.valueOf(this.assembly.getLevel()) + " not supported yet");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		
+		uriString = uriString + 
+				":written_question:" + this.id;
+		
+		
+		URI u = URI.create(uriString);
+		
+		return u;
+		
+		
+		
+	}
+
+	@Override
+	public type getType() {
+		return HasIndexableDocument.type.WRITTEN_QUESTION;
+
+	}
 }
