@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.util.Iterator;
+import java.util.List;
 
 
 public class ExistingQuestionIndexer {
@@ -39,6 +39,7 @@ public class ExistingQuestionIndexer {
     }
 
     public void indexQuestionsFromDatabase(final int limit) {
+        LOGGER.debug("Indexing with commit every {} question", limit);
 
         boolean continueIndexing = true;
         Integer firstElement = null;
@@ -48,15 +49,17 @@ public class ExistingQuestionIndexer {
             SearchParameter searchParameter = new SearchParameter(limit, firstElement);
             PartialResult<Question> questions = qr.getQuestions(searchParameter, Optional.<Integer>absent());
             LOGGER.debug("Next item : {} more: {}", questions.getNextItem(), questions.moreResultsAvailable());
-            Iterator<Question> i = questions.getResults().iterator();
-            while (i.hasNext()) {
-                Question q = i.next();
-                LOGGER.debug("Indexing {} - {}", q.id.toString(), q.title);
-                solrHelper.add(q, false);
-            }
+            indexQuestions(questions.getResults());
             continueIndexing = questions.moreResultsAvailable();
             firstElement = (Integer) questions.getNextItem();
             solrHelper.commit();
+        }
+    }
+
+    private void indexQuestions(final List<Question> questions) {
+        for (final Question question : questions) {
+            LOGGER.trace("Indexing {} - {}", question.id.toString(), question.title);
+            solrHelper.add(question, false);
         }
     }
 
