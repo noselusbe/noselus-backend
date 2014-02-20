@@ -16,7 +16,7 @@ import javax.inject.Singleton;
 import java.util.List;
 
 @Singleton
-@Scheduled(jobName = "walloonNewQuestionImporter", cronExpression = "0 30 0 1/1 * ?")
+@Scheduled(jobName = "walloonResponseImporter", cronExpression = "0 30 0 1/1 * ?")
 public class WalloonNewResponseImporterJob implements Job {
 
     private final QuestionRepository questionRepository;

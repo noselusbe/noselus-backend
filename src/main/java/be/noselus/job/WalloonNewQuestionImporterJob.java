@@ -15,7 +15,7 @@ import javax.inject.Singleton;
 
 @Singleton
 @Scheduled(jobName = "walloonNewQuestionImporter", cronExpression = "0 0 1 1/1 * ?")
-public class WalloonNewQuestionImporter implements Job {
+public class WalloonNewQuestionImporterJob implements Job {
 
     public static final int WALLOON_PARLIAMENT_ID = 1;
     private final ParliamentImporter importer;
@@ -23,14 +23,14 @@ public class WalloonNewQuestionImporter implements Job {
     public static final Integer NBR_QUESTION_TO_IMPORT = 100;
 
     @Inject
-    public WalloonNewQuestionImporter(final ParliamentImporter importer, final QuestionRepository questionRepository) {
+    public WalloonNewQuestionImporterJob(final ParliamentImporter importer, final QuestionRepository questionRepository) {
         this.importer = importer;
         this.questionRepository = questionRepository;
     }
 
     public static void main(String[] args) throws JobExecutionException {
         Injector injector = Guice.createInjector(new NosElusModule());
-        final WalloonNewQuestionImporter instance = injector.getInstance(WalloonNewQuestionImporter.class);
+        final WalloonNewQuestionImporterJob instance = injector.getInstance(WalloonNewQuestionImporterJob.class);
         instance.execute(null);
     }
 
