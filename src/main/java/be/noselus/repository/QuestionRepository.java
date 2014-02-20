@@ -5,6 +5,8 @@ import be.noselus.dto.SearchParameter;
 import be.noselus.model.Question;
 import com.google.common.base.Optional;
 
+import java.util.List;
+
 /**
  * Repository allowing access to all the questions available.
  */
@@ -23,4 +25,7 @@ public interface QuestionRepository {
 
     void insertOrUpdateQuestion(Question question);
 
+    Integer getMostRecentQuestionFrom(Integer assemblyId);
+
+    List<Integer> getUnansweredQuestionsFrom(Integer assemblyId);
 }

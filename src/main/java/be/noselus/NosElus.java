@@ -3,6 +3,7 @@ package be.noselus;
 import be.noselus.db.DatabaseUpdater;
 import be.noselus.job.NosElusQuartzModule;
 import be.noselus.pictures.PictureManager;
+import be.noselus.search.SolrModule;
 import be.noselus.service.Routes;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -41,7 +42,7 @@ public class NosElus {
 
     public static void main(String[] args) throws IOException {
         LOGGER.debug("Starting up");
-        Injector injector = Guice.createInjector(new NosElusModule(), new NosElusQuartzModule());
+        Injector injector = Guice.createInjector(new NosElusModule(), new NosElusQuartzModule(), new SolrModule());
         final NosElus nosElus = injector.getInstance(NosElus.class);
         nosElus.initialize();
         nosElus.startScheduler();

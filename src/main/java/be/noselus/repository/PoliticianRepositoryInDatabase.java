@@ -104,7 +104,7 @@ public class PoliticianRepositoryInDatabase extends AbstractRepositoryInDatabase
                 if (endIndex == -1) {
                     lastName = name;
                 } else {
-                    lastName = name.substring(0, endIndex);
+                    lastName = name.substring(0, endIndex).replace(" ", " ");
                 }
 
                 return p != null && (name.equals(p.fullName) || p.fullName.contains(name) || p.fullName.contains(lastName));

@@ -72,6 +72,36 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
     }
 
     @Override
+    public Integer getMostRecentQuestionFrom(final Integer assemblyId) {
+        try (Connection db = dataSource.getConnection();
+             PreparedStatement stat = db.prepareStatement("SELECT max(assembly_ref) FROM written_question WHERE assembly_id = ?;")) {
+
+            stat.setInt(1, assemblyId);
+            stat.execute();
+            stat.getResultSet().next();
+            return stat.getResultSet().getInt(1);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<Integer> getUnansweredQuestionsFrom(final Integer assemblyId) {
+        List<Integer> result = new ArrayList<>();
+        try (Connection db = dataSource.getConnection();
+             PreparedStatement stat = db.prepareStatement("SELECT assembly_ref FROM written_question WHERE assembly_id = ? AND date_answer IS NULL;")) {
+            stat.setInt(1, assemblyId);
+            stat.execute();
+            while (stat.getResultSet().next()){
+                result.add(stat.getResultSet().getInt("assembly_ref"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return result;
+    }
+
+    @Override
     public PartialResult<Question> getQuestions(final SearchParameter parameter, final Optional<Integer> askedById, final String... keywords) {
         List<Question> results = Lists.newArrayList();
         int totalResults = 0;

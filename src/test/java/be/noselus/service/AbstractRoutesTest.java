@@ -4,6 +4,7 @@ import be.noselus.NosElus;
 import be.noselus.NosElusModule;
 import be.noselus.NosElusTestModule;
 import be.noselus.job.NosElusQuartzModule;
+import be.noselus.search.DbSearchModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.util.Modules;
@@ -24,7 +25,7 @@ public abstract class AbstractRoutesTest {
             if (server == null){
                 Spark.setPort(4566);
                 AbstractRoutesTest.injector = Guice.createInjector(
-                        Modules.override(new NosElusModule(), new NosElusQuartzModule())
+                        Modules.override(new NosElusModule(), new NosElusQuartzModule(), new DbSearchModule())
                         .with(new NosElusTestModule()));
                 server = injector.getInstance(NosElus.class);
                 RestAssured.port = 4566;

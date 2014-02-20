@@ -6,7 +6,8 @@ public class NosElusQuartzModule extends QuartzModule {
 
     @Override
     protected void schedule() {
-        scheduleJob(WalloonParliamentJob.class);
+        scheduleJob(WalloonNewQuestionImporter.class);
+        scheduleJob(WalloonNewResponseImporterJob.class);
         scheduleJob(QuestionIndexerJob.class);
         configureScheduler().withManualStart();
     }
