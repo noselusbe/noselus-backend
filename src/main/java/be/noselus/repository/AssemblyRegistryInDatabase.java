@@ -7,7 +7,10 @@ import javax.inject.Singleton;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -29,12 +32,9 @@ public class AssemblyRegistryInDatabase extends AbstractRepositoryInDatabase imp
 
                 stat.setInt(1, id);
                 stat.execute();
-                stat.getResultSet().next();
-                final int foundId = stat.getResultSet().getInt("id");
-                final String label = stat.getResultSet().getString("label");
-                final String level = stat.getResultSet().getString("level");
-
-                Assembly result = new Assembly(foundId, label, Assembly.Level.valueOf(level));
+                final ResultSet resultSet = stat.getResultSet();
+                resultSet.next();
+                Assembly result = assemblyMapping(resultSet);
 
                 assemblies.put(id, result);
 
@@ -43,5 +43,31 @@ public class AssemblyRegistryInDatabase extends AbstractRepositoryInDatabase imp
             }
         }
         return assemblies.get(id);
+    }
+
+    @Override
+    public List<Assembly> getAssemblies() {
+        List<Assembly> result = new ArrayList<>();
+        try (Connection db = dataSource.getConnection();
+             PreparedStatement stat = db.prepareStatement("SELECT * FROM assembly;")) {
+
+            stat.execute();
+            final ResultSet resultSet = stat.getResultSet();
+            while (resultSet.next()) {
+                Assembly assembly = assemblyMapping(resultSet);
+                result.add(assembly);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error retrieving assemblies", e);
+        }
+        return result;
+    }
+
+    private Assembly assemblyMapping(final ResultSet resultSet) throws SQLException {
+        final int foundId = resultSet.getInt("id");
+        final String label = resultSet.getString("label");
+        final String level = resultSet.getString("level");
+
+        return new Assembly(foundId, label, Assembly.Level.valueOf(level));
     }
 }

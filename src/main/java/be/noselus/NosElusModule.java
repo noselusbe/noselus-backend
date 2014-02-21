@@ -6,6 +6,7 @@ import be.noselus.repository.AssemblyRegistry;
 import be.noselus.repository.AssemblyRegistryInDatabase;
 import be.noselus.repository.PoliticianRepository;
 import be.noselus.repository.PoliticianRepositoryInDatabase;
+import be.noselus.service.AssembliesRoutes;
 import be.noselus.service.PoliticianRoutes;
 import be.noselus.service.QuestionRoutes;
 import be.noselus.service.Routes;
@@ -26,6 +27,7 @@ public class NosElusModule extends AbstractModule {
         Multibinder<Routes> routesMultibinder = Multibinder.newSetBinder(binder(), Routes.class);
         routesMultibinder.addBinding().to(QuestionRoutes.class);
         routesMultibinder.addBinding().to(PoliticianRoutes.class);
+        routesMultibinder.addBinding().to(AssembliesRoutes.class);
         requireBinding(DataSource.class);
         requireBinding(DbConfig.class);
         requireBinding(DatabaseUpdater.class);

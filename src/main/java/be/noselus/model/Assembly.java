@@ -4,12 +4,13 @@ public class Assembly {
 
     public enum Level {
         DEPUTY_CHAMBER,
-        SENATE,
+        SENAT,
         REGION,
         LOCAL,
         PROVINCE,
         EUROPE,
-        FEDERAL
+        FEDERAL,
+        COMMUNITY
     }
 
     private final int id;
