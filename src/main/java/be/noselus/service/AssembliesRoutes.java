@@ -7,7 +7,6 @@ import spark.Response;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
 import java.util.List;
 
 import static spark.Spark.get;
@@ -31,6 +30,15 @@ public class AssembliesRoutes implements Routes {
             protected Object myHandle(final Request request, final Response response) {
                 final List<Assembly> assemblies = assemblyRegistry.getAssemblies();
                 return helper.resultAs("assemblies", assemblies);
+            }
+        });
+
+        get(new JsonTransformer("/assemblies/:id") {
+            @Override
+            protected Object myHandle(final Request request, final Response response) {
+                final String params = request.params(":id");
+                Integer assemblyId = Integer.parseInt(params);
+                return helper.resultAs("assembly", assemblyRegistry.findId(assemblyId));
             }
         });
     }

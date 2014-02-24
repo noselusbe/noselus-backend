@@ -14,4 +14,14 @@ public class AssemblyRoutesTest extends AbstractRoutesTest {
                 .when()
                 .get("/assemblies");
     }
+
+    @Test
+    public void returnsAssemblyById(){
+        expect().statusCode(200)
+                .root("assembly")
+                .body("id", equalTo(1),
+                        "label", equalTo("Parlement Wallon"))
+                .when()
+                .get("/assemblies/1");
+    }
 }
