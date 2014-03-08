@@ -52,7 +52,7 @@ public class DatabaseUpdater {
                 database.setConnection(jdbcConnection);
             }
             Liquibase liq = new Liquibase("db/changelog-master.xml", accessor, database);
-            liq.clearCheckSums();
+//            liq.clearCheckSums();
             liq.update("");
         } catch (SQLException | LiquibaseException e) {
             throw new RuntimeException(e);

@@ -186,7 +186,7 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
     public List<Question> getQuestionsByIds(final List<Integer> ids) {
         List<Question> result = new ArrayList<>(ids.size());
         try (Connection db = dataSource.getConnection();
-             PreparedStatement stat = db.prepareStatement("SELECT * FROM written_question WHERE id = ANY ( ? );")) {
+             PreparedStatement stat = db.prepareStatement("SELECT * FROM written_question WHERE id = ANY ( ? ) ORDER BY date_asked DESC, id DESC;")) {
             final Array anInt = db.createArrayOf("int", ids.toArray());
             stat.setArray(1, anInt);
             stat.execute();
