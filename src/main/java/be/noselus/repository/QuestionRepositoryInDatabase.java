@@ -4,6 +4,7 @@ import be.noselus.dto.PartialResult;
 import be.noselus.dto.SearchParameter;
 import be.noselus.model.Eurovoc;
 import be.noselus.model.Question;
+import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
@@ -101,6 +102,7 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
         return result;
     }
 
+    @Timed
     @Override
     public PartialResult<Question> getQuestions(final SearchParameter parameter, final Optional<Integer> askedById, final String... keywords) {
         List<Question> results = Lists.newArrayList();
@@ -183,6 +185,7 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
         return makePartialResult(questionAssociatedToEurovoc, parameter, total);
     }
 
+    @Timed
     public List<Question> getQuestionsByIds(final List<Integer> ids) {
         List<Question> result = new ArrayList<>(ids.size());
         try (Connection db = dataSource.getConnection();

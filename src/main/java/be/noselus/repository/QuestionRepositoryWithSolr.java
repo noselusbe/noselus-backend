@@ -4,6 +4,7 @@ import be.noselus.dto.PartialResult;
 import be.noselus.dto.SearchParameter;
 import be.noselus.model.Question;
 import be.noselus.search.SolrHelper;
+import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -31,6 +32,7 @@ public class QuestionRepositoryWithSolr extends QuestionRepositoryInDatabase {
     }
 
     @Override
+    @Timed
     public PartialResult<Question> getQuestions(final SearchParameter parameter, final Optional<Integer> askedById, final String... keywords) {
 
         SolrQuery parameters = new SolrQuery();
