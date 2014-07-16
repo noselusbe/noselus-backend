@@ -59,46 +59,46 @@ public class QuestionParser {
         // Extract Question & Response
 
         final String type = document.getQuestionType();
-        if (type.startsWith("Question écrite")) {
 
-            question.dateAsked = document.getDateAsked();
-            if (document.hasAnswer()) {
-                question.dateAnswered = document.getDateAnswered();
-            }
-
-            final String askedByName = document.getQuestionAskedBy();
-            if (!politicianRepository.getPoliticianByName(askedByName).isEmpty()) {
-                question.askedBy = politicianRepository.getPoliticianByName(askedByName).get(0).id;
-            } else {
-                question.askedBy = 0;
-            }
-
-            List<PersonSmall> list = politicianRepository.getPoliticianByName(document.getQuestionAskedTo());
-            if (!list.isEmpty()) {
-                question.askedTo = list.get(0).id;
-            }
-
-            if (document.hasAnswer()) {
-                question.answeredBy = politicianRepository.getPoliticianByName(document.getAnsweredBy()).get(0).id;
-            }
-
-            // Extract Metadata
-            List<String> fields;
-            fields = extract(doc, "div#print_container > ul li");
-
-            question.session = fields.get(0).replace("Session : ", "");
-            question.year = Integer.parseInt(fields.get(1).replace("Année : ", ""));
-            question.number = fields.get(2).replace("N° : ", "");
-
-            question.questionText = document.getQuestionText();
-            if (document.hasAnswer()) {
-                question.answerText = document.getAnswerText();
-            }
-            return question;
-        } else {
+        if (!type.startsWith("Question écrite")) {
             LOGGER.trace("Document at {} is not a written question but a ", url, type);
             return null;
         }
+
+        question.dateAsked = document.getDateAsked();
+        if (document.hasAnswer()) {
+            question.dateAnswered = document.getDateAnswered();
+        }
+
+        final String askedByName = document.getQuestionAskedBy();
+        if (!politicianRepository.getPoliticianByName(askedByName).isEmpty()) {
+            question.askedBy = politicianRepository.getPoliticianByName(askedByName).get(0).id;
+        } else {
+            question.askedBy = 0;
+        }
+
+        List<PersonSmall> list = politicianRepository.getPoliticianByName(document.getQuestionAskedTo());
+        if (!list.isEmpty()) {
+            question.askedTo = list.get(0).id;
+        }
+
+        if (document.hasAnswer()) {
+            question.answeredBy = politicianRepository.getPoliticianByName(document.getAnsweredBy()).get(0).id;
+        }
+
+        // Extract Metadata
+        List<String> fields;
+        fields = extract(doc, "div#print_container > ul li");
+
+        question.session = fields.get(0).replace("Session : ", "");
+        question.year = Integer.parseInt(fields.get(1).replace("Année : ", ""));
+        question.number = fields.get(2).replace("N° : ", "");
+
+        question.questionText = document.getQuestionText();
+        if (document.hasAnswer()) {
+            question.answerText = document.getAnswerText();
+        }
+        return question;
 
     }
 
