@@ -46,7 +46,7 @@ public class QuestionParser {
         LOGGER.trace("Parsing document {}", url);
 
         Document doc;
-        doc = Jsoup.parse(in, "iso-8859-1", url);
+        doc = Jsoup.parse(in, "utf-8", url);
 
         WalloonDocument document = new WalloonDocument(doc);
 
@@ -54,13 +54,11 @@ public class QuestionParser {
 
         model.assemblyRef = id + "";
         model.assembly = WALLOON_PARLIAMENT;
-        List<String> fields;
         model.title = document.geTitle();
 
         // Extract Question & Response
-        fields = extract(doc, "h2");
 
-        final String type = fields.get(0);
+        final String type = document.getQuestionType();
         if (type.startsWith("Question écrite")) {
 
             model.dateAsked = document.getDateAsked();
@@ -68,10 +66,7 @@ public class QuestionParser {
                 model.dateAnswered = document.getDateAnswered();
             }
 
-            // Extract From/To
-            fields = extract(doc, "li.evid02");
-
-            final String askedByName = fields.get(0).replace("de ", "").replace(" ", " ");
+            final String askedByName = document.getQuestionAskedBy();
             if (!politicianRepository.getPoliticianByName(askedByName).isEmpty()) {
                 model.askedBy = politicianRepository.getPoliticianByName(askedByName).get(0).id;
             } else {
@@ -79,7 +74,7 @@ public class QuestionParser {
             }
 
             // Separate title from askedTo field
-            String askedTo = fields.get(1).replace("à ", "");
+            String askedTo = document.getQuestionAskedTo();
             int pos = askedTo.indexOf(',');
             String name;
             if (pos > 0) {
@@ -94,22 +89,21 @@ public class QuestionParser {
                 model.askedTo = list.get(0).id;
             }
 
-            if (fields.size() > 2) {
-                model.answeredBy = politicianRepository.getPoliticianByName(fields.get(2).replace("de ", "")).get(0).id;
+            if(document.hasAnswer()){
+                model.answeredBy = politicianRepository.getPoliticianByName(document.getAnsweredBy()).get(0).id;
             }
 
             // Extract Metadata
+            List<String> fields;
             fields = extract(doc, "div#print_container > ul li");
 
             model.session = fields.get(0).replace("Session : ", "");
             model.year = Integer.parseInt(fields.get(1).replace("Année : ", ""));
             model.number = fields.get(2).replace("N° : ", "");
 
-            // Extract Texts
-            fields = extract(doc, "div#print_container div + div");
-            model.questionText = fields.get(0).replaceAll("^(<br />)*", "").replaceAll("(<br />)*$", "");
-            if (fields.size() > 2) {
-                model.answerText = fields.get(2);
+           model.questionText = document.getQuestionText();
+            if (document.hasAnswer()) {
+                model.answerText = document.getAnswerText();
             }
             return model;
         } else {
