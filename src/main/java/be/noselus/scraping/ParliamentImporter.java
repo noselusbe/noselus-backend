@@ -20,6 +20,7 @@ public class ParliamentImporter {
     public static final int WAIT_INTERVAL = 450;
     public static final int FROM_ID = 53250;
     public static final int TO_ID = 53271;
+    public static final String QUESTION_URL = "http://www.parlement-wallon.be/content/print.php?print=interp-questions-voir.php&type=all&id_doc=";
 
     @Inject
     public ParliamentImporter(final QuestionRepository questionRepository, final QuestionParser parser) {
@@ -62,7 +63,7 @@ public class ParliamentImporter {
                 questionRepository.insertOrUpdateQuestion(parsedQuestion);
             }
         } catch (IOException | IllegalArgumentException | IndexOutOfBoundsException e) {
-            LOGGER.error("http://parlement.wallonie.be/content/print_container.php?print=quest_rep_voir.php&type=all&id_doc=" + id, e);
+            LOGGER.error(QUESTION_URL + id, e);
         }
         waitInterval();
     }
