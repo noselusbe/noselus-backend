@@ -14,7 +14,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-@Scheduled(jobName = "walloonNewQuestionImporter", cronExpression = "0 0 1 1/1 * ?")
+@Scheduled(jobName = "walloonNewQuestionImporter", cronExpression = "0 0 1 * * ?")
 public class WalloonNewQuestionImporterJob implements Job {
 
     public static final int WALLOON_PARLIAMENT_ID = 1;

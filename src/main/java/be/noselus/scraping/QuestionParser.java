@@ -24,7 +24,7 @@ public class QuestionParser {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(QuestionParser.class);
 
-    private String url = "http://www.parlement-wallon.be/content/print.php?print=interp-questions-voir.php&type=all&id_doc=";
+    private static final String DEFAULT_URL = "http://www.parlement-wallon.be/content/print.php?print=interp-questions-voir.php&type=all&id_doc=";
 
     private final PoliticianRepository politicianRepository;
     private final Assembly WALLOON_PARLIAMENT;
@@ -36,7 +36,7 @@ public class QuestionParser {
     }
 
     public Question parse(int id) throws IOException {
-        final String resource = url + id;
+        final String resource = DEFAULT_URL + id;
         try (InputStream in = new URL(resource).openStream()) {
             return parse(in, resource, id);
         }
@@ -50,62 +50,51 @@ public class QuestionParser {
 
         WalloonDocument document = new WalloonDocument(doc);
 
-        Question model = new Question();
+        Question question = new Question();
 
-        model.assemblyRef = id + "";
-        model.assembly = WALLOON_PARLIAMENT;
-        model.title = document.geTitle();
+        question.assemblyRef = id + "";
+        question.assembly = WALLOON_PARLIAMENT;
+        question.title = document.geTitle();
 
         // Extract Question & Response
 
         final String type = document.getQuestionType();
         if (type.startsWith("Question écrite")) {
 
-            model.dateAsked = document.getDateAsked();
+            question.dateAsked = document.getDateAsked();
             if (document.hasAnswer()) {
-                model.dateAnswered = document.getDateAnswered();
+                question.dateAnswered = document.getDateAnswered();
             }
 
             final String askedByName = document.getQuestionAskedBy();
             if (!politicianRepository.getPoliticianByName(askedByName).isEmpty()) {
-                model.askedBy = politicianRepository.getPoliticianByName(askedByName).get(0).id;
+                question.askedBy = politicianRepository.getPoliticianByName(askedByName).get(0).id;
             } else {
-                model.askedBy = 0;
+                question.askedBy = 0;
             }
 
-            // Separate title from askedTo field
-            String askedTo = document.getQuestionAskedTo();
-            int pos = askedTo.indexOf(',');
-            String name;
-            if (pos > 0) {
-                name = askedTo.substring(0, pos).trim();
-                // String title = askedTo.substring(pos+1)
-            } else {
-                name = askedTo.trim();
-            }
-
-            List<PersonSmall> list = politicianRepository.getPoliticianByName(name);
+            List<PersonSmall> list = politicianRepository.getPoliticianByName(document.getQuestionAskedTo());
             if (!list.isEmpty()) {
-                model.askedTo = list.get(0).id;
+                question.askedTo = list.get(0).id;
             }
 
-            if(document.hasAnswer()){
-                model.answeredBy = politicianRepository.getPoliticianByName(document.getAnsweredBy()).get(0).id;
+            if (document.hasAnswer()) {
+                question.answeredBy = politicianRepository.getPoliticianByName(document.getAnsweredBy()).get(0).id;
             }
 
             // Extract Metadata
             List<String> fields;
             fields = extract(doc, "div#print_container > ul li");
 
-            model.session = fields.get(0).replace("Session : ", "");
-            model.year = Integer.parseInt(fields.get(1).replace("Année : ", ""));
-            model.number = fields.get(2).replace("N° : ", "");
+            question.session = fields.get(0).replace("Session : ", "");
+            question.year = Integer.parseInt(fields.get(1).replace("Année : ", ""));
+            question.number = fields.get(2).replace("N° : ", "");
 
-           model.questionText = document.getQuestionText();
+            question.questionText = document.getQuestionText();
             if (document.hasAnswer()) {
-                model.answerText = document.getAnswerText();
+                question.answerText = document.getAnswerText();
             }
-            return model;
+            return question;
         } else {
             LOGGER.trace("Document at {} is not a written question but a ", url, type);
             return null;

@@ -13,6 +13,10 @@ import java.util.List;
 
 public class WalloonDocument {
 
+    public static final String DATE = ".text-pw-date";
+    public static final String QUESTION_OR_ANSWER_HEADER = "h5";
+    public static final String QUESTION_OR_ANSWER = ".list-group-item";
+
     private final Document document;
     private List<String> h5Titles;
     private final Element question;
@@ -20,15 +24,14 @@ public class WalloonDocument {
 
     public WalloonDocument(final Document document) {
         this.document = document;
-        final Elements h5 = document.select("h5");
-        h5Titles = new ArrayList<>(h5.size());
-        for (Element element : h5) {
+        final Elements headers = document.select(QUESTION_OR_ANSWER_HEADER);
+        h5Titles = new ArrayList<>(headers.size());
+        for (Element element : headers) {
             h5Titles.add(StringEscapeUtils.unescapeHtml(element.html()));
         }
-        //final Elements subElement = document.select("div#print_container ul");
-        final Elements subElement = document.select(".list-group-item");
+        final Elements subElement = document.select(QUESTION_OR_ANSWER);
         question = subElement.get(0);
-        if (subElement.size() > 1){
+        if (subElement.size() > 1) {
             answer = subElement.get(1);
         } else {
             answer = null;
@@ -41,36 +44,45 @@ public class WalloonDocument {
         return StringEscapeUtils.unescapeHtml(data.html());
     }
 
-    public String getQuestionType(){
+    public String getQuestionType() {
         return h5Titles.get(0);
     }
 
-    public boolean hasAnswer(){
-        return h5Titles.size() == 2;
+    public boolean hasAnswer() {
+        return answer != null;
     }
 
-    public String getQuestionAskedBy(){
+    public String getQuestionAskedBy() {
         final Elements lis = question.select("li");
         return StringEscapeUtils.unescapeHtml(lis.get(1).html()).replace("de ", "").replace(" ", " ");
     }
 
-    public String getQuestionAskedTo(){
+    public String getQuestionAskedTo() {
         final Elements lis = question.select("li");
-        return StringEscapeUtils.unescapeHtml(lis.get(2).html()).replace("à ", "").replace(" ", " ");
+        String askedTo =  StringEscapeUtils.unescapeHtml(lis.get(2).html()).replace("à ", "").replace(" ", " ");
+        // Separate title from askedTo field
+        int pos = askedTo.indexOf(',');
+        String name;
+        if (pos > 0) {
+            name = askedTo.substring(0, pos).trim();
+        } else {
+            name = askedTo.trim();
+        }
+        return name;
     }
 
-    public String getAnsweredBy(){
+    public String getAnsweredBy() {
         final Elements lis = answer.select("li");
         return StringEscapeUtils.unescapeHtml(lis.get(1).html()).replace("de ", "").replace(" ", " ");
     }
 
-    public LocalDate getDateAsked(){
-        final String dateAsString = document.select("h5").get(0).select(".text-pw-date").get(0).html();
+    public LocalDate getDateAsked() {
+        final String dateAsString = document.select(QUESTION_OR_ANSWER_HEADER).get(0).select(DATE).get(0).html();
         return LocalDate.parse(dateAsString, getDateFormatter());
     }
 
-    public LocalDate getDateAnswered(){
-        final String responseDateString = document.select("h5").get(1).select(".text-pw-date").get(0).html();
+    public LocalDate getDateAnswered() {
+        final String responseDateString = document.select(QUESTION_OR_ANSWER_HEADER).get(1).select(DATE).get(0).html();
         return LocalDate.parse(responseDateString, getDateFormatter());
     }
 
@@ -92,12 +104,12 @@ public class WalloonDocument {
         return getListGroupElementText(answer);
     }
 
-    private String getListGroupElementText(Element element){
+    private String getListGroupElementText(Element element) {
         final Element clone = element.clone();
-        clone.select("h5").remove();
+        clone.select(QUESTION_OR_ANSWER_HEADER).remove();
         final Elements ul = clone.select("ul");
         ul.get(0).remove();
-        return  StringEscapeUtils.unescapeHtml(clone.html().replaceAll("^(<br />)*", "").replaceAll("(<br/>)*$", ""));
+        return StringEscapeUtils.unescapeHtml(clone.html().replaceAll("^(<br />)*", "").replaceAll("(<br/>)*$", ""));
 
     }
 }

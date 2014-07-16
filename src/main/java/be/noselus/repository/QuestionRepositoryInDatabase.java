@@ -110,7 +110,6 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
         final StringBuilder sql = new StringBuilder(SELECT_QUESTION);
         final StringBuilder where = new StringBuilder();
         addKeywordsClause(where, keywords);
-//        final Integer firstElement = addClauseForNext(parameter, where);
         addAskedByClause(askedById, where);
         sql.append(where);
         sql.append(ORDER_BY);
@@ -120,7 +119,6 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
              PreparedStatement stat = db.prepareStatement(sql.toString());
              PreparedStatement countStat = db.prepareStatement("SELECT COUNT(*) FROM WRITTEN_QUESTION WHERE 1=1 " + where)) {
             int position = 1;
-//            position = addParameterForNext(firstElement, position, stat, countStat);
             position = addAskedByParameter(askedById, position, stat, countStat);
             stat.setInt(position++, parameter.getLimit() + 1);
             stat.setInt(position, parameter.getFirstElement() == null ? 0 : (Integer) parameter.getFirstElement());
@@ -293,7 +291,7 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
         final int limit = parameter.getLimit();
         if (resultFound > limit) {
             final Integer firstElement = (Integer) parameter.getFirstElement();
-            nextElement = firstElement == null ? 0 + limit : firstElement + limit;
+            nextElement = firstElement == null ? limit : firstElement + limit;
             results.remove(resultFound - 1);
         } else {
             nextElement = null;
