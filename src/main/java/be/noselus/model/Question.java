@@ -35,8 +35,10 @@ public class Question implements HasIndexableDocument {
     public LocalDateTime createdAt;
     public LocalDateTime updatedAt;
 
-    public Question() {
-
+    public Question(Assembly assembly, String assemblyRef, String title) {
+        this.assembly = assembly;
+        this.assemblyRef = assemblyRef;
+        this.title = title;
     }
 
     public Question(Integer id, int askedBy, int askedTo, int answeredBy, String session, Integer year, String number, LocalDate dateAsked, LocalDate dateAnswered, String title, String questionText, String answerText, Assembly assembly, String assemblyRef, LocalDateTime createdAt, LocalDateTime updatedAt) {

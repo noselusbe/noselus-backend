@@ -65,18 +65,15 @@ public class QuestionRepositoryTest extends AbstractDbDependantTest {
     public void findTheRightResult() {
         final PartialResult<Question> questions = repo.getQuestions(new SearchParameter(10, 2), Optional.<Integer>absent());
         assertEquals(1, questions.getResults().size());
-        assertEquals((Integer)1, questions.getResults().get(0).id);
+        assertEquals((Integer) 1, questions.getResults().get(0).id);
     }
 
     @Test
     public void insertNewQuestion() {
-        Question question = new Question();
+        Question question = new Question(new Assembly(1, "Parlement Wallon", Assembly.Level.REGION), "test", "new question");
         question.year = 2014;
-        question.title = "new question";
         question.dateAsked = new LocalDate();
-        question.assembly = new Assembly(1, "Parlement Wallon", Assembly.Level.REGION);
         question.questionText = "Question text";
-        question.assemblyRef = "test";
         repo.insertOrUpdateQuestion(question);
         PartialResult<Question> questionInserted = repo.getQuestions(new SearchParameter(50, null), Optional.<Integer>absent(), "new question");
         assertEquals(1, questionInserted.getResults().size());

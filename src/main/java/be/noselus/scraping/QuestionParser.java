@@ -50,13 +50,7 @@ public class QuestionParser {
 
         WalloonDocument document = new WalloonDocument(doc);
 
-        Question question = new Question();
-
-        question.assemblyRef = id + "";
-        question.assembly = WALLOON_PARLIAMENT;
-        question.title = document.geTitle();
-
-        // Extract Question & Response
+        Question question = new Question(WALLOON_PARLIAMENT, id + "", document.geTitle());
 
         final String type = document.getQuestionType();
 
