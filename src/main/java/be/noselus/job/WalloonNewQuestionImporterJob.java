@@ -14,13 +14,13 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-@Scheduled(jobName = "walloonNewQuestionImporter", cronExpression = "0 0 1 * * ?")
+@Scheduled(jobName = "walloonNewQuestionImporter", cronExpression = "0 0 1 1/1 * ?")
 public class WalloonNewQuestionImporterJob implements Job {
 
     public static final int WALLOON_PARLIAMENT_ID = 1;
     private final ParliamentImporter importer;
     private final QuestionRepository questionRepository;
-    public static final Integer NBR_QUESTION_TO_IMPORT = 100;
+    public static final Integer NBR_QUESTION_TO_IMPORT = 500;
 
     @Inject
     public WalloonNewQuestionImporterJob(final ParliamentImporter importer, final QuestionRepository questionRepository) {
