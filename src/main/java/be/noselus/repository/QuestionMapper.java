@@ -13,11 +13,11 @@ import java.sql.Timestamp;
 
 public class QuestionMapper {
 
-    private final AssemblyRegistry assemblyRegistry;
+    private final AssemblyRepository assemblyRepository;
 
     @Inject
-    public QuestionMapper(AssemblyRegistry assemblyRegistry) {
-        this.assemblyRegistry = assemblyRegistry;
+    public QuestionMapper(AssemblyRepository assemblyRepository) {
+        this.assemblyRepository = assemblyRepository;
     }
 
     public Question map(ResultSet r) throws SQLException {
@@ -40,7 +40,7 @@ public class QuestionMapper {
         final String question_text = r.getString("question_text");
         final String answer_text = r.getString("answer_text");
         final int assembly_id = r.getInt("assembly_id");
-        final Assembly assembly = assemblyRegistry.findId(assembly_id);
+        final Assembly assembly = assemblyRepository.findId(assembly_id);
         final String assemblyRef = r.getString("assembly_ref");
         final Timestamp createdAtDb = r.getTimestamp("created_at");
         final LocalDateTime createdAt;

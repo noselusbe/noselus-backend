@@ -1,7 +1,7 @@
 package be.noselus.service;
 
 import be.noselus.model.Assembly;
-import be.noselus.repository.AssemblyRegistry;
+import be.noselus.repository.AssemblyRepository;
 import spark.Request;
 import spark.Response;
 
@@ -15,12 +15,12 @@ import static spark.Spark.get;
 public class AssembliesRoutes implements Routes {
 
     private final RoutesHelper helper;
-    private final AssemblyRegistry assemblyRegistry;
+    private final AssemblyRepository assemblyRepository;
 
     @Inject
-    public AssembliesRoutes(final RoutesHelper helper, final AssemblyRegistry assemblyRegistry) {
+    public AssembliesRoutes(final RoutesHelper helper, final AssemblyRepository assemblyRepository) {
         this.helper = helper;
-        this.assemblyRegistry = assemblyRegistry;
+        this.assemblyRepository = assemblyRepository;
     }
 
     @Override
@@ -28,7 +28,7 @@ public class AssembliesRoutes implements Routes {
         get(new JsonTransformer("/assemblies") {
             @Override
             protected Object myHandle(final Request request, final Response response) {
-                final List<Assembly> assemblies = assemblyRegistry.getAssemblies();
+                final List<Assembly> assemblies = assemblyRepository.getAssemblies();
                 return helper.resultAs("assemblies", assemblies);
             }
         });
@@ -38,7 +38,7 @@ public class AssembliesRoutes implements Routes {
             protected Object myHandle(final Request request, final Response response) {
                 final String params = request.params(":id");
                 Integer assemblyId = Integer.parseInt(params);
-                return helper.resultAs("assembly", assemblyRegistry.findId(assemblyId));
+                return helper.resultAs("assembly", assemblyRepository.findId(assemblyId));
             }
         });
     }

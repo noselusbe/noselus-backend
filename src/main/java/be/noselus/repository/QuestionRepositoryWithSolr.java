@@ -26,8 +26,8 @@ public class QuestionRepositoryWithSolr extends QuestionRepositoryInDatabase {
 
 
     @Inject
-    public QuestionRepositoryWithSolr(final AssemblyRegistry assemblyRegistry, final DataSource dataSource, final SolrHelper solrHelper) {
-        super(assemblyRegistry, dataSource);
+    public QuestionRepositoryWithSolr(final AssemblyRepository assemblyRepository, final DataSource dataSource, final SolrHelper solrHelper) {
+        super(assemblyRepository, dataSource);
         this.solrHelper = solrHelper;
     }
 

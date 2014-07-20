@@ -2,10 +2,7 @@ package be.noselus;
 
 import be.noselus.db.DatabaseUpdater;
 import be.noselus.db.DbConfig;
-import be.noselus.repository.AssemblyRegistry;
-import be.noselus.repository.AssemblyRegistryInDatabase;
-import be.noselus.repository.PoliticianRepository;
-import be.noselus.repository.PoliticianRepositoryInDatabase;
+import be.noselus.repository.*;
 import be.noselus.service.AssembliesRoutes;
 import be.noselus.service.PoliticianRoutes;
 import be.noselus.service.QuestionRoutes;
@@ -22,7 +19,7 @@ public class NosElusModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(AssemblyRegistry.class).to(AssemblyRegistryInDatabase.class);
+        bind(AssemblyRepository.class).to(AssemblyRepositoryDbUtils.class);
         bind(PoliticianRepository.class).to(PoliticianRepositoryInDatabase.class);
         Multibinder<Routes> routesMultibinder = Multibinder.newSetBinder(binder(), Routes.class);
         routesMultibinder.addBinding().to(QuestionRoutes.class);

@@ -15,12 +15,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Singleton
-public class AssemblyRegistryInDatabase extends AbstractRepositoryInDatabase implements AssemblyRegistry {
+public class AssemblyRepositoryInDatabase extends AbstractRepositoryInDatabase implements AssemblyRepository {
 
     private Map<Integer, Assembly> assemblies = new ConcurrentHashMap<>();
 
     @Inject
-    public AssemblyRegistryInDatabase(final DataSource dataSource) {
+    public AssemblyRepositoryInDatabase(final DataSource dataSource) {
         super(dataSource);
     }
 

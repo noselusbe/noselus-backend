@@ -3,7 +3,7 @@ package be.noselus.scraping;
 import be.noselus.model.Assembly;
 import be.noselus.model.PersonSmall;
 import be.noselus.model.Question;
-import be.noselus.repository.AssemblyRegistry;
+import be.noselus.repository.AssemblyRepository;
 import be.noselus.repository.PoliticianRepository;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.jsoup.Jsoup;
@@ -30,9 +30,9 @@ public class QuestionParser {
     private final Assembly WALLOON_PARLIAMENT;
 
     @Inject
-    public QuestionParser(final PoliticianRepository politicianRepository, final AssemblyRegistry assemblyRegistry) {
+    public QuestionParser(final PoliticianRepository politicianRepository, final AssemblyRepository assemblyRepository) {
         this.politicianRepository = politicianRepository;
-        WALLOON_PARLIAMENT = assemblyRegistry.findId(1);
+        WALLOON_PARLIAMENT = assemblyRepository.findId(1);
     }
 
     public Question parse(int id) throws IOException {

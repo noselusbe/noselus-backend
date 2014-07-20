@@ -4,7 +4,7 @@ import be.noselus.model.Assembly;
 
 import java.util.List;
 
-public interface AssemblyRegistry {
+public interface AssemblyRepository {
 
     Assembly findId(int id);
 

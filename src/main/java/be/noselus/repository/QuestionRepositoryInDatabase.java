@@ -32,9 +32,9 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
     private final QuestionMapper mapper;
 
     @Inject
-    public QuestionRepositoryInDatabase(final AssemblyRegistry assemblyRegistry, final DataSource dataSource) {
+    public QuestionRepositoryInDatabase(final AssemblyRepository assemblyRepository, final DataSource dataSource) {
         super(dataSource);
-        this.mapper = new QuestionMapper(assemblyRegistry);
+        this.mapper = new QuestionMapper(assemblyRepository);
     }
 
     @Override
