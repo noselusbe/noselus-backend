@@ -1,7 +1,7 @@
 Build status: [![Build Status](http://jenkins.hurion.eu/buildStatus/icon?job=nos elus - backend)](http://jenkins.hurion.eu/job/nos%20elus%20-%20backend/) [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/noselusbe/noselus-backend/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
-Bulding
-=======
+Building
+========
 
 In order to build this application you need:
 * [Java 7](http://java.com/en/download/index.jsp). If you're using a mac [Java 7 on mac](http://www.monkehworks.com/set-java-7-as-default-jvm-on-mac-osx-mountain-lion)
