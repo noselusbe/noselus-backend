@@ -143,7 +143,7 @@
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
-                <version>1.1.1</version>
+                <version>1.1.2</version>
             </dependency>
             <dependency>
                 <groupId>com.sparkjava</groupId>
@@ -178,7 +178,7 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>16.0.1</version>
+                <version>17.0</version>
             </dependency>
             <dependency>
                 <groupId>postgresql</groupId>
@@ -213,17 +213,17 @@
             <dependency>
                 <groupId>org.liquibase</groupId>
                 <artifactId>liquibase-core</artifactId>
-                <version>3.1.1</version>
+                <version>3.2.1</version>
             </dependency>
             <dependency>
                 <groupId>com.h2database</groupId>
                 <artifactId>h2</artifactId>
-                <version>1.3.174</version>
+                <version>1.4.180</version>
             </dependency>
             <dependency>
                 <groupId>com.ninja-squad</groupId>
                 <artifactId>DbSetup</artifactId>
-                <version>1.2.0</version>
+                <version>1.3.0</version>
             </dependency>
             <dependency>
                 <groupId>com.google.inject.extensions</groupId>
@@ -243,7 +243,7 @@
             <dependency>
                 <groupId>com.jayway.restassured</groupId>
                 <artifactId>rest-assured</artifactId>
-                <version>2.3.0</version>
+                <version>2.3.2</version>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
@@ -264,7 +264,7 @@
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
-                <version>4.3.2</version>
+                <version>4.3.4</version>
             </dependency>
             <dependency>
                 <groupId>com.palominolabs.metrics</groupId>
