@@ -4,33 +4,32 @@ import be.noselus.model.Assembly;
 import be.noselus.model.Person;
 import be.noselus.model.PersonFunction;
 import be.noselus.model.PersonSmall;
+import be.noselus.util.dbutils.MapperBasedResultSetListHandler;
+import be.noselus.util.dbutils.QueryRunnerAdapter;
+import be.noselus.util.dbutils.ResultSetMapper;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 @Singleton
-public class PoliticianRepositoryInDatabase extends AbstractRepositoryInDatabase implements PoliticianRepository {
+public class PoliticianRepositoryInDatabase implements PoliticianRepository, ResultSetMapper<Person> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PoliticianRepositoryInDatabase.class);
+    private final QueryRunnerAdapter queryRunner;
     private List<Person> politicians;
 
     @Inject
     public PoliticianRepositoryInDatabase(final DataSource dataSource) {
-        super(dataSource);
+        this.queryRunner = new QueryRunnerAdapter(dataSource);
     }
 
     @Override
@@ -42,56 +41,11 @@ public class PoliticianRepositoryInDatabase extends AbstractRepositoryInDatabase
     }
 
     private List<Person> initPoliticians() {
-        final List<Person> result = new ArrayList<>();
-        try (Connection db = dataSource.getConnection();
-             PreparedStatement stat = db.prepareStatement("SELECT person.*, assembly.label AS assembly_label,"
-                     + " assembly.level AS assembly_level, assembly.id AS belong_to_assembly_id FROM person"
-                     + " JOIN assembly"
-                     + " ON assembly.id = person.belong_to_assembly"
-                     + " WHERE person.id != 0;")) {
-
-
-            stat.execute();
-
-            while (stat.getResultSet().next()) {
-
-                int id = stat.getResultSet().getInt("id");
-                String full_name = stat.getResultSet().getString("full_name");
-                String party = stat.getResultSet().getString("party");
-                String address = stat.getResultSet().getString("address");
-                String postal_code = stat.getResultSet().getString("postal_code");
-                String town = stat.getResultSet().getString("town");
-                String phone = stat.getResultSet().getString("phone");
-                String fax = stat.getResultSet().getString("fax");
-                String email = stat.getResultSet().getString("email");
-                String site = stat.getResultSet().getString("site");
-                String assemblyLabel = stat.getResultSet().getString("assembly_label");
-                String assemblyLevel = stat.getResultSet().getString("assembly_level");
-                Integer assemblyId = stat.getResultSet().getInt("assembly_id");
-                PersonFunction function = PersonFunction.valueOf(stat.getResultSet().getString("function"));
-                double latitude = stat.getResultSet().getDouble("lat");
-                double longitude = stat.getResultSet().getDouble("long");
-                Integer belong_to_assembly_id = stat.getResultSet().getInt("belong_to_assembly");
-
-                Assembly assembly = new Assembly(belong_to_assembly_id, assemblyLabel, Assembly.Level.valueOf(assemblyLevel));
-
-                List<Integer> questions = Collections.emptyList();
-
-
-                Person person = new Person(id, full_name, party, address, postal_code,
-                        town, phone, fax, email, site, function, assemblyId,
-                        questions, assembly, latitude, longitude);
-                result.add(person);
-            }
-
-            stat.close();
-            db.close();
-
-        } catch (SQLException e) {
-            LOGGER.error("Error loading person from DB", e);
-        }
-
-        return result;
+        return queryRunner.query("SELECT person.*, assembly.label AS assembly_label,"
+                + " assembly.level AS assembly_level, assembly.id AS belong_to_assembly_id FROM person"
+                + " JOIN assembly"
+                + " ON assembly.id = person.belong_to_assembly"
+                + " WHERE person.id != 0;", new MapperBasedResultSetListHandler<>(this));
     }
 
     @Override
@@ -143,4 +97,32 @@ public class PoliticianRepositoryInDatabase extends AbstractRepositoryInDatabase
         return foundPerson.iterator().next();
     }
 
+    @Override
+    public Person map(final ResultSet resultSet) throws SQLException {
+        int id = resultSet.getInt("id");
+        String full_name = resultSet.getString("full_name");
+        String party = resultSet.getString("party");
+        String address = resultSet.getString("address");
+        String postal_code = resultSet.getString("postal_code");
+        String town = resultSet.getString("town");
+        String phone = resultSet.getString("phone");
+        String fax = resultSet.getString("fax");
+        String email = resultSet.getString("email");
+        String site = resultSet.getString("site");
+        Integer assemblyId = resultSet.getInt("assembly_id");
+        PersonFunction function = PersonFunction.valueOf(resultSet.getString("function"));
+        double latitude = resultSet.getDouble("lat");
+        double longitude = resultSet.getDouble("long");
+
+        String assemblyLabel = resultSet.getString("assembly_label");
+        String assemblyLevel = resultSet.getString("assembly_level");
+        Integer belong_to_assembly_id = resultSet.getInt("belong_to_assembly");
+        Assembly assembly = new Assembly(belong_to_assembly_id, assemblyLabel, Assembly.Level.valueOf(assemblyLevel));
+
+        List<Integer> questions = Collections.emptyList();
+
+        return new Person(id, full_name, party, address, postal_code,
+                town, phone, fax, email, site, function, assemblyId,
+                questions, assembly, latitude, longitude);
+    }
 }
