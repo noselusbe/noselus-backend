@@ -10,3 +10,4 @@ yo
 *.war
 *.ear
 src/main/solr/home/noselusbe/data/
+/bin

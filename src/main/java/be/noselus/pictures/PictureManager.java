@@ -7,6 +7,8 @@ import net.coobird.thumbnailator.geometry.Positions;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.sql.DataSource;
+
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -71,6 +73,7 @@ public class PictureManager implements Service {
             Thumbnails.of(PictureManager.class.getResourceAsStream(path + mapping.get(id) + ext))
                     .size(width, height)
                     .crop(Positions.CENTER)
+                    .imageType(BufferedImage.SCALE_FAST)
                     .outputFormat("jpg")
                     .toOutputStream(os);
         }
