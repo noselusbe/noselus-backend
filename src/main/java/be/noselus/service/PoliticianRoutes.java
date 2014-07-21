@@ -72,7 +72,7 @@ public class PoliticianRoutes implements Routes {
                         out = IOUtils.toByteArray(is);
                         response.raw().setContentType(IMAGE_JPEG_CHARSET_UTF_8);
                         response.raw().getOutputStream().write(out, 0, out.length);
-                        response.header("Cache-Control", "no-transform,public,max-age=300,s-maxage=900");
+                        response.header("Cache-Control", "no-transform,public,max-age=72000,s-maxage=90000");
                         return out;
                     }
                 } catch (IOException e) {
@@ -90,6 +90,7 @@ public class PoliticianRoutes implements Routes {
                     int height = Integer.valueOf(request.splat()[1]);
 
                     response.raw().setContentType(IMAGE_JPEG_CHARSET_UTF_8);
+                    response.header("Cache-Control", "no-transform,public,max-age=72000,s-maxage=90000");
                     pictureManager.get(Integer.valueOf(id), width, height, response.raw().getOutputStream());
                     return null;
                 } catch (IOException e) {
