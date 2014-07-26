@@ -33,6 +33,7 @@ public abstract class JsonTransformer extends ResponseTransformerRoute {
     public Object handle(Request request, Response response) {
         response.type("application/json");
         response.header("Access-Control-Allow-Origin", "*");
+        response.header("Cache-Control", "no-transform,public,max-age=3600,s-maxage=4800");
         return myHandle(request, response);
     }
 
