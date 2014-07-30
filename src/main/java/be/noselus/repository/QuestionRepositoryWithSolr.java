@@ -34,30 +34,10 @@ public class QuestionRepositoryWithSolr extends QuestionRepositoryInDatabase {
     @Override
     @Timed
     public PartialResult<Question> getQuestions(final SearchParameter parameter, final Optional<Integer> askedById, final String... keywords) {
-
-        SolrQuery parameters = new SolrQuery();
-        String query;
-        if (keywords.length > 0) {
-            query = "text:" + Joiner.on("+").join(keywords);
-            if (askedById.isPresent()) {
-                query += " AND asked_by_id:" + askedById.get();
-            }
-        } else {
-            if (askedById.isPresent()) {
-                query = "asked_by_id:" + askedById.get();
-            } else {
-                query = "*:*";
-            }
-        }
-
-        parameters.set("q", query);
         final int limit = parameter.getLimit();
-        parameters.set("rows", limit);
         final int offset = parameter.getFirstElement() == null ? 0 : (Integer) parameter.getFirstElement();
-        parameters.set("start", offset);
-        parameters.set("sort", "date_asked desc, id desc");
 
-        LOGGER.debug("Solr query parameters: {}", parameters);
+        SolrQuery parameters = solrHelper.buildSolrQuery(askedById, limit, offset, keywords);
 
         QueryResponse resp = solrHelper.query(parameters);
 
