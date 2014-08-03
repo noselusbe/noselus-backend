@@ -17,7 +17,7 @@ public class AssemblyRepositoryTest extends AbstractDbDependantTest {
 
     @Before
     public void setUp() {
-        repo = new AssemblyRepositoryDbUtils(AbstractDbDependantTest.dataSource);
+        repo = new AssemblyRepositoryInDatabase(AbstractDbDependantTest.dataSource);
     }
 
     @Test

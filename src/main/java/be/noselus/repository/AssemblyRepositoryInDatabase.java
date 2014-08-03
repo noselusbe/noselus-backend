@@ -13,12 +13,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-public class AssemblyRepositoryDbUtils implements AssemblyRepository, ResultSetMapper<Assembly> {
+public class AssemblyRepositoryInDatabase implements AssemblyRepository, ResultSetMapper<Assembly> {
 
     private final QueryRunnerAdapter queryRunner;
 
     @Inject
-    public AssemblyRepositoryDbUtils(final DataSource dataSource) {
+    public AssemblyRepositoryInDatabase(final DataSource dataSource) {
         queryRunner = new QueryRunnerAdapter(dataSource);
     }
 

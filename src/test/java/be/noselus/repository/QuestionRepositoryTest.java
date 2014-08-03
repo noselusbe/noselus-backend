@@ -26,7 +26,7 @@ public class QuestionRepositoryTest extends AbstractDbDependantTest {
 
     @Before
     public void setUp() {
-        AssemblyRepository assemblies = new AssemblyRepositoryDbUtils(AbstractDbDependantTest.dataSource);
+        AssemblyRepository assemblies = new AssemblyRepositoryInDatabase(AbstractDbDependantTest.dataSource);
         Operation operation =
                 sequenceOf(
                         deleteAllFrom("WRITTEN_QUESTION"),

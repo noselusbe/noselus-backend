@@ -19,7 +19,7 @@ public class NosElusModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(AssemblyRepository.class).to(AssemblyRepositoryDbUtils.class);
+        bind(AssemblyRepository.class).to(AssemblyRepositoryInDatabase.class);
         bind(PoliticianRepository.class).to(PoliticianRepositoryInDatabase.class);
         Multibinder<Routes> routesMultibinder = Multibinder.newSetBinder(binder(), Routes.class);
         routesMultibinder.addBinding().to(QuestionRoutes.class);
