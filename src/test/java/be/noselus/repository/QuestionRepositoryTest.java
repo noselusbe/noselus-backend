@@ -14,7 +14,7 @@ import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
 
 import static com.ninja_squad.dbsetup.Operations.*;
@@ -31,10 +31,12 @@ public class QuestionRepositoryTest extends AbstractDbDependantTest {
                 sequenceOf(
                         deleteAllFrom("WRITTEN_QUESTION"),
                         insertInto("WRITTEN_QUESTION")
-                                .columns("ID", "TITLE", "DATE_ASKED", "ASSEMBLY_ID", "QUESTION_TEXT")
-                                .values(1L, "Flandre", new Date(), 1, "Question text")
-                                .values(2L, "Wallonie", new Date(), 1, "Question text")
-                                .values(536L, "Question 536", new Date(), 1, "Question text")
+                                .withDefaultValue("DATE_ASKED", Date.valueOf("2014-08-12"))
+                                .withDefaultValue("ASSEMBLY_ID", 1)
+                                .columns("ID", "TITLE", "ASSEMBLY_REF", "QUESTION_TEXT", "CREATED_AT", "DATE_ANSWER")
+                                .values(1L, "Flandre", "45", "Question text", null, Date.valueOf("2010-06-17"))
+                                .values(2L, "Wallonie", "32", "Question text", Date.valueOf("2014-08-02"), null)
+                                .values(536L, "Question 536", "153", "Question text", Date.valueOf("2014-05-12"), Date.valueOf("2014-08-12"))
                                 .build());
 
         DbSetup dbSetup = new DbSetup(new DriverManagerDestination(NosElusTestModule.TEST_DB, null, null), operation);
@@ -62,11 +64,25 @@ public class QuestionRepositoryTest extends AbstractDbDependantTest {
     }
 
     @Test
-    public void findTheRightResult() {
+    public void findTheCorrectResultsWhenUsingFirstElementAndLimit() {
         final PartialResult<Question> questions = repo.getQuestions(new SearchParameter(10, 2), Optional.<Integer>absent());
         assertEquals(1, questions.getResults().size());
         assertEquals((Integer) 1, questions.getResults().get(0).id);
     }
+
+    @Test
+    public void getTheMostRecentQuestion() {
+        Integer mostRecentQuestionFrom = repo.getMostRecentQuestionFrom(1);
+        assertEquals((Integer) 32, mostRecentQuestionFrom);
+    }
+
+    @Test
+    public void returnsTheUnansweredQuestion(){
+        List<Integer> unansweredQuestionsFrom = repo.getUnansweredQuestionsFrom(1);
+        assertEquals(1, unansweredQuestionsFrom.size());
+        assertEquals(Integer.valueOf(32), unansweredQuestionsFrom.get(0));
+    }
+
 
     @Test
     public void insertNewQuestion() {

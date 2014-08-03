@@ -25,7 +25,13 @@ public interface QuestionRepository {
 
     void insertOrUpdateQuestion(Question question);
 
+    /**
+     * Returns the {@code assemblyRef} of the question ;ost recently added in the database for the given assembly.
+     */
     Integer getMostRecentQuestionFrom(Integer assemblyId);
 
+    /**
+     * Returns the list of {@code assemblyRef} of the questions that do not have an answer in the database yet for the given assembly.
+     */
     List<Integer> getUnansweredQuestionsFrom(Integer assemblyId);
 }

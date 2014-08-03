@@ -2,6 +2,7 @@ package be.noselus.repository;
 
 import be.noselus.model.Assembly;
 import be.noselus.model.Question;
+import be.noselus.util.dbutils.ResultSetMapper;
 import com.google.inject.Inject;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
@@ -11,7 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
-public class QuestionMapper {
+public class QuestionMapper implements ResultSetMapper<Question>{
 
     private final AssemblyRepository assemblyRepository;
 

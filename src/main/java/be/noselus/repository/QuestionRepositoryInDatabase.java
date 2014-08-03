@@ -4,10 +4,15 @@ import be.noselus.dto.PartialResult;
 import be.noselus.dto.SearchParameter;
 import be.noselus.model.Eurovoc;
 import be.noselus.model.Question;
+import be.noselus.util.dbutils.MapperBasedResultSetHandler;
+import be.noselus.util.dbutils.MapperBasedResultSetListHandler;
+import be.noselus.util.dbutils.QueryRunnerAdapter;
+import be.noselus.util.dbutils.ResultSetMapper;
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
+import org.apache.commons.dbutils.ResultSetHandler;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,38 +35,27 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
     public static final String OFFSET = " OFFSET ?;";
 
     private final QuestionMapper mapper;
+    private final QueryRunnerAdapter queryRunner;
 
     @Inject
     public QuestionRepositoryInDatabase(final AssemblyRepository assemblyRepository, final DataSource dataSource) {
         super(dataSource);
+        this.queryRunner = new QueryRunnerAdapter(dataSource);
         this.mapper = new QuestionMapper(assemblyRepository);
     }
 
     @Override
+    @Timed
     public Question getQuestionById(final int id) {
-        Question result = null;
-        try (Connection db = dataSource.getConnection();
-             PreparedStatement stat = db.prepareStatement("SELECT * FROM written_question WHERE id = ?;")) {
-
-            stat.setInt(1, id);
-            stat.execute();
-            stat.getResultSet().next();
-
-            result = mapper.map(stat.getResultSet());
-
-            this.addEurovocsToQuestion(result, db);
-
-        } catch (SQLException e) {
-            LOGGER.error("Error loading question with id {}", id, e);
-        }
-
-        return result;
+        Question question = queryRunner.query("SELECT * FROM written_question WHERE id = ?;",
+                new MapperBasedResultSetHandler<>(mapper), id);
+        addEurovocsToQuestion(question);
+        return question;
     }
 
     @Override
     public void insertOrUpdateQuestion(final Question question) {
         try (Connection db = dataSource.getConnection()) {
-
             if (questionIsPresent(db, question)) {
                 updateQuestion(db, question);
             } else {
@@ -74,32 +68,26 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
 
     @Override
     public Integer getMostRecentQuestionFrom(final Integer assemblyId) {
-        try (Connection db = dataSource.getConnection();
-             PreparedStatement stat = db.prepareStatement("SELECT max(assembly_ref) FROM written_question WHERE assembly_id = ?;")) {
-
-            stat.setInt(1, assemblyId);
-            stat.execute();
-            stat.getResultSet().next();
-            return stat.getResultSet().getInt(1);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        return queryRunner.query("SELECT assembly_ref FROM written_question WHERE created_at  = " +
+                        "(SELECT max(created_at) FROM written_question WHERE assembly_id = ?);",
+                new ResultSetHandler<Integer>() {
+                    @Override
+                    public Integer handle(ResultSet rs) throws SQLException {
+                        rs.next();
+                        return rs.getInt(1);
+                    }
+                }, assemblyId);
     }
 
     @Override
     public List<Integer> getUnansweredQuestionsFrom(final Integer assemblyId) {
-        List<Integer> result = new ArrayList<>();
-        try (Connection db = dataSource.getConnection();
-             PreparedStatement stat = db.prepareStatement("SELECT assembly_ref FROM written_question WHERE assembly_id = ? AND date_answer IS NULL;")) {
-            stat.setInt(1, assemblyId);
-            stat.execute();
-            while (stat.getResultSet().next()){
-                result.add(stat.getResultSet().getInt("assembly_ref"));
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return result;
+        return queryRunner.query("SELECT assembly_ref FROM written_question WHERE assembly_id = ? AND date_answer IS NULL;",
+                new MapperBasedResultSetListHandler<>(new ResultSetMapper<Integer>() {
+                    @Override
+                    public Integer map(ResultSet resultSet) throws SQLException {
+                        return resultSet.getInt("assembly_ref");
+                    }
+                }), assemblyId);
     }
 
     @Timed
@@ -126,7 +114,7 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
 
             while (stat.getResultSet().next()) {
                 final Question question = mapper.map(stat.getResultSet());
-                this.addEurovocsToQuestion(question, db);
+                this.addEurovocsToQuestion(question);
                 results.add(question);
             }
 
@@ -171,7 +159,7 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
 
             while (questionsStat.getResultSet().next()) {
                 Question q = mapper.map(questionsStat.getResultSet());
-                this.addEurovocsToQuestion(q, db);
+                this.addEurovocsToQuestion(q);
                 questionAssociatedToEurovoc.add(q);
             }
             countStatement.execute();
@@ -193,7 +181,7 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
             stat.execute();
             while (stat.getResultSet().next()) {
                 final Question question = mapper.map(stat.getResultSet());
-                addEurovocsToQuestion(question, db);
+                addEurovocsToQuestion(question);
                 result.add(question);
             }
         } catch (SQLException e) {
@@ -245,26 +233,17 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
         }
     }
 
-    private void addEurovocsToQuestion(Question q, Connection db) {
-        try (PreparedStatement stat = db.prepareStatement("SELECT label, id FROM eurovoc JOIN written_question_eurovoc "
-                + "ON written_question_eurovoc.id_eurovoc = eurovoc.id "
-                + "WHERE written_question_eurovoc.id_written_question = ? ")) {
-
-            stat.setInt(1, q.id);
-
-            stat.execute();
-
-            while (stat.getResultSet().next()) {
-                String label = stat.getResultSet().getString("label");
-                Integer eurovocId = stat.getResultSet().getInt("id");
-
-                Eurovoc eurovoc = new Eurovoc(eurovocId, label);
-
-                q.addEurovoc(eurovoc);
-            }
-        } catch (SQLException e) {
-            LOGGER.error("ERROR while loading eurovocs from question " + q.id.toString(), e);
-        }
+    private void addEurovocsToQuestion(final Question q) {
+        List<Eurovoc> eurovocs = queryRunner.query("SELECT label, id FROM eurovoc JOIN written_question_eurovoc "
+                        + "ON written_question_eurovoc.id_eurovoc = eurovoc.id "
+                        + "WHERE written_question_eurovoc.id_written_question = ? ",
+                new MapperBasedResultSetListHandler<>(new ResultSetMapper<Eurovoc>() {
+                    @Override
+                    public Eurovoc map(ResultSet resultSet) throws SQLException {
+                        return new Eurovoc(resultSet.getInt("id"), resultSet.getString("label"));
+                    }
+                }), q.id);
+        q.addEurovoc(eurovocs);
     }
 
     private int addParameterForNext(final Integer firstElement, int parameterPosition, final PreparedStatement... statements) throws SQLException {
