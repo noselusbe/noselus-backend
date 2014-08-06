@@ -44,7 +44,9 @@
         </encoder>
     </appender>
 
-    <logger name="be.noselus" level="DEBUG"/>
+    <logger name="be.noselus" level="DEBUG" additivity="false">
+        <appender-ref ref="FILE"/>
+    </logger>
 
     <logger name="be.noselus.perf" level="INFO" additivity="false">
         <appender-ref ref="PERF"/>
