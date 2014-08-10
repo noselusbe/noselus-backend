@@ -6,13 +6,15 @@ import java.util.Map;
 
 
 public interface HasIndexableDocument {
-	
-	public enum type {
-		WRITTEN_QUESTION
-	}
-		
-	public Map<SolrHelper.Fields, Object> getIndexableFields();
-	public URI getURI();
-	public type getType();
+
+    public enum type {
+        WRITTEN_QUESTION
+    }
+
+    Map<SolrHelper.Fields, Object> getIndexableFields();
+
+    URI getURI();
+
+    type getType();
 
 }

@@ -143,7 +143,7 @@ public class SolrHelper {
                 LOGGER.error("Error adding document {}", indexableDoc.getFieldValue("id"), e);
             }
 
-            if (commitNow == true) {
+            if (commitNow) {
                 try {
                     solrServer.commit();
                 } catch (SolrServerException | IOException e) {
