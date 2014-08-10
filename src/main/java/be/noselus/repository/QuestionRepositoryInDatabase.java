@@ -21,7 +21,6 @@ import javax.inject.Singleton;
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Singleton
@@ -93,37 +92,34 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
     @Timed
     @Override
     public PartialResult<Question> getQuestions(final SearchParameter parameter, final Optional<Integer> askedById, final String... keywords) {
-        List<Question> results = Lists.newArrayList();
-        int totalResults = 0;
-        final StringBuilder sql = new StringBuilder(SELECT_QUESTION);
-        final StringBuilder where = new StringBuilder();
-        addKeywordsClause(where, keywords);
-        addAskedByClause(askedById, where);
-        sql.append(where);
-        sql.append(ORDER_BY);
-        sql.append(LIMIT);
-        sql.append(OFFSET);
-        try (Connection db = dataSource.getConnection();
-             PreparedStatement stat = db.prepareStatement(sql.toString());
-             PreparedStatement countStat = db.prepareStatement("SELECT COUNT(*) FROM WRITTEN_QUESTION WHERE 1=1 " + where)) {
-            int position = 1;
-            position = addAskedByParameter(askedById, position, stat, countStat);
-            stat.setInt(position++, parameter.getLimit() + 1);
-            stat.setInt(position, parameter.getFirstElement() == null ? 0 : (Integer) parameter.getFirstElement());
-            stat.execute();
+        //build where clause
+        final StringBuilder whereClause = new StringBuilder();
+        addKeywordsClause(whereClause, keywords);
+        addAskedByClause(whereClause, askedById);
 
-            while (stat.getResultSet().next()) {
-                final Question question = mapper.map(stat.getResultSet());
-                this.addEurovocsToQuestion(question);
-                results.add(question);
-            }
+        List<Object> countParams = new ArrayList<>();
+        List<Object> selectParams = new ArrayList<>();
+        if (askedById.isPresent()){
+            countParams.add(askedById.get());
+            selectParams.add(askedById.get());
+        }
+        //count total number of results
+        int totalResults = queryRunner.query("SELECT COUNT(*) question_count FROM WRITTEN_QUESTION WHERE 1=1 " + whereClause,
+                new MapperBasedResultSetHandler<>(new ResultSetMapper<Integer>() {
+                    @Override
+                    public Integer map(ResultSet resultSet) throws SQLException {
+                        return resultSet.getInt("question_count");
+                    }
+                }), countParams.toArray());
 
-            countStat.execute();
-            countStat.getResultSet().next();
-            totalResults = countStat.getResultSet().getInt(1);
-
-        } catch (SQLException e) {
-            LOGGER.error("Error loading question with keywords " + Arrays.toString(keywords), e);
+        //select the questions
+        selectParams.add(parameter.getLimit() + 1);
+        selectParams.add(parameter.getFirstElement().or(0));
+        List<Question> results = queryRunner.query(SELECT_QUESTION + whereClause + ORDER_BY + LIMIT + OFFSET,
+                new MapperBasedResultSetListHandler<>(mapper),
+                selectParams.toArray());
+        for (Question result : results) {
+            addEurovocsToQuestion(result);
         }
         return makePartialResult(results, parameter, totalResults);
     }
@@ -146,9 +142,8 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
 
         int total = 0;
         try (Connection db = dataSource.getConnection();
-             PreparedStatement questionsStat = db.prepareStatement(
-                     sql.toString());
-             PreparedStatement countStatement = db.prepareCall(count)) {
+            PreparedStatement questionsStat = db.prepareStatement(sql.toString());
+            PreparedStatement countStatement = db.prepareCall(count)) {
             int position = 1;
             questionsStat.setInt(position, eurovocId);
             countStatement.setInt(position, eurovocId);
@@ -192,24 +187,13 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
     }
 
     private Integer addClauseForNext(final SearchParameter parameter, final StringBuilder where) {
-        final Integer firstElement = (Integer) parameter.getFirstElement();
-        if (firstElement != null) {
+        if (parameter.getFirstElement().isPresent()) {
             where.append(NEXT_ELEMENT_WHERE);
         }
-        return firstElement;
+        return (Integer) parameter.getFirstElement().orNull();
     }
 
-    private int addAskedByParameter(final Optional<Integer> askedById, int position, final PreparedStatement... stats) throws SQLException {
-        if (askedById.isPresent()) {
-            for (PreparedStatement stat : stats) {
-                stat.setInt(position, askedById.get());
-            }
-            position++;
-        }
-        return position;
-    }
-
-    private void addAskedByClause(final Optional<Integer> askedById, final StringBuilder where) {
+    private void addAskedByClause(final StringBuilder where, final Optional<Integer> askedById) {
         if (askedById.isPresent()) {
             where.append(" AND asked_by = ? ");
         }
@@ -254,11 +238,9 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
             }
             for (PreparedStatement statement : statements) {
                 statement.setDate(parameterPosition, new java.sql.Date(firstQuestion.dateAsked.toDate().getTime()));
+                statement.setInt(parameterPosition + 1, firstQuestion.id);
             }
             parameterPosition++;
-            for (PreparedStatement statement : statements) {
-                statement.setInt(parameterPosition, firstQuestion.id);
-            }
             parameterPosition++;
         }
         return parameterPosition;
@@ -269,8 +251,8 @@ public class QuestionRepositoryInDatabase extends AbstractRepositoryInDatabase i
         final Integer nextElement;
         final int limit = parameter.getLimit();
         if (resultFound > limit) {
-            final Integer firstElement = (Integer) parameter.getFirstElement();
-            nextElement = firstElement == null ? limit : firstElement + limit;
+            final Integer firstElement = (Integer) parameter.getFirstElement().or(0);
+            nextElement = firstElement + limit;
             results.remove(resultFound - 1);
         } else {
             nextElement = null;

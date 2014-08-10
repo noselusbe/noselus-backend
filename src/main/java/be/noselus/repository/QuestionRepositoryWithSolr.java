@@ -35,7 +35,7 @@ public class QuestionRepositoryWithSolr extends QuestionRepositoryInDatabase {
     @Timed
     public PartialResult<Question> getQuestions(final SearchParameter parameter, final Optional<Integer> askedById, final String... keywords) {
         final int limit = parameter.getLimit();
-        final int offset = parameter.getFirstElement() == null ? 0 : (Integer) parameter.getFirstElement();
+        final int offset = (int) parameter.getFirstElement().or(0);
 
         SolrQuery parameters = solrHelper.buildSolrQuery(askedById, limit, offset, keywords);
 
