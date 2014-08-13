@@ -17,7 +17,8 @@ public class PoliticianRepositoryTest extends AbstractDbDependantTest {
 
     @Before
     public void init() {
-        repo = new PoliticianRepositoryInDatabase(AbstractDbDependantTest.dataSource);
+        repo = new PoliticianRepositoryInDatabase(AbstractDbDependantTest.dataSource,
+                new AssemblyRepositoryInDatabase(AbstractDbDependantTest.dataSource));
     }
 
     @Test

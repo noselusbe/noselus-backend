@@ -25,10 +25,12 @@ import java.util.List;
 public class PoliticianRepositoryInDatabase implements PoliticianRepository, ResultSetMapper<Person> {
 
     private final QueryRunnerAdapter queryRunner;
+    private final AssemblyRepository assemblyRepository;
     private List<Person> politicians;
 
     @Inject
-    public PoliticianRepositoryInDatabase(final DataSource dataSource) {
+    public PoliticianRepositoryInDatabase(final DataSource dataSource, final AssemblyRepository assemblyRepository) {
+        this.assemblyRepository = assemblyRepository;
         this.queryRunner = new QueryRunnerAdapter(dataSource);
     }
 
@@ -41,10 +43,7 @@ public class PoliticianRepositoryInDatabase implements PoliticianRepository, Res
     }
 
     private List<Person> initPoliticians() {
-        return queryRunner.query("SELECT person.*, assembly.label AS assembly_label,"
-                + " assembly.level AS assembly_level, assembly.id AS belong_to_assembly_id FROM person"
-                + " JOIN assembly"
-                + " ON assembly.id = person.belong_to_assembly"
+        return queryRunner.query("SELECT person.* FROM person"
                 + " WHERE person.id != 0;", new MapperBasedResultSetListHandler<>(this));
     }
 
@@ -114,10 +113,8 @@ public class PoliticianRepositoryInDatabase implements PoliticianRepository, Res
         double latitude = resultSet.getDouble("lat");
         double longitude = resultSet.getDouble("long");
 
-        String assemblyLabel = resultSet.getString("assembly_label");
-        String assemblyLevel = resultSet.getString("assembly_level");
         Integer belong_to_assembly_id = resultSet.getInt("belong_to_assembly");
-        Assembly assembly = new Assembly(belong_to_assembly_id, assemblyLabel, Assembly.Level.valueOf(assemblyLevel));
+        Assembly assembly = assemblyRepository.findId(belong_to_assembly_id);
 
         List<Integer> questions = Collections.emptyList();
 
