@@ -2,7 +2,10 @@ package be.noselus;
 
 import be.noselus.db.DatabaseUpdater;
 import be.noselus.db.DbConfig;
-import be.noselus.repository.*;
+import be.noselus.repository.AssemblyRepository;
+import be.noselus.repository.AssemblyRepositoryInDatabase;
+import be.noselus.repository.PoliticianRepository;
+import be.noselus.repository.PoliticianRepositoryInDatabase;
 import be.noselus.service.AssembliesRoutes;
 import be.noselus.service.PoliticianRoutes;
 import be.noselus.service.QuestionRoutes;
@@ -10,7 +13,8 @@ import be.noselus.service.Routes;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.multibindings.Multibinder;
-import com.jolbox.bonecp.BoneCPDataSource;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 import javax.inject.Singleton;
 import javax.sql.DataSource;
@@ -39,14 +43,13 @@ public class NosElusModule extends AbstractModule {
     @Provides
     @Singleton
     DataSource getDataSource(DbConfig config) {
-        BoneCPDataSource ds = new BoneCPDataSource();
-        ds.setDriverClass(config.getDriver());
-        ds.setJdbcUrl(config.getUrl());
-        ds.setUsername(config.getUsername());
-        ds.setPassword(config.getPassword());
-        ds.setMinConnectionsPerPartition(5);
-        ds.setMaxConnectionsPerPartition(18);
-        ds.setPartitionCount(1);
-        return ds;
+        HikariConfig hkConfig = new HikariConfig();
+        hkConfig.setDriverClassName(config.getDriver());
+        hkConfig.setJdbcUrl(config.getUrl());
+        hkConfig.setUsername(config.getUsername());
+        hkConfig.setPassword(config.getPassword());
+        hkConfig.setMaximumPoolSize(5);
+        return new HikariDataSource(hkConfig);
     }
+
 }

@@ -3,7 +3,8 @@ package be.noselus;
 import be.noselus.repository.QuestionRepository;
 import be.noselus.repository.QuestionRepositoryInDatabase;
 import com.google.inject.AbstractModule;
-import org.h2.jdbcx.JdbcDataSource;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 import javax.sql.DataSource;
 
@@ -13,8 +14,12 @@ public class NosElusTestModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        JdbcDataSource ds = new JdbcDataSource();
-        ds.setURL(TEST_DB);
+        HikariConfig hkConfig = new HikariConfig();
+        hkConfig.setDataSourceClassName("org.h2.jdbcx.JdbcDataSource");
+        hkConfig.addDataSourceProperty("URL",TEST_DB);
+        hkConfig.setMaximumPoolSize(5);
+        DataSource ds = new HikariDataSource(hkConfig);
+
         bind(DataSource.class).toInstance(ds);
         bind(QuestionRepository.class).to(QuestionRepositoryInDatabase.class);
     }
