@@ -49,6 +49,8 @@ public class NosElusModule extends AbstractModule {
         hkConfig.setUsername(config.getUsername());
         hkConfig.setPassword(config.getPassword());
         hkConfig.setMaximumPoolSize(5);
+        hkConfig.setJdbc4ConnectionTest(false);
+        hkConfig.setConnectionTestQuery("SELECT 1");
         return new HikariDataSource(hkConfig);
     }
 
