@@ -51,7 +51,10 @@ public class NosElusModule extends AbstractModule {
         hkConfig.setMaximumPoolSize(5);
         hkConfig.setJdbc4ConnectionTest(false);
         hkConfig.setConnectionTestQuery("SELECT 1");
-        return new HikariDataSource(hkConfig);
+        HikariDataSource hikariDataSource = new HikariDataSource(hkConfig);
+        hikariDataSource.setJdbc4ConnectionTest(false);
+        hikariDataSource.setConnectionTestQuery("SELECT 1");
+        return hikariDataSource;
     }
 
 }
