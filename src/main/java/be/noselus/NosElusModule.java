@@ -15,11 +15,14 @@ import com.google.inject.Provides;
 import com.google.inject.multibindings.Multibinder;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Singleton;
 import javax.sql.DataSource;
 
 public class NosElusModule extends AbstractModule {
+    private static final Logger LOGGER = LoggerFactory.getLogger(NosElusModule.class);
 
     @Override
     protected void configure() {
@@ -54,6 +57,8 @@ public class NosElusModule extends AbstractModule {
         HikariDataSource hikariDataSource = new HikariDataSource(hkConfig);
         hikariDataSource.setJdbc4ConnectionTest(false);
         hikariDataSource.setConnectionTestQuery("SELECT 1");
+        LOGGER.info("HikariCPConfig [jdbc4ConnectionTest:{}, connectionTestQuery{}]",
+                hikariDataSource.isJdbc4ConnectionTest(), hikariDataSource.getConnectionTestQuery());
         return hikariDataSource;
     }
 
