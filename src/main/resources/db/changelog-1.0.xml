@@ -154,4 +154,10 @@
             <column name="updated_at" type="timestamp"/>
         </addColumn>
     </changeSet>
+    <changeSet id="index_whenSearchingWithSolr" author="nhurion">
+        <createIndex tableName="written_question" indexName="question_id_date_asked" unique="true">
+            <column name="date_asked"/>
+            <column name="id"/>
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>
