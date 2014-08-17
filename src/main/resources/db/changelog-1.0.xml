@@ -167,4 +167,10 @@
             <column name="date_asked"/>
         </createIndex>
     </changeSet>
+    <changeSet id="simpler_index_last_questions" author="nhurion">
+        <dropIndex tableName="written_question" indexName="question_date_asked"/>
+        <createIndex tableName="written_question" indexName="question_date_asked">
+            <column name="date_asked"/>
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>
