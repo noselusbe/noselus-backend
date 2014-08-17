@@ -160,4 +160,11 @@
             <column name="id"/>
         </createIndex>
     </changeSet>
+    <changeSet id="better_index_last_questions" author="nhurion">
+        <dropIndex tableName="written_question" indexName="question_id_date_asked"/>
+        <createIndex tableName="written_question" indexName="question_date_asked" unique="true">
+            <column name="id"/>
+            <column name="date_asked"/>
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>
