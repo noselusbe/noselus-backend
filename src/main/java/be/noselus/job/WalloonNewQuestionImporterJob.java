@@ -20,7 +20,7 @@ public class WalloonNewQuestionImporterJob implements Job {
     public static final int WALLOON_PARLIAMENT_ID = 1;
     private final ParliamentImporter importer;
     private final QuestionRepository questionRepository;
-    public static final Integer NBR_QUESTION_TO_IMPORT = 500;
+    public static final Integer NBR_QUESTION_TO_IMPORT = 1500;
 
     @Inject
     public WalloonNewQuestionImporterJob(final ParliamentImporter importer, final QuestionRepository questionRepository) {
