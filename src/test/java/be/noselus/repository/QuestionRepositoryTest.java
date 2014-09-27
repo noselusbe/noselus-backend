@@ -29,7 +29,7 @@ public class QuestionRepositoryTest extends AbstractDbDependantTest {
         AssemblyRepository assemblies = new AssemblyRepositoryInDatabase(AbstractDbDependantTest.dataSource);
         Operation operation =
                 sequenceOf(
-                        deleteAllFrom("WRITTEN_QUESTION"),
+                        deleteAllFrom("WRITTEN_QUESTION_EUROVOC","WRITTEN_QUESTION"),
                         insertInto("WRITTEN_QUESTION")
                                 .withDefaultValue("DATE_ASKED", Date.valueOf("2014-08-12"))
                                 .withDefaultValue("ASSEMBLY_ID", 1)
