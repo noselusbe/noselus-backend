@@ -13,4 +13,6 @@ public interface PoliticianRepository {
     List<PersonSmall> getPoliticianByName(String name);
 
     Person getPoliticianById(int i);
+
+    void upsertPolitician(Person representative);
 }

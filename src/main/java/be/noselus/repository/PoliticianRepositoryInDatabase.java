@@ -97,6 +97,11 @@ public class PoliticianRepositoryInDatabase implements PoliticianRepository, Res
     }
 
     @Override
+    public void upsertPolitician(final Person representative) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
     public Person map(final ResultSet resultSet) throws SQLException {
         int id = resultSet.getInt("id");
         String full_name = resultSet.getString("full_name");
