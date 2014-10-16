@@ -1,6 +1,8 @@
 package be.noselus.db;
 
 import com.google.inject.Singleton;
+import com.netflix.config.DynamicPropertyFactory;
+import com.netflix.config.DynamicStringProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,26 +62,30 @@ public class DbConfig {
 
     public DbConfig invoke() {
         if (driver == null) {
-            driver = "org.postgresql.Driver";
-            final String databaseUrl = System.getenv("DATABASE_URL");
+            DynamicStringProperty driverClass = DynamicPropertyFactory.getInstance().
+                    getStringProperty("DATABASE_DRIVER", "org.postgresql.Driver");
+            driver = driverClass.get();
+            DynamicStringProperty databaseUrl = DynamicPropertyFactory.getInstance().
+                    getStringProperty("DATABASE_URL", "jdbc:postgresql://localhost:5432/");
 
-            if (databaseUrl == null) {
-                url = "jdbc:postgresql://localhost:5432/";
-            } else {
-                username = System.getenv("DATABASE_USER");
-                password = System.getenv("DATABASE_PASSWORD");
-                url = databaseUrl;
+            url = databaseUrl.get();
+            DynamicStringProperty databaseUsername = DynamicPropertyFactory.getInstance().
+                    getStringProperty("DATABASE_USER", null);
+            DynamicStringProperty databasePassword = DynamicPropertyFactory.getInstance().
+                    getStringProperty("DATABASE_PASSWORD", null);
 
-                if (username == null && password == null) {
-                    URI dbUri = null;
-                    try {
-                        dbUri = new URI(databaseUrl);
-                        username = dbUri.getUserInfo().split(":")[0];
-                        password = dbUri.getUserInfo().split(":")[1];
-                        url = "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath();
-                    } catch (Exception e) {
-                        LOGGER.error("error connecting to database", e);
-                    }
+            username = databaseUsername.get();
+            password = databasePassword.get();
+
+            if (username == null && password == null) {
+                URI dbUri = null;
+                try {
+                    dbUri = new URI(url);
+                    username = dbUri.getUserInfo().split(":")[0];
+                    password = dbUri.getUserInfo().split(":")[1];
+                    url = "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath();
+                } catch (Exception e) {
+                    LOGGER.error("error connecting to database", e);
                 }
             }
         }

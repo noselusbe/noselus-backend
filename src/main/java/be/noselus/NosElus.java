@@ -3,12 +3,19 @@ package be.noselus;
 import be.noselus.db.DatabaseUpdater;
 import be.noselus.job.NosElusQuartzModule;
 import be.noselus.pictures.PictureManager;
+import be.noselus.repository.QuestionRepository;
+import be.noselus.repository.QuestionRepositoryInDatabase;
 import be.noselus.search.SolrModule;
 import be.noselus.service.Routes;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Slf4jReporter;
+import com.google.common.collect.Lists;
+import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Module;
+import com.netflix.config.DynamicBooleanProperty;
+import com.netflix.config.DynamicPropertyFactory;
 import com.palominolabs.metrics.guice.InstrumentationModule;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -17,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -30,6 +38,7 @@ import static spark.Spark.staticFileLocation;
 public class NosElus {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NosElus.class);
+    private static final String ENABLE_SOLR = "solr.enable";
 
     private final Set<Routes> routes;
     private final PictureManager pictureManager;
@@ -48,7 +57,23 @@ public class NosElus {
 
     public static void main(String[] args) throws IOException {
         LOGGER.debug("Starting up");
-        Injector injector = Guice.createInjector(new NosElusModule(), new NosElusQuartzModule(), new SolrModule(), new InstrumentationModule());
+        List<Module> applicationModules = Lists.<Module>newArrayList(new NosElusModule(),
+                new NosElusQuartzModule(),
+                new InstrumentationModule());
+        DynamicBooleanProperty withSolr =
+                DynamicPropertyFactory.getInstance().getBooleanProperty(ENABLE_SOLR, true);
+        if (withSolr.get()){
+            applicationModules.add(new SolrModule());
+        } else {
+            applicationModules.add(new AbstractModule() {
+                @Override
+                protected void configure() {
+                    bind(QuestionRepository.class).to(QuestionRepositoryInDatabase.class);
+                }
+            });
+        }
+
+        Injector injector = Guice.createInjector(applicationModules);
         final NosElus nosElus = injector.getInstance(NosElus.class);
         nosElus.initialize();
         nosElus.startScheduler();
