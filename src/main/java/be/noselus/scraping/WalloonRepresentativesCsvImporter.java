@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.Charset;
 
 public class WalloonRepresentativesCsvImporter {
 
@@ -21,7 +22,7 @@ public class WalloonRepresentativesCsvImporter {
     }
 
     public void importCsv(String csv){
-        Reader in = new InputStreamReader(getClass().getResourceAsStream(csv));
+        Reader in = new InputStreamReader(getClass().getResourceAsStream(csv), Charset.forName("UTF-8"));
         Iterable<CSVRecord> records;
         try {
             records = CSVFormat.EXCEL.withDelimiter(';').withHeader().parse(in);
