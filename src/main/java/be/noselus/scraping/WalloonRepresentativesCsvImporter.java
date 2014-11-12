@@ -33,8 +33,8 @@ public class WalloonRepresentativesCsvImporter {
             String party = record.get("Parti");
             String address = record.get("Adresse");
             String postalCode = record.get("CP");
-            String locality = record.get("Localité");
-            String phone = record.get("Tél.");
+            String locality = record.get("Localite");
+            String phone = record.get("Tel.");
             String fax = record.get("Fax.");
             String email = record.get("e-mail");
             String site = record.get("Site");
