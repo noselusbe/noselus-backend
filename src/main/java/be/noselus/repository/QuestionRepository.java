@@ -26,7 +26,7 @@ public interface QuestionRepository {
     void insertOrUpdateQuestion(Question question);
 
     /**
-     * Returns the {@code assemblyRef} of the question ;ost recently added in the database for the given assembly.
+     * Returns the {@code assemblyRef} of the question most recently added in the database for the given assembly.
      */
     Integer getMostRecentQuestionFrom(Integer assemblyId);
 
