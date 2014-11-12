@@ -29,4 +29,12 @@ public class QueryRunnerAdapter {
             throw new RuntimeException(e);
         }
     }
+
+    public int update(final String sql, final Object... params)  {
+        try {
+            return runner.update(sql, params);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

@@ -1,9 +1,6 @@
 package be.noselus.repository;
 
-import be.noselus.model.Assembly;
-import be.noselus.model.Person;
-import be.noselus.model.PersonFunction;
-import be.noselus.model.PersonSmall;
+import be.noselus.model.*;
 import be.noselus.util.dbutils.MapperBasedResultSetListHandler;
 import be.noselus.util.dbutils.QueryRunnerAdapter;
 import be.noselus.util.dbutils.ResultSetMapper;
@@ -99,6 +96,39 @@ public class PoliticianRepositoryInDatabase implements PoliticianRepository, Res
     @Override
     public void upsertPolitician(final Person representative) {
         throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public void upsertPolitician(final String name, final String party, final String address, final String postalCode,
+                                 final String locality, final String phone, final String fax, final String email,
+                                 final String site, final PersonFunction function, final AssemblyEnum assembly) {
+        if (!politicianIsPresent(name)){
+            insertNewPolitician(name,party,address,postalCode,locality, phone, fax,  email,site, function,  assembly);
+            resetCache();
+        }
+    }
+
+    private boolean politicianIsPresent(final String name) {
+        for (Person politician : getPoliticians()) {
+            if (politician.fullName.equalsIgnoreCase(name)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void insertNewPolitician(final String name, final String party, final String address, final String postalCode,
+                                     final String locality, final String phone, final String fax, final String email,
+                                     final String site, final PersonFunction function, final AssemblyEnum assembly) {
+
+        queryRunner.update("INSERT INTO PERSON(full_name, party, address, postal_code, town, phone, fax, email, site, belong_to_assembly, function)" +
+                        "VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                name, party, address, postalCode, locality, phone, fax, email, site, assembly.getId(), function.name()
+        );
+    }
+
+    private void resetCache() {
+        politicians = null;
     }
 
     @Override

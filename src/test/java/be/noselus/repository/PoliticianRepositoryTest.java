@@ -1,7 +1,9 @@
 package be.noselus.repository;
 
 import be.noselus.AbstractDbDependantTest;
+import be.noselus.model.AssemblyEnum;
 import be.noselus.model.Person;
+import be.noselus.model.PersonFunction;
 import be.noselus.model.PersonSmall;
 import org.junit.Assert;
 import org.junit.Before;
@@ -10,6 +12,7 @@ import org.junit.Test;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class PoliticianRepositoryTest extends AbstractDbDependantTest {
 
@@ -91,5 +94,18 @@ public class PoliticianRepositoryTest extends AbstractDbDependantTest {
     public void findByAlmostName() {
         final List<PersonSmall> found = repo.getPoliticianByName("KAPOMPOLE Joëlle");
         assertEquals(1, found.size());
+    }
+
+    @Test
+    public void insertNewPolitician(){
+        repo.upsertPolitician("Will Smith", "Rock", "Fresh", "90210","Belair","001",null,null,null, PersonFunction.DEPUTY, AssemblyEnum.WAL);
+        final List<PersonSmall> politicianByName = repo.getPoliticianByName("Will Smith");
+        boolean willSmithIsFound = false;
+        for (PersonSmall personSmall : politicianByName) {
+            if (personSmall.fullName.equalsIgnoreCase("Will Smith")){
+                willSmithIsFound = true;
+            }
+        }
+        assertTrue("Will smith should be one of the politicians now",willSmithIsFound);
     }
 }

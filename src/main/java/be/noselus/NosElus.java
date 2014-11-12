@@ -5,6 +5,7 @@ import be.noselus.job.NosElusQuartzModule;
 import be.noselus.pictures.PictureManager;
 import be.noselus.repository.QuestionRepository;
 import be.noselus.repository.QuestionRepositoryInDatabase;
+import be.noselus.scraping.WalloonRepresentativesCsvImporter;
 import be.noselus.search.SolrModule;
 import be.noselus.service.Routes;
 import com.codahale.metrics.MetricRegistry;
@@ -45,14 +46,17 @@ public class NosElus {
     private final DatabaseUpdater dbUpdater;
     private final Scheduler scheduler;
     private final MetricRegistry metricRegistry;
+    private final WalloonRepresentativesCsvImporter walRepCsvImporter;
 
     @Inject
-    public NosElus(final Set<Routes> routes, final PictureManager pictureManager, final DatabaseUpdater dbUpdater, final Scheduler scheduler, final MetricRegistry metricRegistry) {
+    public NosElus(final Set<Routes> routes, final PictureManager pictureManager, final DatabaseUpdater dbUpdater,
+                   final Scheduler scheduler, final MetricRegistry metricRegistry, final WalloonRepresentativesCsvImporter walRepCsvImporter) {
         this.routes = routes;
         this.pictureManager = pictureManager;
         this.dbUpdater = dbUpdater;
         this.scheduler = scheduler;
         this.metricRegistry = metricRegistry;
+        this.walRepCsvImporter = walRepCsvImporter;
     }
 
     public static void main(String[] args) throws IOException {
@@ -108,6 +112,7 @@ public class NosElus {
                 .convertDurationsTo(TimeUnit.MILLISECONDS)
                 .build();
         reporter.start(1, TimeUnit.MINUTES);
+        walRepCsvImporter.importCsv("/liste_parl_pw-2014-10-16.csv");
 
         LOGGER.info("End initialization");
     }
