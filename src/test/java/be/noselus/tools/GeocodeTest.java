@@ -16,7 +16,7 @@ public class GeocodeTest extends AbstractDbDependantTest {
     @Test
     public void geocode() throws IOException {
         String value = Geocode.lookup(50.839812952485, 4.31287655636466);
-        Assert.assertEquals("Birminghamstraat 386, 1070 Anderlecht, Belgium", value);
+        Assert.assertEquals("Birmingham Street 386, 1070 Anderlecht, Belgium", value);
     }
 
     @Test
