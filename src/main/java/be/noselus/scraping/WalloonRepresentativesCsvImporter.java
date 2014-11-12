@@ -29,7 +29,7 @@ public class WalloonRepresentativesCsvImporter {
             throw new RuntimeException(e);
         }
         for (CSVRecord record : records) {
-            String name = record.get("Nom et prénom");
+            String name = record.get("Nom");
             String party = record.get("Parti");
             String address = record.get("Adresse");
             String postalCode = record.get("CP");
