@@ -1,6 +1,7 @@
 package be.noselus;
 
 import be.noselus.db.DatabaseUpdater;
+import be.noselus.fix.QuestionWithoutPersonAskingFix;
 import be.noselus.job.NosElusQuartzModule;
 import be.noselus.pictures.PictureManager;
 import be.noselus.repository.QuestionRepository;
@@ -47,16 +48,19 @@ public class NosElus {
     private final Scheduler scheduler;
     private final MetricRegistry metricRegistry;
     private final WalloonRepresentativesCsvImporter walRepCsvImporter;
+    private final QuestionWithoutPersonAskingFix questionWithoutPersonAskingFix;
 
     @Inject
     public NosElus(final Set<Routes> routes, final PictureManager pictureManager, final DatabaseUpdater dbUpdater,
-                   final Scheduler scheduler, final MetricRegistry metricRegistry, final WalloonRepresentativesCsvImporter walRepCsvImporter) {
+                   final Scheduler scheduler, final MetricRegistry metricRegistry,
+                   final WalloonRepresentativesCsvImporter walRepCsvImporter, final QuestionWithoutPersonAskingFix questionWithoutPersonAskingFix) {
         this.routes = routes;
         this.pictureManager = pictureManager;
         this.dbUpdater = dbUpdater;
         this.scheduler = scheduler;
         this.metricRegistry = metricRegistry;
         this.walRepCsvImporter = walRepCsvImporter;
+        this.questionWithoutPersonAskingFix = questionWithoutPersonAskingFix;
     }
 
     public static void main(String[] args) throws IOException {
@@ -113,7 +117,12 @@ public class NosElus {
                 .build();
         reporter.start(1, TimeUnit.MINUTES);
         walRepCsvImporter.importCsv("/liste_parl_pw-2014-10-16.csv");
+        fixQuestionWithoutRepresentative();
 
         LOGGER.info("End initialization");
+    }
+
+    private void fixQuestionWithoutRepresentative() {
+        questionWithoutPersonAskingFix.runFix();
     }
 }
