@@ -3,7 +3,7 @@ package be.noselus.fix;
 import be.noselus.dto.PartialResult;
 import be.noselus.dto.SearchParameter;
 import be.noselus.model.Question;
-import be.noselus.repository.QuestionRepository;
+import be.noselus.repository.QuestionRepositoryInDatabase;
 import be.noselus.scraping.ParliamentImporter;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
@@ -19,11 +19,11 @@ public class QuestionWithoutPersonAskingFix {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(QuestionWithoutPersonAskingFix.class);
 
-    private final QuestionRepository questionRepository;
+    private final QuestionRepositoryInDatabase questionRepository;
     private final ParliamentImporter importer;
 
     @Inject
-    public QuestionWithoutPersonAskingFix(final QuestionRepository questionRepository, final ParliamentImporter importer) {
+    public QuestionWithoutPersonAskingFix(final QuestionRepositoryInDatabase questionRepository, final ParliamentImporter importer) {
         this.questionRepository = questionRepository;
         this.importer = importer;
     }
