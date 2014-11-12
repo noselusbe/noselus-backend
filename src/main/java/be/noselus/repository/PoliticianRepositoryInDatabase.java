@@ -110,7 +110,7 @@ public class PoliticianRepositoryInDatabase implements PoliticianRepository, Res
 
     private boolean politicianIsPresent(final String name) {
         for (Person politician : getPoliticians()) {
-            if (politician.fullName.equalsIgnoreCase(name)){
+            if (politician.fullName.trim().equalsIgnoreCase(name.trim())){
                 return true;
             }
         }

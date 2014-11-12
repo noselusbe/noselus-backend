@@ -7,6 +7,7 @@ import be.noselus.model.PersonFunction;
 import be.noselus.model.PersonSmall;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
@@ -97,6 +98,7 @@ public class PoliticianRepositoryTest extends AbstractDbDependantTest {
     }
 
     @Test
+    @Ignore("db is not cleanedup after this test.")
     public void insertNewPolitician(){
         repo.upsertPolitician("Will Smith", "Rock", "Fresh", "90210","Belair","001",null,null,null, PersonFunction.DEPUTY, AssemblyEnum.WAL);
         final List<PersonSmall> politicianByName = repo.getPoliticianByName("Will Smith");

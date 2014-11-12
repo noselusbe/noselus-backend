@@ -10,7 +10,7 @@ public class PoliticianRoutesTest extends AbstractRoutesTest {
     @Test
     public void returnsAllPoliticians(){
         expect().statusCode(200)
-                .body("politicians.size()", equalTo(294))
+                .body("politicians.size()", equalTo(293))
                 .when()
                 .get("/politicians");
     }
