@@ -11,7 +11,6 @@ import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.List;
 
@@ -46,9 +45,8 @@ public class QuestionWithoutPersonAskingFix {
 
     private void fixQuestions(final List<Question> results) {
         final List<Integer> questionIds = Lists.transform(results, new Function<Question, Integer>() {
-            @Nullable
             @Override
-            public Integer apply(@Nullable final Question input) {
+            public Integer apply(final Question input) {
                 return Integer.valueOf(input.assemblyRef);
             }
         });
