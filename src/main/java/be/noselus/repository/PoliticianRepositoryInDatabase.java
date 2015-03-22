@@ -14,6 +14,7 @@ import javax.inject.Singleton;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -23,7 +24,7 @@ public class PoliticianRepositoryInDatabase implements PoliticianRepository, Res
 
     private final QueryRunnerAdapter queryRunner;
     private final AssemblyRepository assemblyRepository;
-    private List<Person> politicians;
+    private final List<Person> politicians = new ArrayList<>();
 
     @Inject
     public PoliticianRepositoryInDatabase(final DataSource dataSource, final AssemblyRepository assemblyRepository) {
@@ -32,9 +33,11 @@ public class PoliticianRepositoryInDatabase implements PoliticianRepository, Res
     }
 
     @Override
-    public synchronized List<Person> getPoliticians() {
-        if (politicians == null) {
-            politicians = initPoliticians();
+    public List<Person> getPoliticians() {
+        synchronized (politicians){
+            if (politicians.isEmpty()) {
+                politicians.addAll(initPoliticians());
+            }
         }
         return politicians;
     }
@@ -128,7 +131,9 @@ public class PoliticianRepositoryInDatabase implements PoliticianRepository, Res
     }
 
     private void resetCache() {
-        politicians = null;
+        synchronized (politicians){
+            politicians.clear();
+        }
     }
 
     @Override
