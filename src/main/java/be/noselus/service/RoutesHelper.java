@@ -47,6 +47,10 @@ public class RoutesHelper {
     }
 
     public static void getJson(String path, Route route){
-        get(path, "application/json", route, new JsonTransformer());
+        Route newRoute = (request, response) -> {
+            response.type("application/json");
+            return route.handle(request,response);
+        };
+        get(path, "application/json", newRoute, new JsonTransformer());
     }
 }

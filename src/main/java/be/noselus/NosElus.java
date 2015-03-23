@@ -114,7 +114,6 @@ public class NosElus {
         }
 
         filters.cacheFilter();
-        filters.jsonFilter();
 
         final Slf4jReporter reporter = Slf4jReporter.forRegistry(metricRegistry)
                 .outputTo(LoggerFactory.getLogger("be.noselus.perf"))

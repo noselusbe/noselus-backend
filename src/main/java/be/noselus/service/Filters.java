@@ -11,9 +11,4 @@ public class Filters {
         });
     }
 
-    public void jsonFilter() {
-        before((request, response) -> {
-            response.type("application/json");
-        });
-    }
 }
