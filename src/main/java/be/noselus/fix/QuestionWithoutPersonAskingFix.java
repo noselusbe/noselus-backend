@@ -5,7 +5,6 @@ import be.noselus.dto.SearchParameter;
 import be.noselus.model.Question;
 import be.noselus.repository.QuestionRepositoryInDatabase;
 import be.noselus.scraping.ParliamentImporter;
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.slf4j.Logger;
@@ -44,12 +43,7 @@ public class QuestionWithoutPersonAskingFix {
     }
 
     private void fixQuestions(final List<Question> results) {
-        final List<Integer> questionIds = Lists.transform(results, new Function<Question, Integer>() {
-            @Override
-            public Integer apply(final Question input) {
-                return Integer.valueOf(input.assemblyRef);
-            }
-        });
+        final List<Integer> questionIds = Lists.transform(results, input -> Integer.valueOf(input.assemblyRef));
         importer.importQuestions(questionIds);
     }
 }

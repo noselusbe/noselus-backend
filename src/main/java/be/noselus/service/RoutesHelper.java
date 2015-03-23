@@ -3,10 +3,13 @@ package be.noselus.service;
 import be.noselus.dto.PartialResult;
 import be.noselus.dto.SearchParameter;
 import spark.Request;
+import spark.Route;
 
 import javax.inject.Singleton;
 import java.util.HashMap;
 import java.util.Map;
+
+import static spark.Spark.get;
 
 @Singleton
 public class RoutesHelper {
@@ -41,5 +44,9 @@ public class RoutesHelper {
         final Map<String, Object> result = new HashMap<>();
         result.put(key, object);
         return result;
+    }
+
+    public static void getJson(String path, Route route){
+        get(path, "application/json", route, new JsonTransformer());
     }
 }

@@ -8,6 +8,7 @@ import be.noselus.repository.QuestionRepository;
 import be.noselus.repository.QuestionRepositoryInDatabase;
 import be.noselus.scraping.WalloonRepresentativesCsvImporter;
 import be.noselus.search.SolrModule;
+import be.noselus.service.Filters;
 import be.noselus.service.Routes;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Slf4jReporter;
@@ -30,7 +31,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import static spark.Spark.setPort;
+import static spark.Spark.port;
 import static spark.Spark.staticFileLocation;
 
 /**
@@ -49,11 +50,12 @@ public class NosElus {
     private final MetricRegistry metricRegistry;
     private final WalloonRepresentativesCsvImporter walRepCsvImporter;
     private final QuestionWithoutPersonAskingFix questionWithoutPersonAskingFix;
+    private final Filters filters;
 
     @Inject
     public NosElus(final Set<Routes> routes, final PictureManager pictureManager, final DatabaseUpdater dbUpdater,
                    final Scheduler scheduler, final MetricRegistry metricRegistry,
-                   final WalloonRepresentativesCsvImporter walRepCsvImporter, final QuestionWithoutPersonAskingFix questionWithoutPersonAskingFix) {
+                   final WalloonRepresentativesCsvImporter walRepCsvImporter, final QuestionWithoutPersonAskingFix questionWithoutPersonAskingFix, final Filters filters) {
         this.routes = routes;
         this.pictureManager = pictureManager;
         this.dbUpdater = dbUpdater;
@@ -61,6 +63,7 @@ public class NosElus {
         this.metricRegistry = metricRegistry;
         this.walRepCsvImporter = walRepCsvImporter;
         this.questionWithoutPersonAskingFix = questionWithoutPersonAskingFix;
+        this.filters = filters;
     }
 
     public static void main(String[] args) throws IOException {
@@ -102,13 +105,16 @@ public class NosElus {
 
         final String port = System.getenv("PORT");
         if (port != null) {
-            setPort(Integer.parseInt(port));
+            port(Integer.parseInt(port));
         }
         staticFileLocation("/public");
 
         for (Routes route : routes) {
             route.setup();
         }
+
+        filters.cacheFilter();
+        filters.jsonFilter();
 
         final Slf4jReporter reporter = Slf4jReporter.forRegistry(metricRegistry)
                 .outputTo(LoggerFactory.getLogger("be.noselus.perf"))

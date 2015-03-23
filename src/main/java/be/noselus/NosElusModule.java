@@ -6,10 +6,7 @@ import be.noselus.repository.AssemblyRepository;
 import be.noselus.repository.AssemblyRepositoryInDatabase;
 import be.noselus.repository.PoliticianRepository;
 import be.noselus.repository.PoliticianRepositoryInDatabase;
-import be.noselus.service.AssembliesRoutes;
-import be.noselus.service.PoliticianRoutes;
-import be.noselus.service.QuestionRoutes;
-import be.noselus.service.Routes;
+import be.noselus.service.*;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.multibindings.Multibinder;
@@ -35,6 +32,7 @@ public class NosElusModule extends AbstractModule {
         requireBinding(DataSource.class);
         requireBinding(DbConfig.class);
         requireBinding(DatabaseUpdater.class);
+        requireBinding(Filters.class);
     }
 
     @Provides

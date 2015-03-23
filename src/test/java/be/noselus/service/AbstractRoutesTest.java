@@ -23,7 +23,7 @@ public abstract class AbstractRoutesTest {
         @Override
         protected void before() throws Throwable {
             if (server == null){
-                Spark.setPort(4566);
+                Spark.port(4566);
                 AbstractRoutesTest.injector = Guice.createInjector(
                         Modules.override(new NosElusModule(), new NosElusQuartzModule(), new DbSearchModule())
                         .with(new NosElusTestModule()));

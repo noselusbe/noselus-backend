@@ -5,14 +5,12 @@ import be.noselus.model.PersonSmall;
 import be.noselus.repository.PoliticianRepository;
 import be.noselus.repository.QuestionRepository;
 import com.google.common.base.Optional;
-import spark.Request;
-import spark.Response;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.List;
 
-import static spark.Spark.get;
+import static be.noselus.service.RoutesHelper.getJson;
 
 @Singleton
 public class QuestionRoutes implements Routes {
@@ -32,64 +30,43 @@ public class QuestionRoutes implements Routes {
 
     @Override
     public void setup() {
-        get(new JsonTransformer("/questions") {
+        getJson("/questions", (request, response) -> {
+            final String q = request.queryParams("q");
+            final String askedBy = request.queryParams("asked_by");
+            final SearchParameter parameter = helper.getSearchParameter(request);
+            Optional<Integer> askedById;
+            if (askedBy == null) {
+                askedById = Optional.absent();
+            } else {
+                askedById = Optional.of(Integer.valueOf(askedBy));
+            }
+            final String[] keywordsArray;
+            if (q == null) {
+                keywordsArray = new String[0];
+            } else {
+                final String keywords = q.replace("\"", "");
+                keywordsArray = keywords.split(" ");
+            }
 
-            @Override
-            public Object myHandle(final Request request, final Response response) {
-                final String q = request.queryParams("q");
-                final String askedBy = request.queryParams("asked_by");
-                final SearchParameter parameter = helper.getSearchParameter(request);
-                Optional<Integer> askedById;
-                if (askedBy == null) {
-                    askedById = Optional.absent();
-                } else {
-                    askedById = Optional.of(Integer.valueOf(askedBy));
-                }
-                final String[] keywordsArray;
-                if (q == null) {
-                    keywordsArray = new String[0];
-                } else {
-                    final String keywords = q.replace("\"", "");
-                    keywordsArray = keywords.split(" ");
-                }
-
-                return helper.resultAs(QUESTIONS, questionRepository.getQuestions(parameter, askedById, keywordsArray));
+            return helper.resultAs(QUESTIONS, questionRepository.getQuestions(parameter, askedById, keywordsArray));
+        });
+        getJson("/questions/:id", (request, response) -> {
+            final String params = request.params(":id");
+            return helper.resultAs(QUESTION, questionRepository.getQuestionById(Integer.parseInt(params)));
+        });
+        getJson("/questions/askedBy/:name", (request, response) -> {
+            final String params = request.params(":name");
+            List<PersonSmall> list = politicianRepository.getPoliticianByName(params);
+            if (list.isEmpty()) {
+                return null;
+            } else {
+                return helper.resultAs(QUESTIONS, questionRepository.getQuestions(helper.getSearchParameter(request), Optional.of(list.get(0).id)));
             }
         });
-
-        get(new JsonTransformer("/questions/:id") {
-
-            @Override
-            public Object myHandle(final Request request, final Response response) {
-                final String params = request.params(":id");
-                return helper.resultAs(QUESTION, questionRepository.getQuestionById(Integer.parseInt(params)));
-            }
-        });
-
-        get(new JsonTransformer("/questions/askedBy/:name") {
-
-            @Override
-            public Object myHandle(final Request request, final Response response) {
-                final String params = request.params(":name");
-                List<PersonSmall> list = politicianRepository.getPoliticianByName(params);
-                if (list.isEmpty()) {
-                    return null;
-                } else {
-                    return helper.resultAs(QUESTIONS, questionRepository.getQuestions(helper.getSearchParameter(request), Optional.of(list.get(0).id)));
-                }
-
-            }
-        });
-
-        get(new JsonTransformer("/questions/byEurovoc/:id") {
-
-            @Override
-            protected Object myHandle(Request request, Response response) {
-                final String id = request.params(":id");
-                final SearchParameter parameter = helper.getSearchParameter(request);
-                return helper.resultAs(QUESTIONS, questionRepository.questionAssociatedToEurovoc(parameter, Integer.valueOf(id)));
-            }
-
+        getJson("/questions/byEurovoc/:id", (request, response) -> {
+            final String id = request.params(":id");
+            final SearchParameter parameter = helper.getSearchParameter(request);
+            return helper.resultAs(QUESTIONS, questionRepository.questionAssociatedToEurovoc(parameter, Integer.valueOf(id)));
         });
     }
 }

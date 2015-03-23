@@ -4,21 +4,18 @@ import com.google.gson.*;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
 import org.joda.time.format.ISODateTimeFormat;
-import spark.Request;
-import spark.Response;
-import spark.ResponseTransformerRoute;
+import spark.ResponseTransformer;
 
 import java.lang.reflect.Type;
 
 /**
  * Response transformer route that is in charge of converting object response into Json response.
  */
-public abstract class JsonTransformer extends ResponseTransformerRoute {
+public class JsonTransformer implements ResponseTransformer {
 
     private final Gson gson;
 
-    protected JsonTransformer(String path) {
-        super(path, "application/json");
+    public JsonTransformer() {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(LocalDate.class, new LocalDateAdapter());
         gson = gsonBuilder.create();
@@ -28,16 +25,6 @@ public abstract class JsonTransformer extends ResponseTransformerRoute {
     public String render(Object model) {
         return gson.toJson(model);
     }
-
-    @Override
-    public Object handle(Request request, Response response) {
-        response.type("application/json");
-        response.header("Access-Control-Allow-Origin", "*");
-        response.header("Cache-Control", "no-transform,public,max-age=3600,s-maxage=4800");
-        return myHandle(request, response);
-    }
-
-    protected abstract Object myHandle(Request request, Response response);
 
     /**
      * Adapter to handle the serialization/deserialization of JodaTime LocalDate to Json.
