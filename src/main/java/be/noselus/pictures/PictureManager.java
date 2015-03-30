@@ -7,7 +7,6 @@ import net.coobird.thumbnailator.geometry.Positions;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.sql.DataSource;
-
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,14 +14,15 @@ import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 @Singleton
 public class PictureManager implements Service {
 
     private final DataSource dataSource;
-    private Map<Integer, Integer> mapping = null;
+    private Map<Integer, ImageInfo> mapping = null;
+    private final Set<Integer> personWithoutPicture = new HashSet<>();
+    private final Set<Integer> personWithPicture = new HashSet<>();
 
     @Inject
     public PictureManager(final DataSource dataSource) {
@@ -40,7 +40,7 @@ public class PictureManager implements Service {
             while (stat.getResultSet().next()) {
                 int id = stat.getResultSet().getInt("id");
                 int assembly_id = stat.getResultSet().getInt("assembly_id");
-                mapping.put(id, assembly_id);
+                mapping.put(id, new ImageInfo(id, assembly_id));
             }
 
         } catch (SQLException e) {
@@ -53,24 +53,31 @@ public class PictureManager implements Service {
     }
 
     public InputStream get(int id) {
-        final ImageInfo imageInfo = new ImageInfo(id).invoke();
-        final String path = imageInfo.getPath();
-        final String ext = imageInfo.getExt();
-
-        if (path != null && ext != null) {
-            return PictureManager.class.getResourceAsStream(path + mapping.get(id) + ext);
+        final ImageInfo imageInfo = mapping.get(id);
+        if (imageInfo == null){
+            return null;
+        }
+        if (personWithoutPicture.contains(id)) {
+            return null;
+        }
+        if (imageInfo.hasImage()) {
+            return PictureManager.class.getResourceAsStream(imageInfo.getImagePath());
         } else {
             return null;
         }
     }
 
     public void get(int id, int width, int height, OutputStream os) throws IOException {
-        final ImageInfo imageInfo = new ImageInfo(id).invoke();
-        final String path = imageInfo.getPath();
-        final String ext = imageInfo.getExt();
+        final ImageInfo imageInfo = mapping.get(id);
+        if (imageInfo == null){
+            return;
+        }
+        if (personWithoutPicture.contains(id)) {
+            return;
+        }
 
-        if (path != null && ext != null) {
-            Thumbnails.of(PictureManager.class.getResourceAsStream(path + mapping.get(id) + ext))
+        if (imageInfo.hasImage()) {
+            Thumbnails.of(PictureManager.class.getResourceAsStream(imageInfo.getImagePath()))
                     .size(width, height)
                     .crop(Positions.CENTER)
                     .imageType(BufferedImage.SCALE_FAST)
@@ -79,31 +86,56 @@ public class PictureManager implements Service {
         }
     }
 
+    public boolean hasPicture(int personId) {
+        if (personWithPicture.contains(personId)){
+            return true;
+        }
+        if (personWithoutPicture.contains(personId)){
+            return false;
+        }
+        try {
+            final InputStream inputStream = get(personId);
+            if (inputStream == null){
+                personWithoutPicture.add(personId);
+                return false;
+            }
+            personWithPicture.add(personId);
+            return true;
+        } catch (Exception e) {
+            personWithoutPicture.add(personId);
+            return false;
+        }
+    }
+
     private class ImageInfo {
-        private final int id;
+        private final int personId;
+        private final int personIdInAssembly;
+
         private String path;
         private String ext;
 
-        public ImageInfo(final int id) {
-            this.id = id;
+        public ImageInfo(final int personId, final int personIdInAssembly) {
+            this.personId = personId;
+            this.personIdInAssembly = personIdInAssembly;
+            init();
         }
 
-        public String getPath() {
-            return path;
+        public String getImagePath(){
+            return path + personIdInAssembly + ext;
         }
 
-        public String getExt() {
-            return ext;
+        public boolean hasImage(){
+            return path != null && ext != null;
         }
 
-        public ImageInfo invoke() {
-            if (id >= 77 && id <= 150) {
+        private ImageInfo init() {
+            if (personId >= 77 && personId <= 150) {
                 path = "/pictures/parlement/";
                 ext = ".jpg";
-            } else if (id >= 151 && id <= 158) {
+            } else if (personId >= 151 && personId <= 158) {
                 path = "/pictures/minister/";
                 ext = ".jpg";
-            } else if (id >= 849 && id <= 998) {
+            } else if (personId >= 849 && personId <= 998) {
                 path = "/pictures/chamber/";
                 ext = ".gif";
             }

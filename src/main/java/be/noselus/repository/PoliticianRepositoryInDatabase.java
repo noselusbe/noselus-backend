@@ -1,6 +1,7 @@
 package be.noselus.repository;
 
 import be.noselus.model.*;
+import be.noselus.pictures.PictureManager;
 import be.noselus.util.dbutils.MapperBasedResultSetListHandler;
 import be.noselus.util.dbutils.QueryRunnerAdapter;
 import be.noselus.util.dbutils.ResultSetMapper;
@@ -24,11 +25,15 @@ public class PoliticianRepositoryInDatabase implements PoliticianRepository, Res
 
     private final QueryRunnerAdapter queryRunner;
     private final AssemblyRepository assemblyRepository;
+    private final PictureManager pictureManager;
+
     private final List<Person> politicians = new ArrayList<>();
 
     @Inject
-    public PoliticianRepositoryInDatabase(final DataSource dataSource, final AssemblyRepository assemblyRepository) {
+    public PoliticianRepositoryInDatabase(final DataSource dataSource, final AssemblyRepository assemblyRepository,
+                                          final PictureManager pictureManager) {
         this.assemblyRepository = assemblyRepository;
+        this.pictureManager = pictureManager;
         this.queryRunner = new QueryRunnerAdapter(dataSource);
     }
 
@@ -158,8 +163,12 @@ public class PoliticianRepositoryInDatabase implements PoliticianRepository, Res
 
         List<Integer> questions = Collections.emptyList();
 
-        return new Person(id, full_name, party, address, postal_code,
+        final Person person = new Person(id, full_name, party, address, postal_code,
                 town, phone, fax, email, site, function, assemblyId,
                 questions, assembly, latitude, longitude);
+        if (pictureManager.hasPicture(id)){
+            person.picture = new Link("/politicians/" + id + "/picture");
+        }
+        return person;
     }
 }

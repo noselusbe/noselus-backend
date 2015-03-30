@@ -2,6 +2,7 @@ package be.noselus.scraping;
 
 import be.noselus.AbstractDbDependantTest;
 import be.noselus.model.Question;
+import be.noselus.pictures.PictureManager;
 import be.noselus.repository.*;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormatter;
@@ -25,7 +26,8 @@ public class QuestionParserTest extends AbstractDbDependantTest {
     @Before
     public void setup() {
         AssemblyRepository assemblyRepository = new AssemblyRepositoryInDatabase(AbstractDbDependantTest.dataSource);
-        PoliticianRepository politicianRepository = new PoliticianRepositoryInDatabase(AbstractDbDependantTest.dataSource,assemblyRepository);
+        PoliticianRepository politicianRepository = new PoliticianRepositoryInDatabase(AbstractDbDependantTest.dataSource,assemblyRepository,
+                new PictureManager(AbstractDbDependantTest.dataSource));
         parser = new QuestionParser(politicianRepository, assemblyRepository);
     }
 

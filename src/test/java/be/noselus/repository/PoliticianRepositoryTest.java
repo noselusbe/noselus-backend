@@ -5,6 +5,7 @@ import be.noselus.model.AssemblyEnum;
 import be.noselus.model.Person;
 import be.noselus.model.PersonFunction;
 import be.noselus.model.PersonSmall;
+import be.noselus.pictures.PictureManager;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -22,7 +23,8 @@ public class PoliticianRepositoryTest extends AbstractDbDependantTest {
     @Before
     public void init() {
         repo = new PoliticianRepositoryInDatabase(AbstractDbDependantTest.dataSource,
-                new AssemblyRepositoryInDatabase(AbstractDbDependantTest.dataSource));
+                new AssemblyRepositoryInDatabase(AbstractDbDependantTest.dataSource),
+                new PictureManager(AbstractDbDependantTest.dataSource));
     }
 
     @Test

@@ -21,6 +21,7 @@ public class Person {
     public double longitude;
     public List<Integer> asked_questions;
     public Assembly belongToAssembly;
+    public Link picture;
 
     public Person(Integer id, String fullName, String party, String address, String postalCode, String town, String phone,
                   String fax, String email, String site, PersonFunction function, int assemblyId, List<Integer> askedQuestionIds,
