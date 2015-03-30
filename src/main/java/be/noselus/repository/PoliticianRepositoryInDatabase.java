@@ -166,9 +166,9 @@ public class PoliticianRepositoryInDatabase implements PoliticianRepository, Res
         final Person person = new Person(id, full_name, party, address, postal_code,
                 town, phone, fax, email, site, function, assemblyId,
                 questions, assembly, latitude, longitude);
-        if (pictureManager.hasPicture(id)){
-            person.picture = new Link("/politicians/" + id + "/picture");
-        }
+//        if (pictureManager.hasPicture(id)){
+//            person.picture = new Link("/politicians/" + id + "/picture");
+//        }
         return person;
     }
 }
