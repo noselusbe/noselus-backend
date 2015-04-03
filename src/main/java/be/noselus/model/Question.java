@@ -75,22 +75,12 @@ public class Question implements HasIndexableDocument {
 
     @Override
     public Map<Fields, Object> getIndexableFields() {
-        Map<SolrHelper.Fields, Object> doc = new HashMap<SolrHelper.Fields, Object>();
-        if (this.title != null) {
-            doc.put(SolrHelper.StringFields.TITLE_FR, this.title);
-        }
-        if (this.questionText != null) {
-            doc.put(SolrHelper.StringFields.QUESTION_FR, this.questionText);
-        }
-        if (this.answerText != null) {
-            doc.put(SolrHelper.StringFields.ANSWER_FR, this.answerText);
-        }
-        if (this.dateAsked != null) {
-            doc.put(SolrHelper.DateFields.DATE_ASKED, this.dateAsked);
-        }
-        if (this.dateAnswered != null) {
-            doc.put(SolrHelper.DateFields.DATE_ANSWERED, this.dateAnswered);
-        }
+        Map<SolrHelper.Fields, Object> doc = new HashMap<>();
+        putIfPresent(doc, this.title, SolrHelper.StringFields.TITLE_FR);
+        putIfPresent(doc, this.questionText, SolrHelper.StringFields.QUESTION_FR);
+        putIfPresent(doc, this.answerText, SolrHelper.StringFields.ANSWER_FR);
+        putIfPresent(doc, this.dateAsked, SolrHelper.DateFields.DATE_ASKED);
+        putIfPresent(doc, this.dateAnswered, SolrHelper.DateFields.DATE_ANSWERED);
         if (this.assembly != null) {
             doc.put(SolrHelper.StringFields.ASSEMBLY, this.assembly.getLabel());
         }
@@ -101,13 +91,17 @@ public class Question implements HasIndexableDocument {
         return doc;
     }
 
+    private void putIfPresent(Map<SolrHelper.Fields, Object> map, Object value, SolrHelper.Fields field){
+        if (value != null){
+            map.put(field, value);
+        }
+    }
+
     @Override
     public URI getURI() {
-
         if (this.id == null) {
             throw new NullPointerException("Id must not be null");
         }
-
         if (this.assembly == null) {
             throw new NullPointerException("Assembly is null. Please avoid this!");
         }
@@ -138,5 +132,9 @@ public class Question implements HasIndexableDocument {
     public type getType() {
         return HasIndexableDocument.type.WRITTEN_QUESTION;
 
+    }
+
+    public Link getOriginal(){
+        return assembly.getLinkToQuestion(this);
     }
 }
