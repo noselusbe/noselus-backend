@@ -62,23 +62,22 @@ public class DbConfig {
 
     public DbConfig invoke() {
         if (driver == null) {
-            DynamicStringProperty driverClass = DynamicPropertyFactory.getInstance().
+            final DynamicPropertyFactory dynamicPropertyFactory = DynamicPropertyFactory.getInstance();
+            DynamicStringProperty driverClass = dynamicPropertyFactory.
                     getStringProperty("DATABASE_DRIVER", "org.postgresql.Driver");
             driver = driverClass.get();
-            DynamicStringProperty databaseUrl = DynamicPropertyFactory.getInstance().
+            DynamicStringProperty databaseUrl = dynamicPropertyFactory.
                     getStringProperty("DATABASE_URL", "jdbc:postgresql://localhost:5432/");
 
             url = databaseUrl.get();
-            DynamicStringProperty databaseUsername = DynamicPropertyFactory.getInstance().
-                    getStringProperty("DATABASE_USER", null);
-            DynamicStringProperty databasePassword = DynamicPropertyFactory.getInstance().
-                    getStringProperty("DATABASE_PASSWORD", null);
+            DynamicStringProperty databaseUsername = dynamicPropertyFactory.getStringProperty("DATABASE_USER", null);
+            DynamicStringProperty databasePassword = dynamicPropertyFactory.getStringProperty("DATABASE_PASSWORD", null);
 
             username = databaseUsername.get();
             password = databasePassword.get();
 
             if (username == null && password == null) {
-                URI dbUri = null;
+                URI dbUri;
                 try {
                     dbUri = new URI(url);
                     username = dbUri.getUserInfo().split(":")[0];
