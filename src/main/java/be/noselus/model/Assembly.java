@@ -5,7 +5,7 @@ import com.google.common.base.Objects;
 public class Assembly {
     private static final int WALLOON_PARLIAMENT_ID = 1;
 
-    Link getLinkToQuestion(Question question) {
+    final Link getLinkToQuestion(Question question) {
         if (getId() == WALLOON_PARLIAMENT_ID) {
             Link link = new Link("http://www.parlement-wallon.be/pwpages?p=interp-questions-voir&type=28&id_doc=" +
                     question.assemblyRef);

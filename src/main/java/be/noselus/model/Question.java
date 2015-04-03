@@ -34,6 +34,7 @@ public class Question implements HasIndexableDocument {
     public List<Eurovoc> eurovocs = new ArrayList<>();
     public LocalDateTime createdAt;
     public LocalDateTime updatedAt;
+    public Link original;
 
     public Question(Assembly assembly, String assemblyRef, String title) {
         this.assembly = assembly;
@@ -63,6 +64,7 @@ public class Question implements HasIndexableDocument {
         this.assemblyRef = assemblyRef;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.original = assembly.getLinkToQuestion(this);
     }
 
     public void addEurovoc(List<Eurovoc> list) {
@@ -134,7 +136,4 @@ public class Question implements HasIndexableDocument {
 
     }
 
-    public Link getOriginal(){
-        return assembly.getLinkToQuestion(this);
-    }
 }
