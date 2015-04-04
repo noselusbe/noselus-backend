@@ -77,7 +77,12 @@ public class QuestionParser {
         }
 
         if (document.hasAnswer()) {
-            question.answeredBy = politicianRepository.getPoliticianByName(document.getAnsweredBy()).get(0).id;
+            final List<PersonSmall> politicianByName = politicianRepository.getPoliticianByName(document.getAnsweredBy());
+            if (politicianByName.isEmpty()) {
+                LOGGER.info("missing politician by name [{}]", document.getAnsweredBy());
+            } else {
+                question.answeredBy = politicianByName.get(0).id;
+            }
         }
 
         // Extract Metadata
