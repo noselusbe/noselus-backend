@@ -34,6 +34,7 @@ public class WalloonRepresentativesCsvImporter {
     }
 
     public void importLatest() {
+        LOGGER.info("Importing latest info on representatives in Walloon parliament");
         try {
             Reader reader = getCsvFrom(WALLOON_PARLIAMENT_COMPO_CSV_URL);
             updateRepresentativeFromCsv(reader);
