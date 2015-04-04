@@ -9,6 +9,7 @@ public class NosElusQuartzModule extends QuartzModule {
         scheduleJob(WalloonNewQuestionImporterJob.class);
         scheduleJob(WalloonNewResponseImporterJob.class);
         scheduleJob(QuestionIndexerJob.class);
+        scheduleJob(WalloonParliamentRepresentativesImporterJob.class);
         configureScheduler().withManualStart();
     }
 }

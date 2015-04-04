@@ -1,12 +1,10 @@
 package be.noselus;
 
 import be.noselus.db.DatabaseUpdater;
-import be.noselus.fix.QuestionWithoutPersonAskingFix;
 import be.noselus.job.NosElusQuartzModule;
 import be.noselus.pictures.PictureManager;
 import be.noselus.repository.QuestionRepository;
 import be.noselus.repository.QuestionRepositoryInDatabase;
-import be.noselus.scraping.WalloonRepresentativesCsvImporter;
 import be.noselus.search.SolrModule;
 import be.noselus.service.Filters;
 import be.noselus.service.Routes;
@@ -48,21 +46,16 @@ public class NosElus {
     private final DatabaseUpdater dbUpdater;
     private final Scheduler scheduler;
     private final MetricRegistry metricRegistry;
-    private final WalloonRepresentativesCsvImporter walRepCsvImporter;
-    private final QuestionWithoutPersonAskingFix questionWithoutPersonAskingFix;
     private final Filters filters;
 
     @Inject
     public NosElus(final Set<Routes> routes, final PictureManager pictureManager, final DatabaseUpdater dbUpdater,
-                   final Scheduler scheduler, final MetricRegistry metricRegistry,
-                   final WalloonRepresentativesCsvImporter walRepCsvImporter, final QuestionWithoutPersonAskingFix questionWithoutPersonAskingFix, final Filters filters) {
+                   final Scheduler scheduler, final MetricRegistry metricRegistry, final Filters filters) {
         this.routes = routes;
         this.pictureManager = pictureManager;
         this.dbUpdater = dbUpdater;
         this.scheduler = scheduler;
         this.metricRegistry = metricRegistry;
-        this.walRepCsvImporter = walRepCsvImporter;
-        this.questionWithoutPersonAskingFix = questionWithoutPersonAskingFix;
         this.filters = filters;
     }
 
@@ -121,13 +114,7 @@ public class NosElus {
                 .convertDurationsTo(TimeUnit.MILLISECONDS)
                 .build();
         reporter.start(1, TimeUnit.MINUTES);
-        walRepCsvImporter.importCsv("/liste_parl_pw-2014-10-16.csv");
-        fixQuestionWithoutRepresentative();
 
         LOGGER.info("End initialization");
-    }
-
-    private void fixQuestionWithoutRepresentative() {
-        questionWithoutPersonAskingFix.runFix();
     }
 }
