@@ -56,6 +56,10 @@
         <appender-ref ref="FILE"/>
     </logger>
 
+    <logger name="org.apache.solr.update.processor.LogUpdateProcessor" level="WARN" additivity="false">
+        <appender-ref ref="FILE"/>
+    </logger>
+
     <root level="INFO">
         <appender-ref ref="FILE"/>
     </root>
