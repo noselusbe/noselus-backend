@@ -113,7 +113,7 @@ public class NosElus {
                 .convertRatesTo(TimeUnit.SECONDS)
                 .convertDurationsTo(TimeUnit.MILLISECONDS)
                 .build();
-        reporter.start(1, TimeUnit.MINUTES);
+        reporter.start(60, TimeUnit.MINUTES);
 
         LOGGER.info("End initialization");
     }
