@@ -1,5 +1,6 @@
 package be.noselus.pictures;
 
+import be.noselus.model.AssemblyEnum;
 import be.noselus.util.Service;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.geometry.Positions;
@@ -32,15 +33,16 @@ public class PictureManager implements Service {
     @Override
     public void start() {
         try (Connection db = dataSource.getConnection();
-             PreparedStatement stat = db.prepareStatement("SELECT id, assembly_id FROM person;")) {
+             PreparedStatement stat = db.prepareStatement("SELECT id, assembly_id, belong_to_assembly FROM person;")) {
 
             stat.execute();
 
             mapping = new TreeMap<>();
             while (stat.getResultSet().next()) {
                 int id = stat.getResultSet().getInt("id");
-                int assembly_id = stat.getResultSet().getInt("assembly_id");
-                mapping.put(id, new ImageInfo(id, assembly_id));
+                int idInAssembly = stat.getResultSet().getInt("assembly_id");
+                int assembly = stat.getResultSet().getInt("belong_to_assembly");
+                mapping.put(id, new ImageInfo(idInAssembly, assembly));
             }
 
         } catch (SQLException e) {
@@ -50,6 +52,17 @@ public class PictureManager implements Service {
 
     @Override
     public void stop() {
+    }
+
+    public Set<ImageInfo> getMissingPictures(){
+        Set<ImageInfo> result = new HashSet<>();
+        if (mapping == null){
+            return result;
+        }
+        for (Integer personId : personWithoutPicture) {
+            result.add(mapping.get(personId));
+        }
+        return result;
     }
 
     public InputStream get(int id) {
@@ -108,15 +121,15 @@ public class PictureManager implements Service {
     }
 
     private class ImageInfo {
-        private final int personId;
         private final int personIdInAssembly;
+        private final int assemblyId;
 
         private String path;
         private String ext;
 
-        public ImageInfo(final int personId, final int personIdInAssembly) {
-            this.personId = personId;
+        public ImageInfo(final int personIdInAssembly, final int assembly) {
             this.personIdInAssembly = personIdInAssembly;
+            this.assemblyId = assembly;
             init();
         }
 
@@ -129,13 +142,13 @@ public class PictureManager implements Service {
         }
 
         private ImageInfo init() {
-            if (personId >= 77 && personId <= 150) {
+            if (assemblyId == AssemblyEnum.WAL.getId()) {
                 path = "/pictures/parlement/";
                 ext = ".jpg";
-            } else if (personId >= 151 && personId <= 158) {
+            } else if (assemblyId == AssemblyEnum.GVT_WAL.getId()) {
                 path = "/pictures/minister/";
                 ext = ".jpg";
-            } else if (personId >= 849 && personId <= 998) {
+            } else if (assemblyId == AssemblyEnum.FED.getId()) {
                 path = "/pictures/chamber/";
                 ext = ".gif";
             }

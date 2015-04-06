@@ -29,6 +29,7 @@ public class NosElusModule extends AbstractModule {
         routesMultibinder.addBinding().to(QuestionRoutes.class);
         routesMultibinder.addBinding().to(PoliticianRoutes.class);
         routesMultibinder.addBinding().to(AssembliesRoutes.class);
+        routesMultibinder.addBinding().to(SupportRoutes.class);
         requireBinding(DataSource.class);
         requireBinding(DbConfig.class);
         requireBinding(DatabaseUpdater.class);
