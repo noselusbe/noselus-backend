@@ -17,7 +17,7 @@ public interface PoliticianRepository {
 
     Person getPoliticianById(int i);
 
-    void upsertPolitician(Person representative);
+    void updatePolitician(Person representative);
 
     void upsertPolitician(String name, String party, String address, String postalCode, String locality, String phone, String fax, String email, String site, final PersonFunction deputy, final AssemblyEnum wal);
 }

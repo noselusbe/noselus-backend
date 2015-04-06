@@ -54,19 +54,15 @@ public class PoliticianRepositoryInDatabase implements PoliticianRepository, Res
 
     @Override
     public List<Person> getFullPoliticianByName(final String name) {
-        Predicate<Person> hasName = new Predicate<Person>() {
-            @Override
-            public boolean apply(Person p) {
-                final int endIndex = name.lastIndexOf(' ');
-                final String lastName;
-                if (endIndex == -1) {
-                    lastName = name;
-                } else {
-                    lastName = name.substring(0, endIndex).replace(" ", " ");
-                }
-
-                return p != null && (name.equals(p.fullName) || p.fullName.contains(name) || p.fullName.contains(lastName));
+        Predicate<Person> hasName = p -> {
+            final int endIndex = name.lastIndexOf(' ');
+            final String lastName;
+            if (endIndex == -1) {
+                lastName = name;
+            } else {
+                lastName = name.substring(0, endIndex).replace(" ", " ");
             }
+            return p != null && (name.equals(p.fullName) || p.fullName.contains(name) || p.fullName.contains(lastName));
         };
 
         Collection<Person> foundPerson = Collections2.filter(getPoliticians(), hasName);
@@ -87,14 +83,7 @@ public class PoliticianRepositoryInDatabase implements PoliticianRepository, Res
 
     @Override
     public Person getPoliticianById(final int id) {
-        Predicate<Person> withId = new Predicate<Person>() {
-            @Override
-            public boolean apply(Person p) {
-                return p != null && (p.id == id);
-            }
-        };
-
-        Collection<Person> foundPerson = Collections2.filter(getPoliticians(), withId);
+        Collection<Person> foundPerson = Collections2.filter(getPoliticians(), p -> p != null && (p.id == id));
         if (foundPerson.isEmpty()) {
             return null;
         }
@@ -102,8 +91,11 @@ public class PoliticianRepositoryInDatabase implements PoliticianRepository, Res
     }
 
     @Override
-    public void upsertPolitician(final Person representative) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    public void updatePolitician(final Person representative) {
+        queryRunner.update("UPDATE PERSON SET assembly_id = ? WHERE id = ?"  ,
+                representative.assemblyId, representative.id
+        );
+        politicians.clear();
     }
 
     @Override
