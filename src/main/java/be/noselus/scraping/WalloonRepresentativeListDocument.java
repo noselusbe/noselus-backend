@@ -1,6 +1,5 @@
 package be.noselus.scraping;
 
-import be.noselus.model.Person;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -11,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 public class WalloonRepresentativeListDocument {
@@ -24,14 +23,15 @@ public class WalloonRepresentativeListDocument {
         this.webPage = webPage;
     }
 
-
-    public List<Person> getRepresentatives() throws IOException {
+    public List<WalloonRepresentativeDocument> getRepresentatives() throws IOException {
+        final List<WalloonRepresentativeDocument> result = new ArrayList<>();
         final Elements links = webPage.select(".panel-heading").select("a[href]");
         for (Element link : links) {
             final WalloonRepresentativeDocument representative = getRepresentative(link);
             LOGGER.trace(representative.getName() + "("+ representative.getParty() +") : " +representative.getId());
+            result.add(representative);
         }
-        return Collections.emptyList();
+        return result;
     }
 
     private WalloonRepresentativeDocument getRepresentative(final Element link) throws IOException {
