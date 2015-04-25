@@ -28,6 +28,7 @@ public class PoliticianRepositoryInDatabase implements PoliticianRepository, Res
     private final PictureManager pictureManager;
 
     private final List<Person> politicians = new ArrayList<>();
+    private boolean dirty = false;
 
     @Inject
     public PoliticianRepositoryInDatabase(final DataSource dataSource, final AssemblyRepository assemblyRepository,
@@ -40,11 +41,14 @@ public class PoliticianRepositoryInDatabase implements PoliticianRepository, Res
     @Override
     public List<Person> getPoliticians() {
         synchronized (politicians){
+            if (dirty){
+                politicians.clear();
+            }
             if (politicians.isEmpty()) {
                 politicians.addAll(initPoliticians());
             }
         }
-        return politicians;
+        return Collections.unmodifiableList(politicians);
     }
 
     private List<Person> initPoliticians() {
@@ -92,11 +96,12 @@ public class PoliticianRepositoryInDatabase implements PoliticianRepository, Res
 
     @Override
     public void updatePolitician(final Person representative) {
-        queryRunner.update("UPDATE PERSON SET assembly_id = ? WHERE id = ?"  ,
+        queryRunner.update("UPDATE PERSON SET assembly_id = ? WHERE id = ?",
                 representative.assemblyId, representative.id
         );
-        politicians.clear();
+        dirty = true;
     }
+
 
     @Override
     public void upsertPolitician(final String name, final String party, final String address, final String postalCode,
@@ -128,9 +133,7 @@ public class PoliticianRepositoryInDatabase implements PoliticianRepository, Res
     }
 
     private void resetCache() {
-        synchronized (politicians){
-            politicians.clear();
-        }
+        dirty = true;
     }
 
     @Override
