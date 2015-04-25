@@ -39,7 +39,7 @@ public class PersonWithMissingAssemblyRefFix {
                     reportProblem(person, documents);
                 }
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                LOGGER.error("problem loading extra info",e);
             }
         });
     }
