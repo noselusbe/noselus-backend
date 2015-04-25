@@ -8,7 +8,6 @@ import be.noselus.scraping.WalloonRepresentativesFetcher;
 import org.slf4j.Logger;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -29,19 +28,23 @@ public class PersonWithMissingAssemblyRefFix {
 
     public void runFix(){
         final List<Person> politicians = politicianRepository.getPoliticians();
-        politicians.stream().filter((Person p) -> p.assemblyId == 0 && p.belongToAssembly.getId() == AssemblyEnum.WAL.getId())
+        politicians.stream().filter((Person p) -> personMissingIdInAssembly(p))
                 .forEach(person -> {
-            try {
-                final List<WalloonRepresentativeDocument> documents = fetcher.searchFor(person.fullName);
-                if (documents.size() == 1) {
-                    fillData(person, documents.get(0));
-                } else {
-                    reportProblem(person, documents);
-                }
-            } catch (IOException e) {
-                LOGGER.error("problem loading extra info",e);
-            }
-        });
+                    try {
+                        final List<WalloonRepresentativeDocument> documents = fetcher.searchFor(person.fullName);
+                        if (documents.size() == 1) {
+                            fillData(person, documents.get(0));
+                        } else {
+                            reportProblem(person, documents);
+                        }
+                    } catch (Exception e) {
+                        LOGGER.error("problem loading extra info", e);
+                    }
+                });
+    }
+
+    private boolean personMissingIdInAssembly(final Person p) {
+        return null != p && 0 == p.assemblyId && null != p.belongToAssembly && p.belongToAssembly.getId() == AssemblyEnum.WAL.getId();
     }
 
     private void reportProblem(final Person person, final List<WalloonRepresentativeDocument> documents) {
