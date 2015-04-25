@@ -27,11 +27,19 @@ public class WalloonRepresentativesFetcherTest {
     }
 
     @Test
-    public void findAToine() throws IOException {
+    public void findAAntoine() throws IOException {
         final List<WalloonRepresentativeDocument> persons = importer.searchFor("ANTOINE André");
         assertThat(persons, not(empty()));
         assertThat(persons, hasSize(1));
         assertThat(persons.get(0).getName(), is("ANTOINE André"));
+    }
+
+    @Test
+    public void findWithSpecialCharacterInMiddleOfName() throws IOException {
+        final List<WalloonRepresentativeDocument> persons = importer.searchFor("CORNET Véronique");
+        assertThat(persons, not(empty()));
+        assertThat(persons, hasSize(1));
+        assertThat(persons.get(0).getName(), is("CORNET Véronique"));
     }
 
 
