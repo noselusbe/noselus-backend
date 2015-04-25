@@ -12,7 +12,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-@Scheduled(jobName = "loadWalloonParliamentRepresentatives", cronExpression = "0 0 1 ? * SUN *")
+@Scheduled(jobName = "loadWalloonParliamentRepresentatives", cronExpression = "0 0 12 1/1 * ? *")
 public class WalloonParliamentRepresentativesImporterJob implements Job {
 
     private final WalloonRepresentativesCsvImporter walRepCsvImporter;

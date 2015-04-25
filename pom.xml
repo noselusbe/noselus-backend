@@ -11,7 +11,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <solr.version>4.6.1</solr.version>
-        <metrics.version>3.0.2</metrics.version>
+        <metrics.version>3.1.3</metrics.version>
     </properties>
 
     <dependencies>
@@ -54,6 +54,7 @@
         <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
+            <!--<classifier>no_aop</classifier>-->
         </dependency>
         <dependency>
             <groupId>com.google.inject.extensions</groupId>
@@ -212,6 +213,7 @@
             <dependency>
                 <groupId>com.google.inject</groupId>
                 <artifactId>guice</artifactId>
+                <!--<classifier>no_aop</classifier>-->
                 <version>3.0</version>
             </dependency>
             <dependency>

@@ -4,6 +4,8 @@ import be.noselus.model.AssemblyEnum;
 import be.noselus.util.Service;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.geometry.Positions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -12,13 +14,19 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 @Singleton
 public class PictureManager implements Service {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PictureManager.class);
 
     private final DataSource dataSource;
     private Map<Integer, ImageInfo> mapping = null;
@@ -74,7 +82,7 @@ public class PictureManager implements Service {
             return null;
         }
         if (imageInfo.hasImage()) {
-            return PictureManager.class.getResourceAsStream(imageInfo.getImagePath());
+            return imageInfo.getIs();
         } else {
             return null;
         }
@@ -90,7 +98,7 @@ public class PictureManager implements Service {
         }
 
         if (imageInfo.hasImage()) {
-            Thumbnails.of(PictureManager.class.getResourceAsStream(imageInfo.getImagePath()))
+            Thumbnails.of(imageInfo.getIs())
                     .size(width, height)
                     .crop(Positions.CENTER)
                     .imageType(BufferedImage.SCALE_FAST)
@@ -133,12 +141,28 @@ public class PictureManager implements Service {
             init();
         }
 
-        public String getImagePath(){
+        private String getImagePath(){
             return path + personIdInAssembly + ext;
         }
 
         public boolean hasImage(){
-            return path != null && ext != null;
+            return null != path && null != ext;
+        }
+
+        public InputStream getIs(){
+            if (0 == personIdInAssembly){
+                return null;
+            }
+            if (assemblyId == AssemblyEnum.WAL.getId()) {
+                final String imgUrl ="http://nautilus.parlement-wallon.be/archives/photos/deputes/webhd/" + personIdInAssembly+ ".jpg";
+                try {
+                    return new URL(imgUrl).openStream();
+                } catch (IOException e) {
+                    LOGGER.warn("Could not load image from [{}]", imgUrl);
+                    return null;
+                }
+            }
+            return PictureManager.class.getResourceAsStream(getImagePath());
         }
 
         private ImageInfo init() {

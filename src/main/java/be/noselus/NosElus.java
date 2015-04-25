@@ -17,7 +17,7 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.netflix.config.DynamicBooleanProperty;
 import com.netflix.config.DynamicPropertyFactory;
-import com.palominolabs.metrics.guice.InstrumentationModule;
+import com.palominolabs.metrics.guice.MetricsInstrumentationModule;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
@@ -59,12 +59,13 @@ public class NosElus {
         this.filters = filters;
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(final String[] args) throws IOException {
         LOGGER.debug("Starting up");
-        List<Module> applicationModules = Lists.<Module>newArrayList(new NosElusModule(),
+        final List<Module> applicationModules = Lists.<Module>newArrayList(new NosElusModule(),
                 new NosElusQuartzModule(),
-                new InstrumentationModule());
-        DynamicBooleanProperty withSolr =
+                new MetricsInstrumentationModule(new MetricRegistry())
+        );
+        final DynamicBooleanProperty withSolr =
                 DynamicPropertyFactory.getInstance().getBooleanProperty(ENABLE_SOLR, true);
         if (withSolr.get()){
             applicationModules.add(new SolrModule());
@@ -77,7 +78,7 @@ public class NosElus {
             });
         }
 
-        Injector injector = Guice.createInjector(applicationModules);
+        final Injector injector = Guice.createInjector(applicationModules);
         final NosElus nosElus = injector.getInstance(NosElus.class);
         nosElus.initialize();
         nosElus.startScheduler();
@@ -97,12 +98,12 @@ public class NosElus {
         pictureManager.start();
 
         final String port = System.getenv("PORT");
-        if (port != null) {
+        if (null != port) {
             port(Integer.parseInt(port));
         }
         staticFileLocation("/public");
 
-        for (Routes route : routes) {
+        for (final Routes route : routes) {
             route.setup();
         }
 
