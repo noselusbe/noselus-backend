@@ -21,7 +21,7 @@ public class WalloonRepresentativeDocument {
     }
 
     public String getName() {
-        final Elements name = pageContent.select("h4.text-pw-blue");
+        final Elements name = pageContent.select("h3.visible-xs");
         return name.get(0).text();
     }
 
