@@ -71,6 +71,6 @@ public class WalloonRepresentativeDocumentTest {
 
     @Test
     public void hasCorrectEmail(){
-        assertEquals("p.henry@skynet.be", representative.getEmail());
+        assertEquals("philippe.henry@ecolo.be", representative.getEmail());
     }
 }
