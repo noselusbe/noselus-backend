@@ -36,10 +36,10 @@ public class WalloonRepresentativesFetcherTest {
 
     @Test
     public void findWithSpecialCharacterInMiddleOfName() throws IOException {
-        final List<WalloonRepresentativeDocument> persons = importer.searchFor("CORNET Véronique");
+        final List<WalloonRepresentativeDocument> persons = importer.searchFor("BONNI Véronique");
         assertThat(persons, not(empty()));
         assertThat(persons, hasSize(1));
-        assertThat(persons.get(0).getName(), is("CORNET Véronique"));
+        assertThat(persons.get(0).getName(), is("BONNI Véronique"));
     }
 
 
