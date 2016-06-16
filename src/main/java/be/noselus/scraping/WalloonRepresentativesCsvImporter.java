@@ -19,7 +19,7 @@ import java.nio.charset.Charset;
 public class WalloonRepresentativesCsvImporter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WalloonRepresentativesCsvImporter.class);
-    private static final String WALLOON_PARLIAMENT_COMPO_CSV_URL = "http://www.parlement-wallon.be/composition-dep-csv";
+    private static final String WALLOON_PARLIAMENT_COMPO_CSV_URL = "https://www.parlement-wallonie.be/composition-dep-csv";
 
     private final PoliticianRepository politicianRepository;
 

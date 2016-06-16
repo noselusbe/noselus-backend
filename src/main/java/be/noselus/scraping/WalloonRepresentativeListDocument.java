@@ -35,7 +35,7 @@ public class WalloonRepresentativeListDocument {
     }
 
     private WalloonRepresentativeDocument getRepresentative(final Element link) throws IOException {
-        final String url = link.attr("abs:href").replace("wallon","wallonie");
+        final String url = link.attr("abs:href").replace("parlement-wallon.be","parlement-wallonie.be");
         Document doc;
         try (InputStream in = new URL(url).openStream()) {
             doc = Jsoup.parse(in, "utf-8", url);

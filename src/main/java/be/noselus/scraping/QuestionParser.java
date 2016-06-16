@@ -24,7 +24,7 @@ public class QuestionParser {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(QuestionParser.class);
 
-    private static final String DEFAULT_URL = "http://www.parlement-wallon.be/content/print.php?print=interp-questions-voir.php&type=all&id_doc=";
+    private static final String DEFAULT_URL = "https://www.parlement-wallonie.be/content/print.php?print=interp-questions-voir.php&type=all&id_doc=";
 
     private final PoliticianRepository politicianRepository;
     private final Assembly WALLOON_PARLIAMENT;

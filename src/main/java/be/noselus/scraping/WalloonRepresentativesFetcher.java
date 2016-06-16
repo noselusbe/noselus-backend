@@ -19,7 +19,7 @@ public class WalloonRepresentativesFetcher {
         WalloonRepresentativeListDocument listDocument;
         String normalizedName = Normalizer.normalize(name, Normalizer.Form.NFD).replace(' ', '+').replace(' ','+').replaceAll("[^\\p{ASCII}]", "");
 //        name = name.replace(' ', '+').replaceAll("[^A-Za-z0-9 /+]", "");
-        final String url = "https://www.parlement-wallon.be/pwpages?home_dep_search=" + normalizedName +
+        final String url = "https://www.parlement-wallonie.be/pwpages?home_dep_search=" + normalizedName +
                 "&p=composition_dep";
         LOGGER.debug("Trying to find using url [{}]", url);
         disableSSLCheckDueToBadCertificate();

@@ -25,7 +25,7 @@ import java.sql.SQLException;
 //TODO Those are not test,move somewhere more appropriate.
 public class PersonParserTest extends AbstractDbDependantTest{
 
-    String urlParlement = "http://www.parlement-wallon.be/content/default.php?p=01-01"; // .jpg
+    String urlParlement = "https://www.parlement-wallonie.be/content/default.php?p=01-01"; // .jpg
     String urlChamber = "http://www.dekamer.be/site/wwwroot/images/cv/"; // .gif
     Connection db;
 

@@ -7,7 +7,7 @@ public class Assembly {
 
     final Link getLinkToQuestion(Question question) {
         if (getId() == WALLOON_PARLIAMENT_ID) {
-            Link link = new Link("http://www.parlement-wallon.be/pwpages?p=interp-questions-voir&type=28&id_doc=" +
+            Link link = new Link("https://www.parlement-wallonie.be/pwpages?p=interp-questions-voir&type=28&id_doc=" +
                     question.assemblyRef);
             link.setRel("original");
             return link;

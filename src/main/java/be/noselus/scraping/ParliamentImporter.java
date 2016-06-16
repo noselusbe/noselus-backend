@@ -20,7 +20,7 @@ public class ParliamentImporter {
     public static final int WAIT_INTERVAL = 450;
     public static final int FROM_ID = 53250;
     public static final int TO_ID = 53271;
-    public static final String QUESTION_URL = "http://www.parlement-wallon.be/content/print.php?print=interp-questions-voir.php&type=all&id_doc=";
+    public static final String QUESTION_URL = "https://www.parlement-wallonie.be/content/print.php?print=interp-questions-voir.php&type=all&id_doc=";
 
     @Inject
     public ParliamentImporter(final QuestionRepository questionRepository, final QuestionParser parser) {
